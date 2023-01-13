@@ -1,6 +1,7 @@
 import { Configuration, getLogger, Logger, configure } from 'log4js'
 import { EventEmitter } from 'events'
 import { modifyJsonNode, getJsonNode } from '../server/utils/client.util'
+import {LogModel} from '../server/models/log.model'
 
 /**
  * @description 使用log4js库作为日志
@@ -18,19 +19,19 @@ export module Log {
     let log: Logger = getLogger('client')
     export let logEvents = new EventEmitter()
 
-    export function info(message: any, params?: object) {
-        log.info(message, { ...params })
-        logEvents.emit('info', message, params)
+    export function info(message:LogModel) {
+        log.info(message.information,{server:message.server,source:message.source,...message.message})
+        logEvents.emit('info', message)
     }
 
-    export function error(message: any, params?: object) {
-        log.error(message, { ...params })
-        logEvents.emit('error', message, params)
+    export function error(message:LogModel) {
+        log.error(message.information,{server:message.server,source:message.source,...message.message})
+        logEvents.emit('error', message)
     }
 
-    export function warn(message: any, params?: object) {
-        log.warn(message, { ...params })
-        logEvents.emit('warn', message, params)
+    export function warn(message:LogModel) {
+        log.warn(message.information,{server:message.server,source:message.source,...message.message})
+        logEvents.emit('warn', message)
     }
 
     /**

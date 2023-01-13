@@ -1,20 +1,25 @@
 import {UaSession} from '../../common/client.classes'
 import {
-    CertificateManager,
     EndpointDescription,
     FindServersOnNetworkRequestOptions,
-    MessageSecurityMode, OPCUACertificateManager,
+    MessageSecurityMode,
+    OPCUACertificateManager,
     OPCUAClient,
-    OPCUAClientOptions, OPCUAServerEndPoint,
-    SecurityPolicy, ServerOnNetwork, StatusCode,
+    OPCUAClientOptions,
+    SecurityPolicy,
+    ServerOnNetwork,
+    StatusCode,
     UserIdentityInfo,
 } from 'node-opcua'
 import {Log} from '../../common/log'
 import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
+import {Errors, Infos, Sources, Warns} from '../../common/enums'
+import {ClientError, ClientInfo, ClientWarn} from '../../common/informations'
 
 export module ClientService {
 
+    // let sourceModule:SourceModules=SourceModules.clientService
     export let client: OPCUAClient = OPCUAClient.create({
         applicationName: 'NodeOPCUA-Client',
         connectionStrategy: {
@@ -30,20 +35,21 @@ export module ClientService {
 
     export function createClient(clientOptions: OPCUAClientOptions) {
         client = OPCUAClient.create(clientOptions)
+        Log.info(new ClientInfo(Sources.clientService, Infos.clientCreated))
     }
 
     export async function createClientSession(userInfo?: UserIdentityInfo) {
         uaSession = new UaSession(userInfo)
         await uaSession.createSession(client)
+        Log.info(new ClientInfo(Sources.clientService, Infos.sessionCreated))
     }
 
     export async function connectToServer(endpointUrl: string) {
         try {
             await client.connect(endpointUrl)
-            Log.info('Established connection.', {Endpoint: endpointUrl})
-            console.log('success')
+            Log.info(new ClientInfo(Sources.clientService, Infos.connectionCreated,{Endpoint:endpointUrl}))
         } catch (e) {
-            Log.error('error')
+            throw new ClientError(Sources.clientService, Errors.errorConnecting,{Error:e.message})
         }
     }
 
@@ -55,34 +61,34 @@ export module ClientService {
                 } else {
                     await uaSession.closeSession()
                 }
-                Log.info('Session closed')
+                Log.info(new ClientInfo(Sources.clientService, Infos.sessionClosed))
             } catch (e: any) {
-                Log.error('Error closing UA session.', {error: e.message})
+                throw new ClientError(Sources.clientService, Errors.errorClosingSession,{Error:e.message})
             }
         }
         await client.disconnect()
-        Log.info('Client disconnected')
+        Log.info(new ClientInfo(Sources.clientService, Infos.clientDisconnect))
     }
 
     export async function getServersOnNetwork(options?: FindServersOnNetworkRequestOptions): Promise<ServerOnNetwork[]> {
         let servers = await client.findServersOnNetwork(options)
-        if (!servers) Log.error('no servers')
+        if (!servers) Log.warn(new ClientWarn(Sources.clientService, Warns.serversNotExist))
         return servers
     }
 
     export async function getEndpoints(): Promise<EndpointDescription[]> {
         let endpoints = await client.getEndpoints()
-        if (!endpoints) Log.warn('endpoints不存在')
+        if (!endpoints) Log.warn(new ClientWarn(Sources.clientService, Warns.endPointsNotExist))
         return endpoints
     }
 
     export function getPrivateKey() {
-        Log.info('get private key')
+        Log.info(new ClientInfo(Sources.clientService, Infos.getPrivateKey))
         return client.getPrivateKey()
     }
 
     export function getCertificate() {
-        Log.info('get certificate')
+        Log.info(new ClientInfo(Sources.clientService, Infos.getCertificate))
         return client.getCertificate()
     }
 }

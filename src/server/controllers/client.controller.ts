@@ -12,20 +12,18 @@ export module ClientController {
         next:Application.Next
     ) {
         let clientOptions=ctx.body
-        let endPointUrl = ctx.body
         let userInfo=ctx.body
         ClientService.createClient(clientOptions)
-        await ClientService.connectToServer(endPointUrl)
         await createClientSession(userInfo)
     }
 
-    // export async function connect(
-    //     ctx:Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
-    //     next:Application.Next
-    // ) {
-    //     let endpointUrl=ctx.body
-    //     await ClientService.connectToServer(endpointUrl)
-    // }
+    export async function connect(
+        ctx:Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
+        next:Application.Next
+    ) {
+        let endpointUrl=ctx.body
+        await ClientService.connectToServer(endpointUrl)
+    }
     export async function disconnect(
         ctx: Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
         next:Application.Next
