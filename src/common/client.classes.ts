@@ -1,33 +1,22 @@
 import {
+    ClientMonitoredItem,
+    ClientMonitoredItemGroup,
     ClientSession,
     ClientSubscription,
     DataValue,
-    EndpointDescription,
     makeBrowsePath,
     MonitoringParametersOptions,
     OPCUAClient,
-    OPCUAClientOptions,
     ReadValueIdOptions,
     ReferenceDescription,
+    StatusCode,
     TimestampsToReturn,
     UserIdentityInfo,
     UserTokenType,
-    ClientMonitoredItemGroup,
-    MessageSecurityMode,
-    SecurityPolicy,
-    findServersOnNetwork,
-    ServerOnNetwork,
-    FindServersOnNetworkRequestOptions,
     WriteValueOptions,
-    StatusCode,
-    OPCUACertificateManager,
-    AttributeIds,
-    ClientMonitoredItem,
-    MonitoredItem,
-    SignedSoftwareCertificate,
-    CertificateManager,
 } from 'node-opcua'
-import { EventEmitter } from 'events'
+import {ClientError, ClientInfo, ClientWarn} from './informations'
+import {Errors, Infos, Sources, Warns} from './enums'
 
 const UaMessageQueue = require('./mq')
 const Log = require('./log')
@@ -39,12 +28,6 @@ const Log = require('./log')
 //     userName: 'nice',
 //     password: 'nice',
 // }
-
-class UaCertificate {
-    constructor() {
-
-    }
-}
 
 export class UaSubscription {
     subscription!: ClientSubscription
@@ -65,7 +48,7 @@ export class UaSubscription {
         this.subscription = ClientSubscription.create(session, subOptions)
         this.subscription
             .on('started', () => {
-                Log.info('installed subscription on session')
+                Log.info(new ClientInfo(Sources.subscription, Infos.installedSub))
             })
             .on('keepalive', () => {
             })
@@ -76,9 +59,9 @@ export class UaSubscription {
     async terminateSubscription() {
         if (this.subscription) {
             await this.subscription.terminate()
-            Log.info('terminated subscription')
+            Log.info(new ClientInfo(Sources.subscription, Infos.terminateSub))
         } else {
-            Log.error('error')
+            throw Log.error(new ClientError(Sources.subscription, Errors.noSubscription))
         }
     }
 
@@ -118,7 +101,7 @@ export class UaSubscription {
                     console.log('err')
                 })
         } else {
-            Log.error('error')
+            throw Log.error(new ClientError(Sources.subscription, Errors.noSubscription))
         }
         // let a:ReadValueIdOptions={
         //     nodeId:'nice',
@@ -168,12 +151,12 @@ export class UaSession {
     uaSubscriptions!: UaSubscription//ClientSubscription[]
     userIdentity: UserIdentityInfo
 
-    constructor(userInfo: UserIdentityInfo = { type: UserTokenType.Anonymous }) {
+    constructor(userInfo: UserIdentityInfo = {type: UserTokenType.Anonymous}) {
         this.userIdentity = userInfo
         // this.uaSubscriptions=[]
     }
 
-    async changeIdentity(userInfo: UserIdentityInfo = { type: UserTokenType.Anonymous }) {
+    async changeIdentity(userInfo: UserIdentityInfo = {type: UserTokenType.Anonymous}) {
         await this.session.changeUser(userInfo)
     }
 
@@ -186,7 +169,7 @@ export class UaSession {
             try {
                 await this.session.close(deleteSubscription)
             } catch (e: any) {
-                Log.error(e.message)
+                throw Log.error(new ClientError(Sources.subscription, Errors.errorClosingSession, {Error: e.message}))
             }
         }
     }
@@ -195,7 +178,7 @@ export class UaSession {
         try {
             this.uaSubscriptions = new UaSubscription(this.session, subOptions)
         } catch (e: any) {
-            Log.error(e.message)
+            throw Log.error(new ClientError(Sources.clientSession, Errors.errorCreatingSub, {Error: e.message}))
         }
     }
 
@@ -209,7 +192,7 @@ export class UaSession {
         if (browseResult.references) {
             resultList = browseResult.references
         } else {
-            Log.warn('空列表')
+            Log.warn(new ClientWarn(Sources.clientSession, Warns.emptyRootFolder))
         }
         return resultList
     }
@@ -217,14 +200,14 @@ export class UaSession {
     async getNodeIdByBrowseName(relativePathBNF: string, rootNode: string = 'RootFolder'): Promise<string> {
         let browsePath = makeBrowsePath(rootNode, relativePathBNF)
         let result = await this.session.translateBrowsePath(browsePath)
-        Log.info('Get NodeId by browseName')
+        Log.info(new ClientInfo(Sources.clientSession, Infos.getIdByName, {Path: browsePath}))
         if (result.targets) return result.targets[0].targetId.toString()
         return ''
     }
 
     async writeToServer(nodesToWrite: WriteValueOptions[]): Promise<StatusCode[]> {
         let codes = await this.session.write(nodesToWrite)
-        if (!codes) Log.error('error writing to server')
+        if (!codes) throw Log.error(new ClientError(Sources.clientSession, Errors.errorWriting))
         return codes
     }
 

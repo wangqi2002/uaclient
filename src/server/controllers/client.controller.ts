@@ -4,17 +4,14 @@ import Application = require('koa')
 import Router = require('koa-router')
 
 export module ClientController {
-    import createClient = ClientService.createClient
-    import createClientSession = ClientService.createClientSession
 
-    export async function initialClient(
+    export async function init(
         ctx: Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
         next:Application.Next
     ) {
         let clientOptions=ctx.body
         let userInfo=ctx.body
         ClientService.createClient(clientOptions)
-        await createClientSession(userInfo)
     }
 
     export async function connect(
@@ -28,8 +25,8 @@ export module ClientController {
         ctx: Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
         next:Application.Next
     ) {
-        let deletSubscription=ctx.body
-        await ClientService.disconnectFromServer(deletSubscription)
+        let deleteSubscription=true
+        await ClientService.disconnectFromServer(deleteSubscription)
     }
 
     export function getEndpoints(
