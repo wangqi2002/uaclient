@@ -1,0 +1,41 @@
+{
+  "name": "uaclient",
+  "productName": "uaclient",
+  "version": "1.0.0",
+  "description": "My Electron application description",
+  "main": "src/main.ts",
+  "scripts": {
+    "dev": "nodemon ./src/main.ts",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\""
+  },
+  "keywords": [],
+  "author": {
+    "name": "f2w00",
+    "email": "109409603+f2w00@users.noreply.github.com"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "electron-squirrel-startup": "^1.0.0",
+    "koa": "^2.14.1",
+    "koa-body": "^6.0.1",
+    "koa-router": "^12.0.0",
+    "log4js": "^6.7.1",
+    "node-opcua": "^2.88.0",
+    "nodemon": "^2.0.20",
+    "typescript": "^4.9.4"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.4",
+    "@electron-forge/maker-deb": "^6.0.4",
+    "@electron-forge/maker-rpm": "^6.0.4",
+    "@electron-forge/maker-squirrel": "^6.0.4",
+    "@electron-forge/maker-zip": "^6.0.4",
+    "@types/koa-router": "^7.4.4",
+    "electron": "22.0.1"
+  }
+}
