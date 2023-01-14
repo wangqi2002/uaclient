@@ -20,12 +20,16 @@ export module ClientService {
             initialDelay: 1000,
             maxRetry: 1,
         },
+        keepSessionAlive:true,
         securityMode: MessageSecurityMode.None,
         securityPolicy: SecurityPolicy.None,
         endpointMustExist: false,
     })
     export let uaConnectionAlive: boolean = false
 
+    export function getServerName() {
+        return ''
+    }
     export function createClient(clientOptions: OPCUAClientOptions) {
         client = OPCUAClient.create(clientOptions)
         Log.info(new ClientInfo(Sources.clientService, Infos.clientCreated))
@@ -35,7 +39,7 @@ export module ClientService {
         try {
             await client.connect(endpointUrl)
             Log.info(new ClientInfo(Sources.clientService, Infos.connectionCreated, {Endpoint: endpointUrl}))
-        } catch (e) {
+        } catch (e:any) {
             throw new ClientError(Sources.clientService, Errors.errorConnecting, {Error: e.message})
         }
     }

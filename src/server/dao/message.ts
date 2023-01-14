@@ -1,12 +1,12 @@
-import { MessageModel } from '../models/message.model'
+import { DataModel } from '../models/data.model'
 import { TableCreateModes } from '../../common/enums'
 
 export class Message {
-    public static insertOne(data: MessageModel): boolean {
+    public static insertOne(data: DataModel): boolean {
         return true
     }
 
-    public static insertMany(data: MessageModel[]): boolean {
+    public static insertMany(data: DataModel[]): boolean {
         return true
     }
 
