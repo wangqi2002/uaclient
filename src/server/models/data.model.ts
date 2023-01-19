@@ -1,14 +1,25 @@
 import {MessageModel} from './message.model'
 import {ClientService} from '../services/client.service'
 
-export class DbData extends MessageModel{
-    server:string
-    displayName:string
+export interface IDbData {
+    server: string
+    nodeId: string
+    displayName: string
+    value: string
+    dataType: string
+    sourceTimeStamp: string
+    serverTimeStamp: string
+    statusCode: string
+}
 
-    constructor(message:MessageModel,name:string) {
+export class DbData extends MessageModel implements IDbData {
+    server: string
+    displayName: string
+
+    constructor(message: MessageModel, name: string) {
         super(message)
-        this.displayName=name
-        this.server=ClientService.getServerName()
-        this.value=message.value.toString()
+        this.displayName = name
+        this.server = ClientService.getServerName()
+        this.value = message.value.toString()
     }
 }

@@ -1,6 +1,5 @@
 import {
     ClientMonitoredItem,
-    ClientMonitoredItemGroup,
     ClientSubscription,
     ClientSubscriptionOptions,
     ModifySubscriptionOptions,
@@ -155,11 +154,14 @@ export module SubscriptService {
      * @description 注意删除该monitoredItem之后并不会改变其他Item在数组当中的index,本index的元素只是被置为empty
      * @param nodeIds
      */
-    export function deleteMonitoredItems(nodeIds: string[]) {
+    export async function deleteMonitoredItems(nodeIds: string[]) {
         try {
             for (let i of nodeIds) {
-                monitoredItems[i].monitoredItem.terminate
-                monitoredItems.delete(i)
+                let item = monitoredItems.get(i)
+                if (item) {
+                    await item.monitoredItem.terminate()
+                    monitoredItems.delete(i)
+                }
             }
         } catch (e: any) {
             throw new ClientError(Sources.subscription, Errors.wrongIndexOfArray, {Error: e.message})
@@ -181,10 +183,13 @@ export module SubscriptService {
         monitoredItem
             .on('changed', (data) => {
                 // UaMessageQueue.enqueue(data, monitoredItem.itemToMonitor, monitoredItems[itemId].displayName)
-                UaMessageQueue.enqueue(
-                    new MessageModel(data, monitoredItem.itemToMonitor.nodeId.toString()),
-                    monitoredItems[itemId].displayName
-                )
+                let item = monitoredItems.get(itemId)
+                if (item) {
+                    UaMessageQueue.enqueue(
+                        new MessageModel(data, monitoredItem.itemToMonitor.nodeId.toString()),
+                        item.displayName
+                    )
+                }
             })
             .on('initialized', () => {
                 Log.info(new ClientInfo(Sources.subscription, Infos.monitoredItemInit, {NodeId: itemId}))

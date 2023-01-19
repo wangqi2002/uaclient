@@ -1,6 +1,6 @@
-import { Configuration, getLogger, Logger, configure } from 'log4js'
-import { EventEmitter } from 'events'
-import { modifyJsonNode, getJsonNode } from '../server/utils/client.util'
+import {Configuration, configure, getLogger, Logger} from 'log4js'
+import {EventEmitter} from 'events'
+import {getJsonNode, modifyJsonNode} from '../server/utils/util'
 import {LogModel} from '../server/models/log.model'
 
 /**

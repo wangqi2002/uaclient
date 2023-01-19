@@ -17,15 +17,15 @@ import {ClientService} from './client.service'
 export module SessionService {
     export let session!: ClientSession
     // let uaSubscriptions!: UaSubscription//ClientSubscription[]
-    export let userIdentity: UserIdentityInfo
+    export let userIdentity: UserIdentityInfo = {type: UserTokenType.Anonymous}
 
-    export async function createSession(userInfo: UserIdentityInfo = {type: UserTokenType.Anonymous}) {
-        userIdentity = userInfo
+    export async function createSession(userInfo?: UserIdentityInfo) {
+        if (userInfo) userIdentity = userInfo
         session = await ClientService.client.createSession(userIdentity)
         Log.info(new ClientInfo(Sources.clientService, Infos.sessionCreated))
     }
 
-    export async function changeIdentity(userInfo: UserIdentityInfo = {type: UserTokenType.Anonymous}) {
+    export async function changeIdentity(userInfo: UserIdentityInfo) {
         await session.changeUser(userInfo)
     }
 

@@ -18,28 +18,31 @@ export module ClientService {
         applicationName: 'NodeOPCUA-Client',
         connectionStrategy: {
             initialDelay: 1000,
-            maxRetry: 1,
+            maxRetry: 10,
         },
-        keepSessionAlive:true,
+        keepSessionAlive: true,
         securityMode: MessageSecurityMode.None,
         securityPolicy: SecurityPolicy.None,
         endpointMustExist: false,
+        requestedSessionTimeout: 36000,
     })
     export let uaConnectionAlive: boolean = false
 
     export function getServerName() {
         return ''
     }
-    export function createClient(clientOptions: OPCUAClientOptions) {
-        client = OPCUAClient.create(clientOptions)
+
+    export function createClient(clientOptions?: OPCUAClientOptions) {
+        if (clientOptions) client = OPCUAClient.create(clientOptions)
         Log.info(new ClientInfo(Sources.clientService, Infos.clientCreated))
     }
 
     export async function connectToServer(endpointUrl: string) {
         try {
             await client.connect(endpointUrl)
+            uaConnectionAlive = true
             Log.info(new ClientInfo(Sources.clientService, Infos.connectionCreated, {Endpoint: endpointUrl}))
-        } catch (e:any) {
+        } catch (e: any) {
             throw new ClientError(Sources.clientService, Errors.errorConnecting, {Error: e.message})
         }
     }
@@ -52,6 +55,7 @@ export module ClientService {
                 } else {
                     await SessionService.closeSession()
                 }
+                uaConnectionAlive = false
                 Log.info(new ClientInfo(Sources.clientService, Infos.sessionClosed))
             } catch (e: any) {
                 throw new ClientError(Sources.clientService, Errors.errorClosingSession, {Error: e.message})

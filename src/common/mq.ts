@@ -1,7 +1,5 @@
 import {EventEmitter} from 'events'
 import {MessageModel} from '../server/models/message.model'
-import {DataValue, ReadValueIdOptions} from 'node-opcua'
-import {SessionService} from '../server/services/session.service'
 import {DbData} from '../server/models/data.model'
 
 /**
@@ -43,5 +41,10 @@ export module UaMessageQueue {
             queue.length = 0
             queueEvents.emit('cleared')
         }
+    }
+
+    export function closeMq() {
+        queueEvents.emit('full', queue.slice(0))
+        queue.length = 0
     }
 }

@@ -6,6 +6,10 @@ export enum TableCreateModes {
     customField = 1,
     customTableName = 2,
     customBoth = 3,
+    createPerYear = 4,
+    createPerMonth = 5,
+    createPerWeek = 6,
+    createPerDay = 7
 }
 
 export enum ServerStatusCodes {
@@ -13,6 +17,10 @@ export enum ServerStatusCodes {
     unableToFindTheRequestedResource = 400,
     notFound = 404,
     internalError = 500,
+}
+
+export enum ServerMessage {
+    success = 'success',
 }
 
 export enum Sources {

@@ -1,5 +1,4 @@
-import { existsSync, readFile, writeFile, readFileSync } from 'fs'
-import { throws } from 'assert'
+import {existsSync, readFile, readFileSync, writeFile} from 'fs'
 
 const Log = require('../../common/log')
 
@@ -101,4 +100,44 @@ export function getJsonNode(path: string, nodeToSelect: string[]): any {
         throw Error('no such file')
     }
 }
+
+/**
+ * @description 输出形如yyyy_mm_dd格式的日期字符串
+ * @param date
+ */
+export function formatDateYMD(date: Date) {
+    let monthN = date.getMonth() + 1
+    let month = monthN.toString()
+    if (monthN < 10) month = '0' + month
+    let dayN = date.getDate()
+    let day = dayN.toString()
+    if (dayN < 10) day = '0' + day
+    return `date_${date.getFullYear()}_${month}_${day}`
+}
+
+export function formatDateYM(date: Date) {
+    let monthN = date.getMonth() + 1
+    let month = monthN.toString()
+    if (monthN < 10) month = '0' + month
+    let dayN = date.getDate().valueOf()
+    let day = dayN.toString()
+    if (dayN < 10) day = '0' + day
+    return `month_${date.getFullYear()}_${month}`
+}
+
+export function formatDateYMW(date: Date) {
+    let day = date.getDay()
+    let d = date.getDate()
+    return `week_${date.getFullYear()}_${date.getMonth() + 1}_${Math.ceil((d + 6 - day) / 7)}`
+}
+
+export function formatDateY(date: Date) {
+    let year = date.getFullYear()
+    return `year_${year}`
+}
+
+//
+// console.log(formatDateYMW(new Date()))
+// console.log(formatDateYM(new Date()))
+// console.log(formatDateYMD(new Date()))
 

@@ -1,38 +1,46 @@
-import { Log } from '../../common/log'
-import { ClientService } from '../services/client.service'
-import Application = require('koa')
-import Router = require('koa-router')
+import {ClientService} from '../services/client.service'
+import {ResponseModel} from '../models/response.model'
+import {ServerMessage} from '../../common/enums'
+import {Next, ParameterizedContext} from 'koa'
+import {IRouterParamContext} from 'koa-router'
 
 export module ClientController {
 
     export async function init(
-        ctx: Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
-        next:Application.Next
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
     ) {
-        let clientOptions=ctx.body
-        let userInfo=ctx.body
+        let clientOptions = ctx.request.body
         ClientService.createClient(clientOptions)
+        ctx.body = new ResponseModel(ServerMessage.success)
     }
 
     export async function connect(
-        ctx:Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
-        next:Application.Next
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
     ) {
-        let endpointUrl=ctx.body
-        await ClientService.connectToServer(endpointUrl)
-    }
-    export async function disconnect(
-        ctx: Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
-        next:Application.Next
-    ) {
-        let deleteSubscription=true
-        await ClientService.disconnectFromServer(deleteSubscription)
+        let param = ctx.request.body
+        if (param['endpointUrl']) {
+            let endpointUrl = param['endpointUrl']
+            await ClientService.connectToServer(endpointUrl)
+            ctx.body = new ResponseModel(ServerMessage.success)
+        }
     }
 
-    export function getEndpoints(
-        ctx:Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
-        next:Application.Next
+    export async function disconnect(
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
     ) {
-        return ClientService.getEndpoints()
+        let deleteSubscription = true
+        await ClientService.disconnectFromServer(deleteSubscription)
+        ctx.body = new ResponseModel(ServerMessage.success)
+    }
+
+    export async function getEndpoints(
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
+    ) {
+        let endpoints = await ClientService.getEndpoints()
+        ctx.body = new ResponseModel(ServerMessage.success, endpoints)
     }
 }

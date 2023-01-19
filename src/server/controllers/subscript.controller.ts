@@ -1,70 +1,90 @@
-import Application = require('koa')
-import Router = require('koa-router')
 import {SubscriptService} from '../services/subscript.service'
+import {IRouterParamContext} from 'koa-router'
+import {Next, ParameterizedContext} from 'koa'
+import {ResponseModel} from '../models/response.model'
+import {ServerMessage} from '../../common/enums'
 
-export module SubscriptController{
+export module SubscriptController {
     export async function init(
-        ctx: Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
-        next:Application.Next
-    ){
-        let options={}
-        SubscriptService.createSubscription(options)
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
+    ) {
+        let param = ctx.request.body
+        if (param['options']) {
+            let options = param['options']
+            SubscriptService.createSubscription(options)
+            ctx.body = new ResponseModel(ServerMessage.success)
+        }
     }
 
     export async function modify(
-        ctx: Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
-        next:Application.Next
-    ){
-        let options={}
-        SubscriptService.modifySubscription(options)
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
+    ) {
+        let param = ctx.request.body
+        if (param['options']) {
+            let options = param['options']
+            await SubscriptService.modifySubscription(options)
+            ctx.body = new ResponseModel(ServerMessage.success)
+        }
     }
 
     export async function addItemGroup(
-        ctx: Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
-        next:Application.Next
-    ){
-        let items=[]
-        let names:string[]=[]
-        let params={}
-        SubscriptService.addMonitoredItemGroup(items,names)
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
+    ) {
+        let param = ctx.request.body
+        if (param['items'] && param['displayNames']) {
+            let items = param['items']
+            let displayNames = param['displayNames']
+            SubscriptService.addMonitoredItemGroup(items, displayNames)
+        }
     }
 
     export async function addItem(
-        ctx: Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
-        next:Application.Next
-    ){
-        let item={}
-        let name=''
-        SubscriptService.addMonitoredItem(item,name)
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
+    ) {
+        let param = ctx.request.body
+        if (param['item'] && param['displayNames']) {
+            let item = param['item']
+            let displayName = param['displayName']
+            SubscriptService.addMonitoredItem(item, displayName)
+            ctx.body = new ResponseModel(ServerMessage.success)
+        }
+
     }
 
     export async function getItems(
-        ctx: Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
-        next:Application.Next
-    ){
-        await SubscriptService.getMonitoredItems()
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
+    ) {
+        let items = await SubscriptService.getMonitoredItems()
+        ctx.body = new ResponseModel(ServerMessage.success, items)
     }
 
     export async function deleteItems(
-        ctx: Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
-        next:Application.Next
-    ){
-        let indexes=[]
-        SubscriptService.deleteMonitoredItems(indexes)
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
+    ) {
+        let indexes: string[] = ctx.request.body
+        await SubscriptService.deleteMonitoredItems(indexes)
+        ctx.body = new ResponseModel(ServerMessage.success)
     }
 
     // export async function deleteItemGroups(
-    //     ctx: Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
-    //     next:Application.Next
+    //     ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+    //     next:Next
     // ){
     //     let indexes=[]
     //     SubscriptService.deleteMonitoredItemGroups(indexes)
     // }
 
     export async function terminate(
-        ctx: Application.ParameterizedContext<any, Router.IRouterParamContext<any, {}>, any>,
-        next:Application.Next
-    ){
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
+    ) {
         await SubscriptService.terminateSubscription()
+        ctx.body = new ResponseModel(ServerMessage.success)
     }
 }
