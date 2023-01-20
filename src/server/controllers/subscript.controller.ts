@@ -3,6 +3,7 @@ import {IRouterParamContext} from 'koa-router'
 import {Next, ParameterizedContext} from 'koa'
 import {ResponseModel} from '../models/response.model'
 import {ServerMessage} from '../../common/enums'
+import 'koa-body/lib/index'
 
 export module SubscriptController {
     export async function init(
@@ -60,7 +61,7 @@ export module SubscriptController {
         next: Next
     ) {
         let items = await SubscriptService.getMonitoredItems()
-        ctx.body = new ResponseModel(ServerMessage.success, items)
+        ctx.body = new ResponseModel(items)
     }
 
     export async function deleteItems(

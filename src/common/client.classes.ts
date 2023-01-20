@@ -178,7 +178,7 @@ export class UaSession {
         try {
             this.uaSubscriptions = new UaSubscription(this.session, subOptions)
         } catch (e: any) {
-            throw Log.error(new ClientError(Sources.clientSession, Errors.errorCreatingSub, {Error: e.message}))
+            throw Log.error(new ClientError(Sources.sessionService, Errors.errorCreatingSub, {Error: e.message}))
         }
     }
 
@@ -192,7 +192,7 @@ export class UaSession {
         if (browseResult.references) {
             resultList = browseResult.references
         } else {
-            Log.warn(new ClientWarn(Sources.clientSession, Warns.emptyRootFolder))
+            Log.warn(new ClientWarn(Sources.sessionService, Warns.emptyRootFolder))
         }
         return resultList
     }
@@ -200,14 +200,14 @@ export class UaSession {
     async getNodeIdByBrowseName(relativePathBNF: string, rootNode: string = 'RootFolder'): Promise<string> {
         let browsePath = makeBrowsePath(rootNode, relativePathBNF)
         let result = await this.session.translateBrowsePath(browsePath)
-        Log.info(new ClientInfo(Sources.clientSession, Infos.getIdByName, {Path: browsePath}))
+        Log.info(new ClientInfo(Sources.sessionService, Infos.getIdByName, {Path: browsePath}))
         if (result.targets) return result.targets[0].targetId.toString()
         return ''
     }
 
     async writeToServer(nodesToWrite: WriteValueOptions[]): Promise<StatusCode[]> {
         let codes = await this.session.write(nodesToWrite)
-        if (!codes) throw Log.error(new ClientError(Sources.clientSession, Errors.errorWriting))
+        if (!codes) throw Log.error(new ClientError(Sources.sessionService, Errors.errorWriting))
         return codes
     }
 

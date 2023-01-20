@@ -25,10 +25,11 @@ export enum ServerMessage {
 
 export enum Sources {
     addressSpace = 'AddressSpace',
+    server = 'Server',
     dataAccess = 'DataAccess',
     clientService = 'ClientService',
     subscription = 'SessionSubscription',
-    clientSession = 'ClientSession'
+    sessionService = 'ClientSession'
 }
 
 export enum Warns {
@@ -44,9 +45,18 @@ export enum Errors {
     errorCreatingSub = 'An exception occurred while creating the subscription',
     errorWriting = 'An exception occurred while writing to the server',
     errorMonitoringItem = 'An exception occurred monitoring item',
-    errorTerminatingItemGroup='An exception occurred terminating item',
+    errorTerminatingItemGroup = 'An exception occurred terminating item',
+    errorGetEndpoints = 'An exception occurred getting endpoints',
     noSubscription = 'Subscription does not exist',
-    wrongIndexOfArray='You input the wrong index of array',
+    wrongIndexOfArray = 'You input the wrong index of array',
+    internalError = 'An exception occurred in server',
+    errorGetServers = 'An exception occurred while getting servers on network',
+    errorCreateClient = 'An exception occurred while creating client',
+    errorGetNodeByName = 'An exception occurred while getting node id by browse name',
+    errorBrowsing = 'An exception occurred while browsing',
+    errorReading = 'An exception occurred while reading',
+    errorChangeIdentity = 'An exception occurred while changing identity of session',
+    errorCreateSession = 'An exception occurred while creating session',
 }
 
 export enum Infos {
@@ -64,5 +74,5 @@ export enum Infos {
     monitoredItemTerminate = 'Monitored item terminated',
     monitoredItemGroupInit = 'Monitored item group initialized',
     monitoredItemGroupTerminate = 'Monitored item group terminated',
-    modifySubscription='Modify subscription',
+    modifySubscription = 'Modify subscription',
 }

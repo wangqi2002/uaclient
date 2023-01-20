@@ -4,6 +4,7 @@ import {DbService} from '../services/db.service'
 import {DbData} from '../models/data.model'
 import {ResponseModel} from '../models/response.model'
 import {ServerMessage, TableCreateModes} from '../../common/enums'
+import 'koa-body/lib/index'
 
 export module DbController {
     export async function init(

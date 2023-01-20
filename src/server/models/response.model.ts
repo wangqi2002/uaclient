@@ -1,17 +1,21 @@
-import {ServerStatusCodes} from '../../common/enums'
+import {ServerMessage, ServerStatusCodes} from '../../common/enums'
 
 /**
- * @description 用来统一response的格式
+ * @description 用来统一response的格式,默认成功
  */
 export class ResponseModel {
     code: ServerStatusCodes
     message: string
     data?: any
 
-    constructor(message: string, data?: any, code?: number) {
+    /**
+     * @description message和code默认为success和200
+     * @param data
+     * @param message
+     * @param code
+     */
+    constructor(data?: any, message: string = ServerMessage.success, code: number = ServerStatusCodes.success) {
         this.code = code
-            ? code
-            : 200
         this.message = message
         this.data = data
     }

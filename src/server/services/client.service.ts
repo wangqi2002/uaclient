@@ -33,8 +33,12 @@ export module ClientService {
     }
 
     export function createClient(clientOptions?: OPCUAClientOptions) {
-        if (clientOptions) client = OPCUAClient.create(clientOptions)
-        Log.info(new ClientInfo(Sources.clientService, Infos.clientCreated))
+        try {
+            if (clientOptions) client = OPCUAClient.create(clientOptions)
+            Log.info(new ClientInfo(Sources.clientService, Infos.clientCreated))
+        } catch (e: any) {
+            throw new ClientError(Sources.clientService, Errors.errorCreateClient, e.message)
+        }
     }
 
     export async function connectToServer(endpointUrl: string) {
@@ -43,7 +47,7 @@ export module ClientService {
             uaConnectionAlive = true
             Log.info(new ClientInfo(Sources.clientService, Infos.connectionCreated, {Endpoint: endpointUrl}))
         } catch (e: any) {
-            throw new ClientError(Sources.clientService, Errors.errorConnecting, {Error: e.message})
+            throw new ClientError(Sources.clientService, Errors.errorConnecting, e.message)
         }
     }
 
@@ -58,7 +62,7 @@ export module ClientService {
                 uaConnectionAlive = false
                 Log.info(new ClientInfo(Sources.clientService, Infos.sessionClosed))
             } catch (e: any) {
-                throw new ClientError(Sources.clientService, Errors.errorClosingSession, {Error: e.message})
+                throw new ClientError(Sources.clientService, Errors.errorClosingSession, e.message)
             }
         }
         await client.disconnect()
@@ -66,15 +70,23 @@ export module ClientService {
     }
 
     export async function getServersOnNetwork(options?: FindServersOnNetworkRequestOptions): Promise<ServerOnNetwork[]> {
-        let servers = await client.findServersOnNetwork(options)
-        if (!servers) Log.warn(new ClientWarn(Sources.clientService, Warns.serversNotExist))
-        return servers
+        try {
+            let servers = await client.findServersOnNetwork(options)
+            if (!servers) Log.warn(new ClientWarn(Sources.clientService, Warns.serversNotExist))
+            return servers
+        } catch (e: any) {
+            throw new ClientError(Sources.clientService, Errors.errorGetServers, e.message)
+        }
     }
 
     export async function getEndpoints(): Promise<EndpointDescription[]> {
-        let endpoints = await client.getEndpoints()
-        if (!endpoints) Log.warn(new ClientWarn(Sources.clientService, Warns.endPointsNotExist))
-        return endpoints
+        try {
+            let endpoints = await client.getEndpoints()
+            if (!endpoints) Log.warn(new ClientWarn(Sources.clientService, Warns.endPointsNotExist))
+            return endpoints
+        } catch (e: any) {
+            throw new ClientError(Sources.clientService, Errors.errorGetEndpoints, e.message)
+        }
     }
 
     export function getPrivateKey() {

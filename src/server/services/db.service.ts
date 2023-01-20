@@ -6,6 +6,9 @@ import {formatDateY, formatDateYM, formatDateYMD, formatDateYMW} from '../utils/
 import {Config} from '../../config/config.default'
 import {existsSync} from 'fs'
 import {UaMessageQueue} from '../../common/mq'
+import {ClientService} from './client.service'
+import {SessionService} from './session.service'
+import {MessageSecurityMode, SecurityPolicy} from 'node-opcua'
 import Database = require('better-sqlite3')
 
 // import {AttributeIds, DataValue, MessageSecurityMode, SecurityPolicy} from 'node-opcua'
@@ -135,23 +138,33 @@ export module DbService {
 }
 
 
-// async function a() {
-//     ClientService.createClient({
-//         applicationName: 'NodeOPCUA-Client',
-//         connectionStrategy: {
-//             initialDelay: 1000,
-//             maxRetry: 1,
-//         },
-//         securityMode: MessageSecurityMode.None,
-//         securityPolicy: SecurityPolicy.None,
-//         endpointMustExist: false,
-//     })
-//     await ClientService.connectToServer('opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer')
-//     await SessionService.createSession()
-//     await SubscriptService.createSubscription()
-//     await SubscriptService.addMonitoredItem({ nodeId: 'ns=3;i=1003', attributeId: AttributeIds.Value })
-// }
-// a()
+async function a() {
+    ClientService.createClient({
+        applicationName: 'NodeOPCUA-Client',
+        connectionStrategy: {
+            initialDelay: 1000,
+            maxRetry: 1,
+        },
+        securityMode: MessageSecurityMode.None,
+        securityPolicy: SecurityPolicy.None,
+        endpointMustExist: false,
+    })
+    await ClientService.connectToServer('opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer')
+    await SessionService.createSession()
+    // console.log(await SessionService.browseByNodeIds([{nodeId: 'ns=3;i=1001'}]))
+    // console.log(await SessionService.readByNodeIds([{nodeId: 'ns=3;i=1001'}]))
+    // let a=await SessionService.browseRootFolder()
+    // makeResultMask()
+    console.log(await SessionService.browseByNodeId({nodeId: 'i=2253', resultMask: 0x3F}))
+    // SessionService.session.browse('objects')
+    // SessionService.session.getBuiltInDataType(new NodeId())
+    // SessionService.session.readNamespaceArray()/
+    // SessionService.session.browseNext()
+    // await SubscriptService.createSubscription()
+    // await SubscriptService.addMonitoredItem({ nodeId: 'ns=3;i=1003', attributeId: AttributeIds.Value })
+}
+
+a()
 
 // DataValue {
 //     statusCode: ConstantStatusCode {

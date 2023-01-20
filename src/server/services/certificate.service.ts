@@ -33,3 +33,12 @@ export module CertificateService {
         return await certificate.getTrustStatus(serverCertificate)
     }
 }
+
+// await certificateManager.createSelfSignedCertificate({
+//     subject: "/CN=MyCommonName;/L=Paris",
+//     startDate: new Date(),
+//     dns: [],
+//     validity: 365 * 5, // five year
+//     applicationUri: "Put you application URI here ",
+//     outputFile: certificateFile,
+// });

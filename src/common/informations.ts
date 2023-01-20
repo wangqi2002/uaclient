@@ -9,9 +9,11 @@ export class ClientWarn extends LogModel {
 }
 
 export class ClientError extends LogModel {
+    error?: string
 
-    constructor(source: Sources, information: Errors, message?: object) {
+    constructor(source: Sources, information: Errors, error?: string, message?: object,) {
         super(source, information, message)
+        if (error) this.error = error
     }
 }
 
