@@ -2,6 +2,7 @@ import {ClientService} from '../services/client.service'
 import {ResponseModel} from '../models/response.model'
 import {Next, ParameterizedContext} from 'koa'
 import {IRouterParamContext} from 'koa-router'
+import 'koa-body/lib/index'
 
 export module ClientController {
 

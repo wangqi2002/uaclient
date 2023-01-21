@@ -9,6 +9,6 @@ export module SessionRouter {
     router.post('/write', SessionController.writeMany)
     router.delete('/close', SessionController.close)
     router.post('/read', SessionController.readManyByIds)
-    router.get('/node_ids', SessionController.getIdByName)
+    router.get('/id', SessionController.getIdByName)
     router.get('/browse/root', SessionController.browseRoot)
 }

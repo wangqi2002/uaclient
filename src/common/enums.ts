@@ -29,7 +29,8 @@ export enum Sources {
     dataAccess = 'DataAccess',
     clientService = 'ClientService',
     subscription = 'SessionSubscription',
-    sessionService = 'ClientSession'
+    sessionService = 'ClientSession',
+    paramValidator = 'ParamValidator',
 }
 
 export enum Warns {
@@ -57,6 +58,7 @@ export enum Errors {
     errorReading = 'An exception occurred while reading',
     errorChangeIdentity = 'An exception occurred while changing identity of session',
     errorCreateSession = 'An exception occurred while creating session',
+    errorValidateParam = 'Wrong param',
 }
 
 export enum Infos {

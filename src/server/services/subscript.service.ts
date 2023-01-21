@@ -164,7 +164,7 @@ export module SubscriptService {
                 }
             }
         } catch (e: any) {
-            throw new ClientError(Sources.subscription, Errors.wrongIndexOfArray, {Error: e.message})
+            throw new ClientError(Sources.subscription, Errors.wrongIndexOfArray, e.message)
         }
     }
 
@@ -198,7 +198,7 @@ export module SubscriptService {
                 Log.info(new ClientInfo(Sources.subscription, Infos.monitoredItemTerminate))
             })
             .on('err', function itemErrHandler(err) {
-                Log.error(new ClientError(Sources.subscription, Errors.errorMonitoringItem, {Error: err}))
+                Log.error(new ClientError(Sources.subscription, Errors.errorMonitoringItem, err))
             })
         monitoredItems.set(itemId, {monitoredItem: monitoredItem, displayName: displayName})
     }

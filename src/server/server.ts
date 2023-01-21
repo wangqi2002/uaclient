@@ -7,6 +7,7 @@ import {SubscriptRouter} from './routers/subscript.router'
 import {CertificateRouter} from './routers/certificate.router'
 import {DbRouter} from './routers/db.router'
 import {ErrorMiddleware} from './middlewares/error.middleware'
+import {ValidatorMiddleware} from './middlewares/validator.middleware'
 
 export module Server {
     export const app = new Koa()
@@ -14,6 +15,8 @@ export module Server {
         multipart: true
     }))
     app.use(ErrorMiddleware.handleError)
+    app.use(ValidatorMiddleware.paramValidator)
+
     app.use(ClientRouter.router.routes())
     app.use(SessionRouter.router.routes())
     app.use(SubscriptRouter.router.routes())

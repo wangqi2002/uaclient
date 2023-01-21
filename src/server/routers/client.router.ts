@@ -9,8 +9,8 @@ export module ClientRouter {
     router.post('/', ClientController.init)
     router.post('/connect', ClientController.connect)
     router.get('/endpoints', ClientController.getEndpoints)
-    router.get('/disconnect', ClientController.disconnect)
     router.get('/privateKey', ClientController.getPrivateKey)
     router.get('/certificate', ClientController.getCertificate)
     router.get('/servers', ClientController.getServers)
+    router.delete('/disconnect', ClientController.disconnect)
 }

@@ -2,7 +2,7 @@ import {SessionService} from '../services/session.service'
 import {Next, ParameterizedContext} from 'koa'
 import {IRouterParamContext} from 'koa-router'
 import {ResponseModel} from '../models/response.model'
-import {BrowseDescriptionLike, WriteValueOptions} from 'node-opcua'
+import {BrowseDescriptionLike, ReadValueIdOptions, UserIdentityInfo, WriteValueOptions} from 'node-opcua'
 import 'koa-body/lib/index'
 
 export module SessionController {
@@ -12,11 +12,9 @@ export module SessionController {
         next: Next
     ) {
         try {
-            let param = ctx.request.body
-            if (param['userInfo']) {
-                await SessionService.createSession(param['userInfo'])
-                ctx.body = new ResponseModel()
-            }
+            let userInfo: UserIdentityInfo | undefined = ctx.request.body
+            await SessionService.createSession(userInfo)
+            ctx.body = new ResponseModel()
         } catch (e: any) {
             throw e
         }
@@ -27,11 +25,9 @@ export module SessionController {
         next: Next
     ) {
         try {
-            let param = ctx.request.body
-            if (param['userInfo']) {
-                await SessionService.changeIdentity(param['userInfo'])
-                ctx.body = new ResponseModel()
-            }
+            let userInfo: UserIdentityInfo = ctx.request.body
+            await SessionService.changeIdentity(userInfo)
+            ctx.body = new ResponseModel()
         } catch (e: any) {
             throw e
         }
@@ -54,12 +50,14 @@ export module SessionController {
         next: Next
     ) {
         try {
-            let param = ctx.request.body
-            if (param['nodeIds']) {
-                let nodes = param['nodeIds']
-                let result = await SessionService.readByNodeIds(nodes)
-                ctx.body = new ResponseModel(result)
-            }
+            let nodes: ReadValueIdOptions[] = ctx.request.body
+            ctx.body = new ResponseModel(await SessionService.readByNodeIds(nodes))
+            // let param = ctx.request.body
+            // if (param && 'nodeIds' in param) {
+            //     let nodes = param['nodeIds']
+            //     let result = await SessionService.readByNodeIds(nodes)
+            //     ctx.body = new ResponseModel(result)
+            // }
         } catch (e: any) {
             throw e
         }
@@ -72,7 +70,7 @@ export module SessionController {
         try {
             let param = ctx.query
             if (param['path']) {
-                let path = param['path'].toString()
+                let path: string = param['path'].toString()
                 let result = await SessionService.getNodeIdByBrowseName(path)
                 ctx.body = new ResponseModel(result)
             }
@@ -87,7 +85,7 @@ export module SessionController {
     ) {
         try {
             let param = ctx.request.body
-            if (param['nodeToWrite']) {
+            if (param && 'nodeToWrite' in param) {
                 let nodes: WriteValueOptions[] = param['nodeToWrite']
                 await SessionService.writeToServer(nodes)
                 ctx.body = new ResponseModel()
@@ -117,7 +115,7 @@ export module SessionController {
             let param = ctx.request.body
             if (param) {
                 let nodes: BrowseDescriptionLike = param
-                let result = await SessionService.browseByNodeId(nodes)
+                let result = await SessionService.browse(nodes)
                 ctx.body = new ResponseModel(result)
             }
         } catch (e: any) {

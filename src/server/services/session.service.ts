@@ -98,7 +98,7 @@ export module SessionService {
         }
     }
 
-    export async function browseByNodeId(nodeToBrowse: BrowseDescriptionLike) {
+    export async function browse(nodeToBrowse: BrowseDescriptionLike) {
         try {
             let result = await session.browse(nodeToBrowse)
             //the problem is the result mask refer to https://github.com/node-opcua/node-opcua/issues/114

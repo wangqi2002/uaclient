@@ -155,7 +155,7 @@ async function a() {
     // console.log(await SessionService.readByNodeIds([{nodeId: 'ns=3;i=1001'}]))
     // let a=await SessionService.browseRootFolder()
     // makeResultMask()
-    console.log(await SessionService.browseByNodeId({nodeId: 'i=2253', resultMask: 0x3F}))
+    console.log(await SessionService.browse({nodeId: 'i=2253', resultMask: 0x3F}))
     // SessionService.session.browse('objects')
     // SessionService.session.getBuiltInDataType(new NodeId())
     // SessionService.session.readNamespaceArray()/
@@ -164,7 +164,7 @@ async function a() {
     // await SubscriptService.addMonitoredItem({ nodeId: 'ns=3;i=1003', attributeId: AttributeIds.Value })
 }
 
-a()
+// a()
 
 // DataValue {
 //     statusCode: ConstantStatusCode {
