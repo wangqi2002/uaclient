@@ -9,7 +9,7 @@ export module ErrorMiddleware {
             await next()
         } catch (e: any) {
             let error: any = e
-            if (typeof e != typeof ClientError) {
+            if (!(e instanceof ClientError)) {
                 error = new ClientError(Sources.server, Errors.internalError, e.message)
             }
             ctx.body = error

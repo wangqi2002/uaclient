@@ -2,15 +2,18 @@ import {Next, ParameterizedContext} from 'koa'
 import {IRouterParamContext} from 'koa-router'
 import {
     BrowseDescriptionLike,
+    ClientSubscriptionOptions,
+    ModifySubscriptionOptions,
     OPCUAClientOptions,
     ReadValueIdOptions,
     UserIdentityInfo,
     WriteValueOptions
 } from 'node-opcua'
 import 'koa-body/lib/index'
-import {is} from 'typescript-is'
+import {is} from 'typia'
 import {ClientError} from '../../common/informations'
 import {Errors, Sources} from '../../common/enums'
+import {AddManyParam, AddOneParam} from '../models/params.model'
 
 export module ValidatorMiddleware {
     export async function paramValidator(
@@ -30,6 +33,7 @@ export module ValidatorMiddleware {
                 if (is<{ endpointUrl: string }>(ctx.request.body)) {
                     await next()
                 } else {
+                    console.log(ctx.request.body)
                     throw validateError('{ endpointUrl: string }')
                 }
                 break
@@ -95,6 +99,49 @@ export module ValidatorMiddleware {
                 }
                 break
             }
+
+            case '/subscript': {
+                if (is<ClientSubscriptionOptions | undefined>(ctx.request.body)) {
+                    await next()
+                } else {
+                    throw validateError('ClientSubscriptionOptions')
+                }
+                break
+            }
+            case '/subscript/modify': {
+                if (is<ModifySubscriptionOptions>(ctx.request.body)) {
+                    await next()
+                } else {
+                    throw validateError('ModifySubscriptionOptions')
+                }
+                break
+            }
+            case '/subscript/add_many': {
+                if (is<AddManyParam>(ctx.request.body)) {
+                    await next()
+                } else {
+                    throw validateError('ModifySubscriptionOptions')
+                }
+                break
+            }
+            case '/subscript/add_one': {
+                if (is<AddOneParam>(ctx.request.body)) {
+                    await next()
+                } else {
+                    throw validateError('ModifySubscriptionOptions')
+                }
+                break
+            }
+            case '/subscript/delete_items': {
+                if (is<string[]>(ctx.request.body)) {
+                    await next()
+                } else {
+                    throw validateError('ModifySubscriptionOptions')
+                }
+                break
+            }
+            default:
+                await next()
         }
     }
 

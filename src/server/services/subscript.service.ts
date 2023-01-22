@@ -4,8 +4,6 @@ import {
     ClientSubscriptionOptions,
     ModifySubscriptionOptions,
     MonitoredItemData,
-    MonitoringParametersOptions,
-    ReadValueIdOptions,
     TimestampsToReturn
 } from 'node-opcua'
 import {SessionService} from './session.service'
@@ -14,10 +12,11 @@ import {ClientError, ClientInfo} from '../../common/informations'
 import {Errors, Infos, Sources} from '../../common/enums'
 import {UaMessageQueue} from '../../common/mq'
 import {MessageModel} from '../models/message.model'
+import {AddManyParam, AddOneParam} from '../models/params.model'
 
 interface ItemAndName {
-    monitoredItem: ClientMonitoredItem,
     displayName: string
+    monitoredItem: ClientMonitoredItem
 }
 
 export module SubscriptService {
@@ -36,8 +35,6 @@ export module SubscriptService {
             priority: 1,
         },
     ) {
-        // monitoredItems = []
-        // monitoredItemGroups = []
         subscription = ClientSubscription.create(SessionService.session, subOptions)
         subscription
             .on('started', () => {
@@ -63,32 +60,23 @@ export module SubscriptService {
         }
     }
 
+
     /**
      * @description 用来创建一个MonitoredItemGroup
-     * @param itemsToMonitor
-     * @param displayNames
-     * @param parameters
-     * @param timeStampToReturn
+     * @param param
      */
-    export function addMonitoredItemGroup(
-        itemsToMonitor: ReadValueIdOptions[],
-        displayNames: string[],
-        parameters: MonitoringParametersOptions = {
-            samplingInterval: 100,
-            discardOldest: true,
-            queueSize: 10,
-        },
-        timeStampToReturn: TimestampsToReturn = TimestampsToReturn.Both,
-    ) {
+    export function addMonitoredItemGroup(param: AddManyParam) {
+        param.parameters = param.parameters || {samplingInterval: 100, discardOldest: true, queueSize: 10,}
+        param.timeStampToReturn = param.timeStampToReturn || TimestampsToReturn.Both
         if (subscription) {
-            for (let i = 0; i < itemsToMonitor.length; i++) {
+            for (let i = 0; i < param.itemsToMonitor.length; i++) {
                 let monitoredItem = ClientMonitoredItem.create(
                     subscription,
-                    itemsToMonitor[i],
-                    parameters,
-                    timeStampToReturn
+                    param.itemsToMonitor[i],
+                    param.parameters,
+                    param.timeStampToReturn
                 )
-                bindingAndPush(monitoredItem, displayNames[i], itemsToMonitor[i].nodeId)
+                bindingAndPush(monitoredItem, param.displayNames[i], param.itemsToMonitor[i].nodeId)
             }
             // let itemGroup = ClientMonitoredItemGroup.create(
             //     subscription,
@@ -123,26 +111,18 @@ export module SubscriptService {
 
     /**
      * @description 创建一个监控节点并且加入到本类的节点数组之中,与group分开
-     * @param itemToMonitor
-     * @param displayName
-     * @param parameters
+     * @param param
      */
-    export function addMonitoredItem(
-        itemToMonitor: ReadValueIdOptions,
-        displayName: string,
-        parameters: MonitoringParametersOptions = {
-            samplingInterval: 100,
-            discardOldest: true,
-            queueSize: 10,
-        },
-    ) {
+    export function addMonitoredItem(param: AddOneParam) {
+        param.parameters = param.parameters || {samplingInterval: 100, discardOldest: true, queueSize: 10,}
+        param.timeStampToReturn = param.timeStampToReturn || TimestampsToReturn.Both
         let monitoredItem = ClientMonitoredItem.create(
             subscription,
-            itemToMonitor,
-            parameters,
-            TimestampsToReturn.Both,
+            param.itemToMonitor,
+            param.parameters,
+            param.timeStampToReturn,
         )
-        bindingAndPush(monitoredItem, displayName, itemToMonitor.nodeId)
+        bindingAndPush(monitoredItem, param.displayName, param.itemToMonitor.nodeId)
     }
 
 

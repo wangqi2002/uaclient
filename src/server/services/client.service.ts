@@ -27,6 +27,7 @@ export module ClientService {
         requestedSessionTimeout: 36000,
     })
     export let uaConnectionAlive: boolean = false
+    export let currentServer: string = 'no server'
 
     export function getServerName() {
         return ''
@@ -45,7 +46,9 @@ export module ClientService {
         try {
             await client.connect(endpointUrl)
             uaConnectionAlive = true
+            currentServer = endpointUrl
             Log.info(new ClientInfo(Sources.clientService, Infos.connectionCreated, {Endpoint: endpointUrl}))
+
         } catch (e: any) {
             throw new ClientError(Sources.clientService, Errors.errorConnecting, e.message)
         }
@@ -98,6 +101,4 @@ export module ClientService {
         Log.info(new ClientInfo(Sources.clientService, Infos.getCertificate))
         return client.getCertificate()
     }
-
 }
-

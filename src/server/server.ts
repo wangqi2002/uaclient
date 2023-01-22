@@ -11,9 +11,7 @@ import {ValidatorMiddleware} from './middlewares/validator.middleware'
 
 export module Server {
     export const app = new Koa()
-    app.use(koaBody({
-        multipart: true
-    }))
+    app.use(koaBody({multipart: true}))
     app.use(ErrorMiddleware.handleError)
     app.use(ValidatorMiddleware.paramValidator)
 
@@ -22,6 +20,7 @@ export module Server {
     app.use(SubscriptRouter.router.routes())
     app.use(CertificateRouter.router.routes())
     app.use(DbRouter.router.routes())
+
     app.listen(Config.port, () => {
         console.log('complete')
         app.emit('serverCreated', Config.port)

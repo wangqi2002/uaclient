@@ -10,11 +10,11 @@ export module SubscriptController {
         ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
         next: Next
     ) {
-        let param = ctx.request.body
-        if (param['options']) {
-            let options = param['options']
-            SubscriptService.createSubscription(options)
+        try {
+            SubscriptService.createSubscription(ctx.request.body)
             ctx.body = new ResponseModel(ServerMessage.success)
+        } catch (e: any) {
+            throw e
         }
     }
 
@@ -22,11 +22,11 @@ export module SubscriptController {
         ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
         next: Next
     ) {
-        let param = ctx.request.body
-        if (param['options']) {
-            let options = param['options']
-            await SubscriptService.modifySubscription(options)
-            ctx.body = new ResponseModel(ServerMessage.success)
+        try {
+            await SubscriptService.modifySubscription(ctx.request.body)
+            ctx.body = new ResponseModel()
+        } catch (e: any) {
+            throw e
         }
     }
 
@@ -34,11 +34,11 @@ export module SubscriptController {
         ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
         next: Next
     ) {
-        let param = ctx.request.body
-        if (param['items'] && param['displayNames']) {
-            let items = param['items']
-            let displayNames = param['displayNames']
-            SubscriptService.addMonitoredItemGroup(items, displayNames)
+        try {
+            SubscriptService.addMonitoredItemGroup(ctx.request.body)
+            ctx.body = new ResponseModel()
+        } catch (e: any) {
+            throw e
         }
     }
 
@@ -46,31 +46,44 @@ export module SubscriptController {
         ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
         next: Next
     ) {
-        let param = ctx.request.body
-        if (param['item'] && param['displayNames']) {
-            let item = param['item']
-            let displayName = param['displayName']
-            SubscriptService.addMonitoredItem(item, displayName)
-            ctx.body = new ResponseModel(ServerMessage.success)
+        // let param = ctx.request.body
+        // if (param['item'] && param['displayNames']) {
+        //     let item = param['item']
+        //     let displayName = param['displayName']
+        //     SubscriptService.addMonitoredItem(item, displayName)
+        //     ctx.body = new ResponseModel(ServerMessage.success)
+        // }
+        try {
+            SubscriptService.addMonitoredItem(ctx.request.body)
+            ctx.body = new ResponseModel()
+        } catch (e: any) {
+            throw e
         }
-
     }
 
     export async function getItems(
         ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
         next: Next
     ) {
-        let items = await SubscriptService.getMonitoredItems()
-        ctx.body = new ResponseModel(items)
+        try {
+            let items = await SubscriptService.getMonitoredItems()
+            ctx.body = new ResponseModel(items)
+        } catch (e: any) {
+            throw e
+        }
     }
 
     export async function deleteItems(
         ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
         next: Next
     ) {
-        let indexes: string[] = ctx.request.body
-        await SubscriptService.deleteMonitoredItems(indexes)
-        ctx.body = new ResponseModel(ServerMessage.success)
+        // let indexes: string[] =
+        try {
+            await SubscriptService.deleteMonitoredItems(ctx.request.body)
+            ctx.body = new ResponseModel(ServerMessage.success)
+        } catch (e: any) {
+            throw e
+        }
     }
 
     // export async function deleteItemGroups(
@@ -85,7 +98,11 @@ export module SubscriptController {
         ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
         next: Next
     ) {
-        await SubscriptService.terminateSubscription()
-        ctx.body = new ResponseModel(ServerMessage.success)
+        try {
+            await SubscriptService.terminateSubscription()
+            ctx.body = new ResponseModel()
+        } catch (e: any) {
+            throw e
+        }
     }
 }

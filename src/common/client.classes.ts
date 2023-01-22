@@ -169,7 +169,7 @@ export class UaSession {
             try {
                 await this.session.close(deleteSubscription)
             } catch (e: any) {
-                throw Log.error(new ClientError(Sources.subscription, Errors.errorClosingSession, {Error: e.message}))
+                throw Log.error(new ClientError(Sources.subscription, Errors.errorClosingSession, e.message))
             }
         }
     }
@@ -178,7 +178,7 @@ export class UaSession {
         try {
             this.uaSubscriptions = new UaSubscription(this.session, subOptions)
         } catch (e: any) {
-            throw Log.error(new ClientError(Sources.sessionService, Errors.errorCreatingSub, {Error: e.message}))
+            throw Log.error(new ClientError(Sources.sessionService, Errors.errorCreatingSub, e.message))
         }
     }
 
