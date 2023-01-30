@@ -1,7 +1,7 @@
 import {Configuration, configure, getLogger, Logger} from 'log4js'
 import {EventEmitter} from 'events'
 import {getJsonNode, modifyJsonNode} from '../server/utils/util'
-import {LogModel} from '../server/models/log.model'
+import {ClientError, ClientInfo, ClientWarn} from './informations'
 
 /**
  * @description 使用log4js库作为日志
@@ -19,18 +19,20 @@ export module Log {
     let log: Logger = getLogger('client')
     export let logEvents = new EventEmitter()
 
-    export function info(message:LogModel) {
-        log.info(message.information,{server:message.server,source:message.source,...message.message})
+    export function info(message: ClientInfo) {
+        log.info(message.information, {server: message.server, source: message.source, ...message.message})
         logEvents.emit('info', message)
     }
 
-    export function error(message:LogModel) {
-        log.error(message.information,{server:message.server,source:message.source,...message.message})
+    export function error(message: ClientError) {
+        log.error(message.information,
+            {server: message.server, source: message.source, error: message.error, ...message.message})
         logEvents.emit('error', message)
     }
 
-    export function warn(message:LogModel) {
-        log.warn(message.information,{server:message.server,source:message.source,...message.message})
+    export function warn(message: ClientWarn) {
+        log.warn(message.information,
+            {server: message.server, source: message.source, warn: message.warn, ...message.message})
         logEvents.emit('warn', message)
     }
 
@@ -52,7 +54,7 @@ export module Log {
      */
     export function configureLog(conf: Configuration, filePath: string) {
         const content = JSON.stringify({
-            LogConfig: { ...conf },
+            LogConfig: {...conf},
         })
         modifyJsonNode(filePath, [], content)
         configure(conf)

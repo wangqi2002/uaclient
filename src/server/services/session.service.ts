@@ -1,5 +1,6 @@
 import {
     BrowseDescriptionLike,
+    BrowseDescriptionOptions,
     ClientSession,
     DataValue,
     makeBrowsePath,
@@ -14,6 +15,7 @@ import {Log} from '../../common/log'
 import {ClientError, ClientInfo, ClientWarn} from '../../common/informations'
 import {Errors, Infos, Sources, Warns} from '../../common/enums'
 import {ClientService} from './client.service'
+import {is} from 'typia'
 
 export module SessionService {
     export let session!: ClientSession
@@ -98,10 +100,14 @@ export module SessionService {
         }
     }
 
-    export async function browse(nodeToBrowse: BrowseDescriptionLike) {
+    export async function browse(nodeToBrowse: BrowseDescriptionLike, browseNext?: boolean) {
         try {
+            if (is<BrowseDescriptionOptions>(nodeToBrowse) && nodeToBrowse.resultMask) nodeToBrowse.resultMask = 0x3f
             let result = await session.browse(nodeToBrowse)
             //the problem is the result mask refer to https://github.com/node-opcua/node-opcua/issues/114
+            if (browseNext && result.continuationPoint) {
+                return await session.browseNext(result.continuationPoint, true)
+            }
             return result.references
         } catch (e: any) {
             throw new ClientError(Sources.sessionService, Errors.errorBrowsing, e.message)

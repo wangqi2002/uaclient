@@ -1,6 +1,9 @@
 import {OPCUACertificateManager, StatusCode} from 'node-opcua'
 import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
+import {ClientError, ClientInfo} from '../../common/informations'
+import {Errors, Infos, Sources} from '../../common/enums'
+import {Log} from '../../common/log'
 
 export module CertificateService {
     let path = require('path')
@@ -15,30 +18,52 @@ export module CertificateService {
      * 默认pem文件存放路径为own/cert/self_signed_certificate.pem
      * validity为有效时间
      * 具体请转到CreateSelfSignCertificateParam1声明处查看
+     * @example
+     * createSelfSignedCertificate({
+     *     subject: "/CN=MyCommonName;/L=Paris",
+     *     startDate: new Date(),
+     *     dns: [],
+     *     validity: 365 * 5, // five year
+     *     applicationUri: "Put you application URI here ",
+     *     outputFile: certificateFile,
+     * })
      * @param params
      */
     export async function createCertificate(params: CreateSelfSignCertificateParam1) {
-        await certificate.createSelfSignedCertificate({...params})
+        try {
+            await certificate.createSelfSignedCertificate({...params})
+            Log.info(new ClientInfo(Sources.paramValidator, Infos.certCreated))
+        } catch (e: any) {
+            throw new ClientError(Sources.certService, Errors.errorCreatCert, e.message)
+        }
     }
 
     export async function trustServerCertificate(serverCertificate: Certificate) {
-        await certificate.trustCertificate(serverCertificate)
+        try {
+            await certificate.trustCertificate(serverCertificate)
+        } catch (e: any) {
+            throw new ClientError(Sources.certService, Errors.errorTrustCert, e.message)
+        }
     }
 
     export async function rejectServerCertificate(serverCertificate: Certificate) {
-        await certificate.rejectCertificate(serverCertificate)
+        try {
+            await certificate.rejectCertificate(serverCertificate)
+        } catch (e: any) {
+            throw new ClientError(Sources.certService, Errors.errorRejectCert, e.message)
+        }
     }
 
+    /**
+     * @description 返回server证书的信任状态
+     * @param serverCertificate
+     */
     export async function getTrustStatus(serverCertificate: Certificate): Promise<StatusCode> {
-        return await certificate.getTrustStatus(serverCertificate)
+        try {
+            return await certificate.getTrustStatus(serverCertificate)
+        } catch (e: any) {
+            throw new ClientError(Sources.certService, Errors.errorGetTrust, e.message)
+        }
     }
 }
 
-// await certificateManager.createSelfSignedCertificate({
-//     subject: "/CN=MyCommonName;/L=Paris",
-//     startDate: new Date(),
-//     dns: [],
-//     validity: 365 * 5, // five year
-//     applicationUri: "Put you application URI here ",
-//     outputFile: certificateFile,
-// });

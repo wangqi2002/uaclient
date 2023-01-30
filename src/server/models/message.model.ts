@@ -1,23 +1,18 @@
 import {DataType, DataValue} from 'node-opcua'
 
 export class MessageModel {
-    // server:string
     nodeId:string
-    // displayName:string
     statusCode:string
     sourceTimeStamp:string
     serverTimeStamp:string
     value:any
     dataType:string
-    // itemIndex:number
-    // groupIndex?:number
 
     constructor(message:MessageModel)
     constructor(dataValue:DataValue,nodeId:string)
     constructor(param:any,nodeId?:string) {
         if (nodeId){
             this.nodeId=nodeId.toString()
-            // this.displayName=displayName
             this.statusCode=param.statusCode.name.toString()
             this.serverTimeStamp=param.serverTimestamp.toLocaleString()
             this.sourceTimeStamp=param.sourceTimestamp.toLocaleString()

@@ -21,6 +21,7 @@ export enum ServerStatusCodes {
 
 export enum ServerMessage {
     success = 'success',
+    error = 'internal error',
 }
 
 export enum Sources {
@@ -31,18 +32,19 @@ export enum Sources {
     subscription = 'SessionSubscription',
     sessionService = 'ClientSession',
     paramValidator = 'ParamValidator',
+    certService = 'CertificateService',
 }
 
 export enum Warns {
     endPointsNotExist = 'Endpoints does not exist',
     serversNotExist = 'There is no server on this network',
     emptyRootFolder = 'Empty root folder',
-
+    nonExistentItem = 'This item doesnt exist',
 }
 
 export enum Errors {
     errorClosingSession = 'An exception occurred while closing the session',
-    errorConnecting = 'An exception occurred while closing the session maybe the endpoint url not exist',
+    errorConnecting = 'An exception occurred maybe the endpoint url not exist',
     errorCreatingSub = 'An exception occurred while creating the subscription',
     errorWriting = 'An exception occurred while writing to the server',
     errorMonitoringItem = 'An exception occurred monitoring item',
@@ -59,6 +61,11 @@ export enum Errors {
     errorChangeIdentity = 'An exception occurred while changing identity of session',
     errorCreateSession = 'An exception occurred while creating session',
     errorValidateParam = 'Wrong param',
+    errorCreatCert = 'An exception occurred while creating certificate',
+    errorTrustCert = 'An exception occurred while trusting certificate of server',
+    errorRejectCert = 'An exception occurred while rejecting certificate of server',
+    errorGetTrust = 'An exception occurred while getting trust status',
+    unFormatDbName = 'Wrong format database name input',
 }
 
 export enum Infos {
@@ -77,4 +84,5 @@ export enum Infos {
     monitoredItemGroupInit = 'Monitored item group initialized',
     monitoredItemGroupTerminate = 'Monitored item group terminated',
     modifySubscription = 'Modify subscription',
+    certCreated = 'Certificate created',
 }

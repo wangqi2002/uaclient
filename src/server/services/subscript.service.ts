@@ -8,8 +8,8 @@ import {
 } from 'node-opcua'
 import {SessionService} from './session.service'
 import {Log} from '../../common/log'
-import {ClientError, ClientInfo} from '../../common/informations'
-import {Errors, Infos, Sources} from '../../common/enums'
+import {ClientError, ClientInfo, ClientWarn} from '../../common/informations'
+import {Errors, Infos, Sources, Warns} from '../../common/enums'
 import {UaMessageQueue} from '../../common/mq'
 import {MessageModel} from '../models/message.model'
 import {AddManyParam, AddOneParam} from '../models/params.model'
@@ -55,9 +55,10 @@ export module SubscriptService {
     export async function terminateSubscription() {
         if (subscription) {
             await subscription.terminate()
-        } else {
-            throw new ClientError(Sources.subscription, Errors.noSubscription)
         }
+        //  else {
+        //     throw new ClientError(Sources.subscription, Errors.noSubscription)
+        // }
     }
 
 
@@ -110,7 +111,7 @@ export module SubscriptService {
     }
 
     /**
-     * @description 创建一个监控节点并且加入到本类的节点数组之中,与group分开
+     * @description 创建一个监控节点并且加入到本类的节点数组之中
      * @param param
      */
     export function addMonitoredItem(param: AddOneParam) {
@@ -131,16 +132,18 @@ export module SubscriptService {
     }
 
     /**
-     * @description 注意删除该monitoredItem之后并不会改变其他Item在数组当中的index,本index的元素只是被置为empty
+     * @description monitored items 队列使用map作为存储结构,以nodeId的string作为键
      * @param nodeIds
      */
     export async function deleteMonitoredItems(nodeIds: string[]) {
         try {
-            for (let i of nodeIds) {
-                let item = monitoredItems.get(i)
+            for (let nodeId of nodeIds) {
+                let item = monitoredItems.get(nodeId)
                 if (item) {
                     await item.monitoredItem.terminate()
-                    monitoredItems.delete(i)
+                    monitoredItems.delete(nodeId)
+                } else {
+                    Log.warn(new ClientWarn(Sources.subscription, Warns.nonExistentItem, nodeId))
                 }
             }
         } catch (e: any) {

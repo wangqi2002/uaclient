@@ -2,9 +2,11 @@ import {LogModel} from '../server/models/log.model'
 import {Errors, Infos, Sources, Warns} from './enums'
 
 export class ClientWarn extends LogModel {
+    warn?: string
 
-    constructor(source: Sources, information: Warns, message?: object) {
+    constructor(source: Sources, information: Warns, warn?: string, message?: object) {
         super(source, information, message)
+        if (warn) this.warn = warn
     }
 }
 
