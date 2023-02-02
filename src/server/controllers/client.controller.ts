@@ -79,7 +79,7 @@ export module ClientController {
         next: Next
     ) {
         try {
-            ctx.body = ClientService.getClientCert()
+            ctx.body = new ResponseModel(ClientService.getClientCert())
         } catch (e: any) {
             throw e
         }
@@ -90,7 +90,7 @@ export module ClientController {
         next: Next
     ) {
         try {
-            ctx.body = ClientService.getServersOnNetwork()
+            ctx.body = new ResponseModel(ClientService.getServersOnNetwork())
         } catch (e: any) {
             throw e
         }

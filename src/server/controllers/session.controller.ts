@@ -38,26 +38,23 @@ export module SessionController {
         next: Next
     ) {
         try {
-            await SessionService.closeSession(true)
+            let param = ctx.request.body
+            'deleteSubscription' in param
+                ? await SessionService.closeSession(Boolean(param['deleteSubscription']))
+                : await SessionService.closeSession()
             ctx.body = new ResponseModel()
         } catch (e: any) {
             throw e
         }
     }
 
-    export async function readManyByIds(
+    export async function readById(
         ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
         next: Next
     ) {
         try {
-            let nodes: ReadValueIdOptions[] = ctx.request.body
-            ctx.body = new ResponseModel(await SessionService.readByNodeIds(nodes))
-            // let param = ctx.request.body
-            // if (param && 'nodeIds' in param) {
-            //     let nodes = param['nodeIds']
-            //     let result = await SessionService.readByNodeIds(nodes)
-            //     ctx.body = new ResponseModel(result)
-            // }
+            let node: ReadValueIdOptions = ctx.request.body
+            ctx.body = new ResponseModel(await SessionService.readByNodeId(node))
         } catch (e: any) {
             throw e
         }
@@ -113,11 +110,10 @@ export module SessionController {
         next: Next
     ) {
         try {
-            let param = ctx.request.body
-            if (param && 'nodes' in param) {
-                let result = await SessionService.browse(param)
-                ctx.body = new ResponseModel(result)
-            }
+            let node = ctx.request.body.node
+            let browseNext = Boolean(ctx.request.body['browseNext'])
+            let result = await SessionService.browse(node, browseNext)
+            ctx.body = new ResponseModel(result)
         } catch (e: any) {
             throw e
         }

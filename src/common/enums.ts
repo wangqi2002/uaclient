@@ -60,7 +60,7 @@ export enum Errors {
     errorReading = 'An exception occurred while reading',
     errorChangeIdentity = 'An exception occurred while changing identity of session',
     errorCreateSession = 'An exception occurred while creating session',
-    errorValidateParam = 'Wrong param',
+    errorValidateParam = 'Wrong Param',
     errorCreatCert = 'An exception occurred while creating certificate',
     errorTrustCert = 'An exception occurred while trusting certificate of server',
     errorRejectCert = 'An exception occurred while rejecting certificate of server',

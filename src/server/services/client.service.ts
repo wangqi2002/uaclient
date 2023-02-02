@@ -14,6 +14,7 @@ import {ClientError, ClientInfo, ClientWarn} from '../models/infos.model'
 
 export module ClientService {
 
+
     export let client: OPCUAClient = OPCUAClient.create({
         applicationName: 'NodeOPCUA-Client',
         connectionStrategy: {
@@ -42,11 +43,6 @@ export module ClientService {
         try {
             await client.connect(endpointUrl)
             uaConnectionAlive = true
-            if (client.endpoint) {
-                currentServer = client.endpoint.server.applicationName.text
-                    ? client.endpoint.server.applicationName.text.toString()
-                    : 'Default Server'
-            }
             Log.info(new ClientInfo(Sources.clientService, Infos.connectionCreated, {Endpoint: endpointUrl}))
         } catch (e: any) {
             throw new ClientError(Sources.clientService, Errors.errorConnecting, e.message)

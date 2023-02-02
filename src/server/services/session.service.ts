@@ -19,13 +19,19 @@ import {ClientError, ClientInfo, ClientWarn} from '../models/infos.model'
 
 export module SessionService {
     export let session!: ClientSession
-    // let uaSubscriptions!: UaSubscription//ClientSubscription[]
     export let userIdentity: UserIdentityInfo = {type: UserTokenType.Anonymous}
 
     export async function createSession(userInfo?: UserIdentityInfo) {
         try {
             if (userInfo) userIdentity = userInfo
+            console.log(ClientService.currentServer)
             session = await ClientService.client.createSession(userIdentity)
+            if (ClientService.client.endpoint) {
+                ClientService.currentServer = ClientService.client.endpoint.server.applicationName.text
+                    ? ClientService.client.endpoint.server.applicationName.text.toString()
+                    : 'Default Server'
+            }
+            console.log(ClientService.currentServer)
             Log.info(new ClientInfo(Sources.sessionService, Infos.sessionCreated))
         } catch (e: any) {
             throw new ClientError(Sources.sessionService, Errors.errorCreateSession, e.message)
@@ -58,9 +64,10 @@ export module SessionService {
     //     }
     // }
 
-    export async function readByNodeIds(nodesToRead: ReadValueIdOptions[], maxAge?: number): Promise<DataValue[]> {
+    export async function readByNodeId(nodeToRead: ReadValueIdOptions, maxAge?: number): Promise<DataValue> {
         try {
-            return await session.read(nodesToRead, maxAge)
+            if (maxAge) return await session.read(nodeToRead, maxAge)
+            return await session.read(nodeToRead)
         } catch (e: any) {
             throw new ClientError(Sources.sessionService, Errors.errorReading, e.message)
         }
@@ -111,7 +118,8 @@ export module SessionService {
      */
     export async function browse(nodeToBrowse: BrowseDescriptionLike, browseNext?: boolean) {
         try {
-            if (is<BrowseDescriptionOptions>(nodeToBrowse) && nodeToBrowse.resultMask) {
+            console.log(nodeToBrowse)
+            if (is<BrowseDescriptionOptions>(nodeToBrowse) && 'resultMask' in nodeToBrowse) {
                 nodeToBrowse.resultMask = makeResultMask(
                     'ReferenceType | IsForward | BrowseName | NodeClass | TypeDefinition')
             }

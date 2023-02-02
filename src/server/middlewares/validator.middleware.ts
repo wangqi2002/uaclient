@@ -68,11 +68,15 @@ export module ValidatorMiddleware {
                 break
             }
             case '/session/change_identity': {
-                is<UserIdentityInfo>(ctx.request.body)
+                if (is<UserIdentityInfo>(ctx.request.body)) {
+                    await next()
+                } else {
+                    throw validateError('UserIdentityInfo')
+                }
                 break
             }
             case '/session/close': {
-                if (is<{ deleteSubscription: boolean } | undefined>(ctx.request.body)) {
+                if (is<{ deleteSubscription: string } | undefined>(ctx.request.body)) {
                     await next()
                 } else {
                     throw validateError('{ deleteSubscription: boolean } | undefined')
@@ -80,10 +84,10 @@ export module ValidatorMiddleware {
                 break
             }
             case '/session/read': {
-                if (is<ReadValueIdOptions[]>(ctx.request.body)) {
+                if (is<ReadValueIdOptions>(ctx.request.body)) {
                     await next()
                 } else {
-                    throw validateError('ReadValueIdOptions[]')
+                    throw validateError('ReadValueIdOptions')
                 }
                 break
             }
@@ -104,10 +108,10 @@ export module ValidatorMiddleware {
                 break
             }
             case '/session/browse': {
-                if (is<{ nodes: BrowseDescriptionLike, browseNext: boolean }>(ctx.request.body)) {
+                if (is<{ node: BrowseDescriptionLike, browseNext: string }>(ctx.request.body)) {
                     await next()
                 } else {
-                    throw validateError('BrowseDescriptionLike')
+                    throw validateError('{ nodes: BrowseDescriptionLike, browseNext: boolean }')
                 }
                 break
             }

@@ -13,7 +13,7 @@ export module ErrorMiddleware {
             let error: any = e
             if (!(e instanceof ClientError)) error = new ClientError(Sources.server, Errors.internalError, e.message)
             ctx.body = new ResponseModel(error, ServerMessage.error, ServerStatusCodes.internalError)
-            // ctx.app.emit('error', error)
+            ctx.app.emit('error', error)
         }
     }
 }

@@ -7,7 +7,7 @@ export module SessionRouter {
     router.post('/', SessionController.init)
     router.post('/change_identity', SessionController.changeIdentity)
     router.post('/write', SessionController.writeMany)
-    router.post('/read', SessionController.readManyByIds)
+    router.post('/read', SessionController.readById)
     router.post('/browse', SessionController.browse)
 
     router.get('/id', SessionController.getIdByName)
