@@ -1,7 +1,7 @@
 import {Configuration, configure, getLogger, Logger} from 'log4js'
 import {EventEmitter} from 'events'
 import {getJsonNode, modifyJsonNode} from '../server/utils/util'
-import {ClientError, ClientInfo, ClientWarn} from './informations'
+import {ClientError, ClientInfo, ClientWarn} from '../server/models/infos.model'
 
 /**
  * @description 使用log4js库作为日志

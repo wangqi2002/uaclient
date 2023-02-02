@@ -40,7 +40,10 @@ export module ClientController {
         next: Next
     ) {
         try {
-            let deleteSubscription = true
+            let deleteSubscription = ctx.request.body
+            if (ctx.request.body) {
+                let deleteSubscription = Boolean(ctx.request.body['deleteSubscription'])
+            }
             await ClientService.disconnectFromServer(deleteSubscription)
             ctx.body = new ResponseModel()
         } catch (e: any) {
@@ -76,7 +79,7 @@ export module ClientController {
         next: Next
     ) {
         try {
-            ctx.body = ClientService.getCertificate()
+            ctx.body = ClientService.getClientCert()
         } catch (e: any) {
             throw e
         }

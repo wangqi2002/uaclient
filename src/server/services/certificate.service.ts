@@ -1,9 +1,9 @@
 import {OPCUACertificateManager, StatusCode} from 'node-opcua'
 import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
-import {ClientError, ClientInfo} from '../../common/informations'
 import {Errors, Infos, Sources} from '../../common/enums'
 import {Log} from '../../common/log'
+import {ClientError, ClientInfo} from '../models/infos.model'
 
 export module CertificateService {
     let path = require('path')

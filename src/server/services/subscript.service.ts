@@ -8,11 +8,11 @@ import {
 } from 'node-opcua'
 import {SessionService} from './session.service'
 import {Log} from '../../common/log'
-import {ClientError, ClientInfo, ClientWarn} from '../../common/informations'
 import {Errors, Infos, Sources, Warns} from '../../common/enums'
 import {UaMessageQueue} from '../../common/mq'
 import {MessageModel} from '../models/message.model'
 import {AddManyParam, AddOneParam} from '../models/params.model'
+import {ClientError, ClientInfo, ClientWarn} from '../models/infos.model'
 
 interface ItemAndName {
     displayName: string

@@ -1,14 +1,16 @@
 import {EventEmitter} from 'events'
-import {IFieldNames} from '../models/db.model'
+import {DbData, IDbData, IFieldNames} from '../models/db.model'
 import {TableCreateModes} from '../../common/enums'
-import {DbData, IDbData} from '../models/data.model'
 import {formatDateY, formatDateYM, formatDateYMD, formatDateYMW} from '../utils/util'
 import {Config} from '../../config/config.default'
 import {existsSync} from 'fs'
 import {UaMessageQueue} from '../../common/mq'
 import {ClientService} from './client.service'
 import {SessionService} from './session.service'
-import {MessageSecurityMode, SecurityPolicy} from 'node-opcua'
+import {makeResultMask, MessageSecurityMode, SecurityPolicy} from 'node-opcua'
+import {SubscriptService} from './subscript.service'
+import {MessageModel} from '../models/message.model'
+import Path from 'path'
 import Database = require('better-sqlite3')
 
 // import {AttributeIds, DataValue, MessageSecurityMode, SecurityPolicy} from 'node-opcua'
@@ -19,7 +21,7 @@ import Database = require('better-sqlite3')
 export module DbService {
     let dbPath = Config.dbPath
         ? Config.dbPath
-        : 'foobar.db'
+        : Path.join(__dirname, "..", '..', "..", "/db/data.db").toString()
     export let db = new Database(dbPath, {verbose: console.log})
     export let defaultTableName: string = formatDateYMW(new Date())
     export let defaultFieldNames: IFieldNames = {
@@ -155,7 +157,17 @@ async function a() {
     // console.log(await SessionService.readByNodeIds([{nodeId: 'ns=3;i=1001'}]))
     // let a=await SessionService.browseRootFolder()
     // makeResultMask()
-    console.log(await SessionService.browse({nodeId: 'i=2253', resultMask: 0x3F}))
+    // let rs=makeResultMask('BrowseName')
+    let rs = makeResultMask("ReferenceType | IsForward | BrowseName | NodeClass | TypeDefinition")
+    await SessionService.browse({nodeId: 'i=2253', resultMask: rs}, true)
+    SubscriptService.createSubscription()
+    SubscriptService.addMonitoredItem({
+        itemToMonitor: {nodeId: 'ns=3;i=1001'},
+        displayName: 'Counter',
+    })
+    UaMessageQueue.queueEvents.on('pushed', (data: MessageModel) => {
+        console.log(data)
+    })
     // SessionService.session.browse('objects')
     // SessionService.session.getBuiltInDataType(new NodeId())
     // SessionService.session.readNamespaceArray()/

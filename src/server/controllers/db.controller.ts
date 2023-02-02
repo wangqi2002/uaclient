@@ -1,10 +1,10 @@
 import {IRouterParamContext} from 'koa-router'
 import {Next, ParameterizedContext} from 'koa'
 import {DbService} from '../services/db.service'
-import {DbData} from '../models/data.model'
 import {ResponseModel} from '../models/response.model'
 import {TableCreateModes} from '../../common/enums'
 import 'koa-body/lib/index'
+import {DbData} from '../models/db.model'
 
 export module DbController {
     export async function init(

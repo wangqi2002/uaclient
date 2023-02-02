@@ -1,4 +1,6 @@
 import {existsSync, readFile, readFileSync, writeFile} from 'fs'
+import {ClientError} from '../models/infos.model'
+import {Errors, Sources} from '../../common/enums'
 
 const Log = require('../../common/log')
 
@@ -136,8 +138,12 @@ export function formatDateY(date: Date) {
     return `year_${year}`
 }
 
-//
-// console.log(formatDateYMW(new Date()))
-// console.log(formatDateYM(new Date()))
-// console.log(formatDateYMD(new Date()))
-
+export function validateDbName(name?: string) {
+    if (name) {
+        let reg = new RegExp('^[a-zA-Z_][\u4E00-\u9FA5A-Za-z0-9]{2,20}$')
+        if (!reg.test(name)) throw new ClientError(Sources.paramValidator, Errors.unFormatDbName)
+    } else {
+        return false
+    }
+    return true
+}

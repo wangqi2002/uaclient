@@ -11,20 +11,19 @@ import {
 } from 'node-opcua'
 import 'koa-body/lib/index'
 import {is} from 'typia'
-import {ClientError} from '../../common/informations'
 import {Errors, Sources, TableCreateModes} from '../../common/enums'
 import {AddManyParam, AddOneParam} from '../models/params.model'
 import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
-import {IFieldNames} from '../models/db.model'
-import {DbData} from '../models/data.model'
+import {DbData, IFieldNames} from '../models/db.model'
 import Database from 'better-sqlite3'
+import {ClientError} from '../models/infos.model'
+import {validateDbName} from '../utils/util'
 
 export module ValidatorMiddleware {
 
     /**
-     * @description
-     * 验证所有请求参数并且抛出异常,当使用数据库服务时会验证表名是否符合标准,如果出现参数错误会返回ClientError
+     * @description 验证所有请求参数并且抛出异常,当使用数据库服务时会验证表名是否符合标准,如果出现参数错误会返回ClientError
      * @param ctx
      * @param next
      */
@@ -34,6 +33,7 @@ export module ValidatorMiddleware {
     ) {
         switch (ctx.request.path) {
             case '/client': {
+                console.log(ctx.request.body)
                 if (is<OPCUAClientOptions | undefined>(ctx.request.body)) {
                     await next()
                 } else {
@@ -54,7 +54,7 @@ export module ValidatorMiddleware {
                 if (is<{ deleteSubscription: string } | undefined>(ctx.request.body)) {
                     await next()
                 } else {
-                    throw validateError('{ deleteSubscription: string } | undefined')
+                    throw validateError('{ deleteSubscription: boolean } | {}')
                 }
                 break
             }
@@ -104,7 +104,7 @@ export module ValidatorMiddleware {
                 break
             }
             case '/session/browse': {
-                if (is<BrowseDescriptionLike>(ctx.request.body)) {
+                if (is<{ nodes: BrowseDescriptionLike, browseNext: boolean }>(ctx.request.body)) {
                     await next()
                 } else {
                     throw validateError('BrowseDescriptionLike')
@@ -132,7 +132,7 @@ export module ValidatorMiddleware {
                 if (is<AddManyParam>(ctx.request.body)) {
                     await next()
                 } else {
-                    throw validateError('ModifySubscriptionOptions')
+                    throw validateError('AddManyParam')
                 }
                 break
             }
@@ -140,7 +140,7 @@ export module ValidatorMiddleware {
                 if (is<AddOneParam>(ctx.request.body)) {
                     await next()
                 } else {
-                    throw validateError('ModifySubscriptionOptions')
+                    throw validateError('AddOneParam')
                 }
                 break
             }
@@ -148,7 +148,7 @@ export module ValidatorMiddleware {
                 if (is<string[]>(ctx.request.body)) {
                     await next()
                 } else {
-                    throw validateError('ModifySubscriptionOptions')
+                    throw validateError('string[]')
                 }
                 break
             }
@@ -196,11 +196,11 @@ export module ValidatorMiddleware {
                 break
             }
             case '/db/create_table': {
-                if (is<{ tableName?: string, fieldNames?: IFieldNames }>(ctx.request.body)) {
-                    validateDbName(ctx.request.body['tableName'])
+                if (is<{ tableName?: string, fieldNames?: IFieldNames } | undefined>(ctx.request.body)) {
+                    if (ctx.request.body) validateDbName(ctx.request.body['tableName'])
                     await next()
                 } else {
-                    throw validateError('CreateSelfSignCertificateParam1')
+                    throw validateError('{ tableName?: string, fieldNames?: IFieldNames } | undefined')
                 }
                 break
             }
@@ -208,7 +208,7 @@ export module ValidatorMiddleware {
                 if (is<{ fileName: string }>(ctx.request.body)) {
                     await next()
                 } else {
-                    throw validateError('CreateSelfSignCertificateParam1')
+                    throw validateError('{ fileName: string }')
                 }
                 break
             }
@@ -216,7 +216,7 @@ export module ValidatorMiddleware {
                 if (is<{ fileName: string, options: Database.Options }>(ctx.request.body)) {
                     await next()
                 } else {
-                    throw validateError('CreateSelfSignCertificateParam1')
+                    throw validateError('{ fileName: string, options: Database.Options }')
                 }
                 break
             }
@@ -226,17 +226,9 @@ export module ValidatorMiddleware {
         }
     }
 
-    function validateError(type: any) {
-        return new ClientError(Sources.paramValidator, Errors.errorValidateParam, `Supposed to be ${type}`)
+    function validateError(paramType: any) {
+        return new ClientError(Sources.paramValidator, Errors.errorValidateParam, `Supposed to be ${paramType}`)
     }
 
-    function validateDbName(str?: string) {
-        if (str) {
-            let reg = new RegExp('^[a-zA-Z_][\u4E00-\u9FA5A-Za-z0-9]{2,20}$')
-            if (!reg.test(str)) throw new ClientError(Sources.paramValidator, Errors.unFormatDbName)
-        } else {
-            return false
-        }
-        return true
-    }
+
 }

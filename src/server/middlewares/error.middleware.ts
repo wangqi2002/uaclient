@@ -1,8 +1,8 @@
-import {ClientError} from '../../common/informations'
 import {Errors, ServerMessage, ServerStatusCodes, Sources} from '../../common/enums'
 import {Next, ParameterizedContext} from 'koa'
 import {IRouterParamContext} from 'koa-router'
 import {ResponseModel} from '../models/response.model'
+import {ClientError} from '../models/infos.model'
 
 export module ErrorMiddleware {
 
@@ -13,7 +13,7 @@ export module ErrorMiddleware {
             let error: any = e
             if (!(e instanceof ClientError)) error = new ClientError(Sources.server, Errors.internalError, e.message)
             ctx.body = new ResponseModel(error, ServerMessage.error, ServerStatusCodes.internalError)
-            ctx.app.emit('error', error)
+            // ctx.app.emit('error', error)
         }
     }
 }

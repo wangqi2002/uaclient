@@ -9,8 +9,8 @@ import {
 } from 'node-opcua'
 import {Log} from '../../common/log'
 import {Errors, Infos, Sources, Warns} from '../../common/enums'
-import {ClientError, ClientInfo, ClientWarn} from '../../common/informations'
 import {SessionService} from './session.service'
+import {ClientError, ClientInfo, ClientWarn} from '../models/infos.model'
 
 export module ClientService {
 
@@ -29,10 +29,6 @@ export module ClientService {
     export let uaConnectionAlive: boolean = false
     export let currentServer: string = 'no server'
 
-    export function getServerName() {
-        return ''
-    }
-
     export function createClient(clientOptions?: OPCUAClientOptions) {
         try {
             if (clientOptions) client = OPCUAClient.create(clientOptions)
@@ -46,9 +42,12 @@ export module ClientService {
         try {
             await client.connect(endpointUrl)
             uaConnectionAlive = true
-            currentServer = endpointUrl
+            if (client.endpoint) {
+                currentServer = client.endpoint.server.applicationName.text
+                    ? client.endpoint.server.applicationName.text.toString()
+                    : 'Default Server'
+            }
             Log.info(new ClientInfo(Sources.clientService, Infos.connectionCreated, {Endpoint: endpointUrl}))
-
         } catch (e: any) {
             throw new ClientError(Sources.clientService, Errors.errorConnecting, e.message)
         }
@@ -97,7 +96,7 @@ export module ClientService {
         return client.getPrivateKey()
     }
 
-    export function getCertificate() {
+    export function getClientCert() {
         Log.info(new ClientInfo(Sources.clientService, Infos.getCertificate))
         return client.getCertificate()
     }

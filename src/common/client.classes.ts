@@ -15,8 +15,8 @@ import {
     UserTokenType,
     WriteValueOptions,
 } from 'node-opcua'
-import {ClientError, ClientInfo, ClientWarn} from './informations'
 import {Errors, Infos, Sources, Warns} from './enums'
+import {ClientError, ClientInfo, ClientWarn} from '../server/models/infos.model'
 
 const UaMessageQueue = require('./mq')
 const Log = require('./log')

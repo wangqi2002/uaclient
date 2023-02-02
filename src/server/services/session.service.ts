@@ -4,18 +4,18 @@ import {
     ClientSession,
     DataValue,
     makeBrowsePath,
+    makeResultMask,
     ReadValueIdOptions,
     ReferenceDescription,
-    StatusCode,
     UserIdentityInfo,
     UserTokenType,
     WriteValueOptions
 } from 'node-opcua'
 import {Log} from '../../common/log'
-import {ClientError, ClientInfo, ClientWarn} from '../../common/informations'
 import {Errors, Infos, Sources, Warns} from '../../common/enums'
 import {ClientService} from './client.service'
 import {is} from 'typia'
+import {ClientError, ClientInfo, ClientWarn} from '../models/infos.model'
 
 export module SessionService {
     export let session!: ClientSession
@@ -92,7 +92,7 @@ export module SessionService {
         }
     }
 
-    export async function writeToServer(nodesToWrite: WriteValueOptions[]): Promise<StatusCode[]> {
+    export async function writeToServer(nodesToWrite: WriteValueOptions[]) {
         try {
             return await session.write(nodesToWrite)
         } catch (e: any) {
@@ -100,17 +100,32 @@ export module SessionService {
         }
     }
 
+    /**
+     * @description
+     * 返回browseResult,包含references和statusCode和continuation point,
+     * 如果使用browseNext,那么应当确定该node具有continuation point
+     * @example
+     * SessionService.browse({nodeId: 'i=2253',resultMask:rs},true)
+     * @param nodeToBrowse
+     * @param browseNext
+     */
     export async function browse(nodeToBrowse: BrowseDescriptionLike, browseNext?: boolean) {
         try {
-            if (is<BrowseDescriptionOptions>(nodeToBrowse) && nodeToBrowse.resultMask) nodeToBrowse.resultMask = 0x3f
+            if (is<BrowseDescriptionOptions>(nodeToBrowse) && nodeToBrowse.resultMask) {
+                nodeToBrowse.resultMask = makeResultMask(
+                    'ReferenceType | IsForward | BrowseName | NodeClass | TypeDefinition')
+            }
             let result = await session.browse(nodeToBrowse)
-            //the problem is the result mask refer to https://github.com/node-opcua/node-opcua/issues/114
             if (browseNext && result.continuationPoint) {
                 return await session.browseNext(result.continuationPoint, true)
             }
-            return result.references
+            return result
         } catch (e: any) {
             throw new ClientError(Sources.sessionService, Errors.errorBrowsing, e.message)
         }
+    }
+
+    export function serverCert() {
+        return session.serverCertificate.toString('utf8')
     }
 }

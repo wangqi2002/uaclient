@@ -1,6 +1,6 @@
 import {EventEmitter} from 'events'
 import {MessageModel} from '../server/models/message.model'
-import {DbData} from '../server/models/data.model'
+import {DbData} from '../server/models/db.model'
 
 /**
  * @description Ua后台发过来的消息的队列,前端只需订阅pushed,

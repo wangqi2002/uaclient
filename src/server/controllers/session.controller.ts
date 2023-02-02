@@ -2,7 +2,7 @@ import {SessionService} from '../services/session.service'
 import {Next, ParameterizedContext} from 'koa'
 import {IRouterParamContext} from 'koa-router'
 import {ResponseModel} from '../models/response.model'
-import {BrowseDescriptionLike, ReadValueIdOptions, UserIdentityInfo, WriteValueOptions} from 'node-opcua'
+import {ReadValueIdOptions, UserIdentityInfo, WriteValueOptions} from 'node-opcua'
 import 'koa-body/lib/index'
 
 export module SessionController {
@@ -69,7 +69,8 @@ export module SessionController {
     ) {
         try {
             let param = ctx.query
-            if (param['path']) {
+            if (param && 'path' in param) {
+                // @ts-ignore
                 let path: string = param['path'].toString()
                 let result = await SessionService.getNodeIdByBrowseName(path)
                 ctx.body = new ResponseModel(result)
@@ -113,11 +114,21 @@ export module SessionController {
     ) {
         try {
             let param = ctx.request.body
-            if (param) {
-                let nodes: BrowseDescriptionLike = param
-                let result = await SessionService.browse(nodes)
+            if (param && 'nodes' in param) {
+                let result = await SessionService.browse(param)
                 ctx.body = new ResponseModel(result)
             }
+        } catch (e: any) {
+            throw e
+        }
+    }
+
+    export async function serverCert(
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
+    ) {
+        try {
+            ctx.body = new ResponseModel(SessionService.serverCert())
         } catch (e: any) {
             throw e
         }
