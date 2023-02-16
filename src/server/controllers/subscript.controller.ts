@@ -12,7 +12,7 @@ export module SubscriptController {
     ) {
         try {
             SubscriptService.createSubscription(ctx.request.body)
-            ctx.body = new ResponseModel(ServerMessage.success)
+            ctx.body = new ResponseModel()
         } catch (e: any) {
             throw e
         }

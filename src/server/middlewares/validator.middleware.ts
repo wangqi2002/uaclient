@@ -125,6 +125,7 @@ export module ValidatorMiddleware {
                 break
             }
             case '/subscript/modify': {
+                console.log(ctx.request.body)
                 if (is<ModifySubscriptionOptions>(ctx.request.body)) {
                     await next()
                 } else {
@@ -174,7 +175,7 @@ export module ValidatorMiddleware {
                 break
             }
 
-            case '/db/init': {
+            case '/db': {
                 if (is<{ createMode: TableCreateModes, tableName?: string, fields?: IFieldNames }>(ctx.request.body)) {
                     validateDbName(ctx.request.body['tableName'])
                     await next()

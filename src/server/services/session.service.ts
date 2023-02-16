@@ -3,8 +3,11 @@ import {
     BrowseDescriptionOptions,
     ClientSession,
     DataValue,
+    DateTime,
+    HistoryReadRequest,
     makeBrowsePath,
     makeResultMask,
+    NodeIdLike,
     ReadValueIdOptions,
     ReferenceDescription,
     UserIdentityInfo,
@@ -118,7 +121,6 @@ export module SessionService {
      */
     export async function browse(nodeToBrowse: BrowseDescriptionLike, browseNext?: boolean) {
         try {
-            console.log(nodeToBrowse)
             if (is<BrowseDescriptionOptions>(nodeToBrowse) && 'resultMask' in nodeToBrowse) {
                 nodeToBrowse.resultMask = makeResultMask(
                     'ReferenceType | IsForward | BrowseName | NodeClass | TypeDefinition')
@@ -135,5 +137,13 @@ export module SessionService {
 
     export function serverCert() {
         return session.serverCertificate.toString('utf8')
+    }
+
+    export async function historyRead(request: HistoryReadRequest) {
+        return await session.historyRead(request)
+    }
+
+    export async function readHistoryValue(nodesToRead: NodeIdLike, start: DateTime, end: DateTime) {
+        await session.readHistoryValue(nodesToRead, start, end)
     }
 }
