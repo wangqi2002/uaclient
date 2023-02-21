@@ -27,14 +27,12 @@ export module SessionService {
     export async function createSession(userInfo?: UserIdentityInfo) {
         try {
             if (userInfo) userIdentity = userInfo
-            console.log(ClientService.currentServer)
             session = await ClientService.client.createSession(userIdentity)
             if (ClientService.client.endpoint) {
                 ClientService.currentServer = ClientService.client.endpoint.server.applicationName.text
                     ? ClientService.client.endpoint.server.applicationName.text.toString()
                     : 'Default Server'
             }
-            console.log(ClientService.currentServer)
             Log.info(new ClientInfo(Sources.sessionService, Infos.sessionCreated))
         } catch (e: any) {
             throw new ClientError(Sources.sessionService, Errors.errorCreateSession, e.message)
@@ -93,6 +91,7 @@ export module SessionService {
 
     export async function getNodeIdByBrowseName(relativePathBNF: string, rootNode: string = 'RootFolder') {
         try {
+            relativePathBNF = '/' + relativePathBNF
             let browsePath = makeBrowsePath(rootNode, relativePathBNF)
             let result = await session.translateBrowsePath(browsePath)
             Log.info(new ClientInfo(Sources.sessionService, Infos.getIdByName, {Path: browsePath}))
@@ -102,7 +101,7 @@ export module SessionService {
         }
     }
 
-    export async function writeToServer(nodesToWrite: WriteValueOptions[]) {
+    export async function writeToServer(nodesToWrite: WriteValueOptions) {
         try {
             return await session.write(nodesToWrite)
         } catch (e: any) {

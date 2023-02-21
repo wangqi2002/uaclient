@@ -10,9 +10,11 @@ import {ErrorMiddleware} from './middlewares/error.middleware'
 import {ValidatorMiddleware} from './middlewares/validator.middleware'
 
 export module Server {
+
     export const app = new Koa()
-    app.use(koaBody({multipart: true}))
+    app.use(koaBody())
     app.use(ErrorMiddleware.handleError)
+    // app.use(TransferMiddleware.bodyTransfer)
     app.use(ValidatorMiddleware.paramValidator)
 
     app.use(ClientRouter.router.routes())

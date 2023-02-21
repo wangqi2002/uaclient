@@ -42,7 +42,7 @@ export module Log {
      * @param nodeToLoad
      * @private
      */
-    export function loadLogConfigure(filePath: string, nodeToLoad: string[]) {
+    export function loadLogConfig(filePath: string, nodeToLoad: string[]) {
         let node = getJsonNode(filePath, nodeToLoad)
         configure(node)
     }
@@ -51,12 +51,13 @@ export module Log {
      * @description 具体参考log4js配置方法
      * @param conf
      * @param filePath
+     * @param nodeToModify
      */
-    export function configureLog(conf: Configuration, filePath: string) {
+    export function configureLog(conf: Configuration, filePath: string, nodeToModify: string[]) {
         const content = JSON.stringify({
             LogConfig: {...conf},
         })
-        modifyJsonNode(filePath, [], content)
+        modifyJsonNode(filePath, nodeToModify, content)
         configure(conf)
     }
 }

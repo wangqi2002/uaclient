@@ -18,7 +18,7 @@ import {DbData} from '../server/models/db.model'
  *     eventHandle()
  * })
  */
-export module UaMessageQueue {
+export module MessageQueue {
     let queue: DbData[] = []
     let maxLength: number = 200
     export let queueEvents: EventEmitter = new EventEmitter()

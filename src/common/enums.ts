@@ -33,6 +33,7 @@ export enum Sources {
     sessionService = 'ClientSession',
     paramValidator = 'ParamValidator',
     certService = 'CertificateService',
+    bodyTrans = 'BodyTransfer',
 }
 
 export enum Warns {
@@ -66,6 +67,7 @@ export enum Errors {
     errorRejectCert = 'An exception occurred while rejecting certificate of server',
     errorGetTrust = 'An exception occurred while getting trust status',
     unFormatDbName = 'Wrong format database name input',
+    wrongJsonScheme = 'Wrong Json scheme ,check the request body',
 }
 
 export enum Infos {

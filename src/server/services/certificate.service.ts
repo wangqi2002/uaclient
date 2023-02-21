@@ -1,4 +1,4 @@
-import {OPCUACertificateManager, StatusCode} from 'node-opcua'
+import {OPCUACertificateManager} from 'node-opcua'
 import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
 import {Errors, Infos, Sources} from '../../common/enums'
@@ -58,7 +58,7 @@ export module CertificateService {
      * @description 返回server证书的信任状态
      * @param serverCertificate
      */
-    export async function getTrustStatus(serverCertificate: Certificate): Promise<StatusCode> {
+    export async function getTrustStatus(serverCertificate: Certificate) {
         try {
             return await certificate.getTrustStatus(serverCertificate)
         } catch (e: any) {

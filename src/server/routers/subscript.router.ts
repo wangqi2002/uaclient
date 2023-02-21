@@ -6,8 +6,8 @@ export module SubscriptRouter{
         prefix:'/subscript'
     })
 
-    router.post('/',SubscriptController.init)
-    router.post('/modify',SubscriptController.modify)
+    router.post('/init', SubscriptController.init)
+    router.post('/modify', SubscriptController.modify)
     router.post('/add_many',SubscriptController.addItemGroup)
     router.post('/add_one', SubscriptController.addItem)
     router.post('/delete_items', SubscriptController.deleteItems)

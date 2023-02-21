@@ -32,7 +32,7 @@ export module ValidatorMiddleware {
         next: Next
     ) {
         switch (ctx.request.path) {
-            case '/client': {
+            case '/client/init': {
                 console.log(ctx.request.body)
                 if (is<OPCUAClientOptions | undefined>(ctx.request.body)) {
                     await next()
@@ -51,7 +51,7 @@ export module ValidatorMiddleware {
                 break
             }
             case '/client/disconnect': {
-                if (is<{ deleteSubscription: string } | undefined>(ctx.request.body)) {
+                if (is<{ deleteSubscription: boolean } | undefined>(ctx.request.body)) {
                     await next()
                 } else {
                     throw validateError('{ deleteSubscription: boolean } | {}')
@@ -59,7 +59,7 @@ export module ValidatorMiddleware {
                 break
             }
 
-            case '/session': {
+            case '/session/init': {
                 if (is<UserIdentityInfo | undefined>(ctx.request.body)) {
                     await next()
                 } else {
@@ -76,7 +76,7 @@ export module ValidatorMiddleware {
                 break
             }
             case '/session/close': {
-                if (is<{ deleteSubscription: string } | undefined>(ctx.request.body)) {
+                if (is<{ deleteSubscription: boolean } | undefined>(ctx.request.body)) {
                     await next()
                 } else {
                     throw validateError('{ deleteSubscription: boolean } | undefined')
@@ -100,15 +100,15 @@ export module ValidatorMiddleware {
                 break
             }
             case '/session/write': {
-                if (is<WriteValueOptions[]>(ctx.request.body)) {
+                if (is<WriteValueOptions>(ctx.request.body)) {
                     await next()
                 } else {
-                    throw validateError('WriteValueOptions[]')
+                    throw validateError('WriteValueOptions')
                 }
                 break
             }
             case '/session/browse': {
-                if (is<{ node: BrowseDescriptionLike, browseNext: string }>(ctx.request.body)) {
+                if (is<{ node: BrowseDescriptionLike, browseNext: boolean }>(ctx.request.body)) {
                     await next()
                 } else {
                     throw validateError('{ nodes: BrowseDescriptionLike, browseNext: boolean }')
@@ -116,7 +116,7 @@ export module ValidatorMiddleware {
                 break
             }
 
-            case '/subscript': {
+            case '/subscript/init': {
                 if (is<ClientSubscriptionOptions | undefined>(ctx.request.body)) {
                     await next()
                 } else {
@@ -175,7 +175,7 @@ export module ValidatorMiddleware {
                 break
             }
 
-            case '/db': {
+            case '/db/init': {
                 if (is<{ createMode: TableCreateModes, tableName?: string, fields?: IFieldNames }>(ctx.request.body)) {
                     validateDbName(ctx.request.body['tableName'])
                     await next()
@@ -234,6 +234,4 @@ export module ValidatorMiddleware {
     function validateError(paramType: any) {
         return new ClientError(Sources.paramValidator, Errors.errorValidateParam, `Supposed to be ${paramType}`)
     }
-
-
 }

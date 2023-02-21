@@ -1,11 +1,9 @@
 import {
-    EndpointDescription,
     FindServersOnNetworkRequestOptions,
     MessageSecurityMode,
     OPCUAClient,
     OPCUAClientOptions,
     SecurityPolicy,
-    ServerOnNetwork,
 } from 'node-opcua'
 import {Log} from '../../common/log'
 import {Errors, Infos, Sources, Warns} from '../../common/enums'
@@ -25,7 +23,7 @@ export module ClientService {
         securityMode: MessageSecurityMode.None,
         securityPolicy: SecurityPolicy.None,
         endpointMustExist: false,
-        requestedSessionTimeout: 36000,
+        requestedSessionTimeout: 3600,
     })
     export let uaConnectionAlive: boolean = false
     export let currentServer: string = 'no server'
@@ -67,7 +65,7 @@ export module ClientService {
         Log.info(new ClientInfo(Sources.clientService, Infos.clientDisconnect))
     }
 
-    export async function getServersOnNetwork(options?: FindServersOnNetworkRequestOptions): Promise<ServerOnNetwork[]> {
+    export async function getServersOnNetwork(options?: FindServersOnNetworkRequestOptions) {
         try {
             let servers = await client.findServersOnNetwork(options)
             if (!servers) Log.warn(new ClientWarn(Sources.clientService, Warns.serversNotExist))
@@ -77,7 +75,7 @@ export module ClientService {
         }
     }
 
-    export async function getEndpoints(): Promise<EndpointDescription[]> {
+    export async function getEndpoints() {
         try {
             let endpoints = await client.getEndpoints()
             if (!endpoints) Log.warn(new ClientWarn(Sources.clientService, Warns.endPointsNotExist))

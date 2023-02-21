@@ -2,7 +2,7 @@ import {SessionService} from '../services/session.service'
 import {Next, ParameterizedContext} from 'koa'
 import {IRouterParamContext} from 'koa-router'
 import {ResponseModel} from '../models/response.model'
-import {ReadValueIdOptions, UserIdentityInfo, WriteValueOptions} from 'node-opcua'
+import {ReadValueIdOptions, UserIdentityInfo} from 'node-opcua'
 import 'koa-body/lib/index'
 
 export module SessionController {
@@ -40,7 +40,7 @@ export module SessionController {
         try {
             let param = ctx.request.body
             'deleteSubscription' in param
-                ? await SessionService.closeSession(Boolean(param['deleteSubscription']))
+                ? await SessionService.closeSession(param['deleteSubscription'])
                 : await SessionService.closeSession()
             ctx.body = new ResponseModel()
         } catch (e: any) {
@@ -77,17 +77,18 @@ export module SessionController {
         }
     }
 
-    export async function writeMany(
+    export async function write(
         ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
         next: Next
     ) {
         try {
             let param = ctx.request.body
-            if (param && 'nodeToWrite' in param) {
-                let nodes: WriteValueOptions[] = param['nodeToWrite']
-                await SessionService.writeToServer(nodes)
-                ctx.body = new ResponseModel()
-            }
+            await SessionService.writeToServer(param)
+            ctx.body = new ResponseModel()
+            // if (param && 'nodeToWrite' in param) {
+            //     let nodes: WriteValueOptions[] = param['nodeToWrite']
+            //
+            // }
         } catch (e: any) {
             throw e
         }

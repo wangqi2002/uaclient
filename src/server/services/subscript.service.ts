@@ -9,7 +9,7 @@ import {
 import {SessionService} from './session.service'
 import {Log} from '../../common/log'
 import {Errors, Infos, Sources, Warns} from '../../common/enums'
-import {UaMessageQueue} from '../../common/mq'
+import {MessageQueue} from '../../common/mq'
 import {MessageModel} from '../models/message.model'
 import {AddManyParam, AddOneParam} from '../models/params.model'
 import {ClientError, ClientInfo, ClientWarn} from '../models/infos.model'
@@ -168,7 +168,7 @@ export module SubscriptService {
                 // UaMessageQueue.enqueue(data, monitoredItem.itemToMonitor, monitoredItems[itemId].displayName)
                 let item = monitoredItems.get(itemId)
                 if (item) {
-                    UaMessageQueue.enqueue(
+                    MessageQueue.enqueue(
                         new MessageModel(data, monitoredItem.itemToMonitor.nodeId.toString()),
                         item.displayName
                     )
