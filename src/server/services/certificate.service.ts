@@ -1,9 +1,8 @@
 import {OPCUACertificateManager} from 'node-opcua'
 import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
-import {Errors, Infos, Sources} from '../../common/enums'
-import {Log} from '../../common/log'
-import {ClientError, ClientInfo} from '../models/infos.model'
+import {Errors, Sources} from '../../common/enums'
+import {ClientError} from '../models/infos.model'
 
 export module CertificateService {
     let path = require('path')
@@ -32,7 +31,7 @@ export module CertificateService {
     export async function createCertificate(params: CreateSelfSignCertificateParam1) {
         try {
             await certificate.createSelfSignedCertificate({...params})
-            Log.info(new ClientInfo(Sources.paramValidator, Infos.certCreated))
+
         } catch (e: any) {
             throw new ClientError(Sources.certService, Errors.errorCreatCert, e.message)
         }

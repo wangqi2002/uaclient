@@ -11,30 +11,26 @@ import {
 } from 'node-opcua'
 import 'koa-body/lib/index'
 import {is} from 'typia'
-import {Errors, Sources, TableCreateModes} from '../../common/enums'
-import {AddManyParam, AddOneParam} from '../models/params.model'
+import {Errors, Infos, Sources, TableCreateModes} from '../../common/enums'
+import {NodeID, SubscriptGroupParam, SubscriptSingleParam} from '../models/params.model'
 import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
-import {DbData, IFieldNames} from '../models/db.model'
+import {IFieldNames} from '../models/db.model'
 import Database from 'better-sqlite3'
-import {ClientError} from '../models/infos.model'
+import {ClientError, ClientInfo} from '../models/infos.model'
 import {validateDbName} from '../utils/util'
+import {MessageModel} from '../models/message.model'
+import {Log} from '../../common/log'
 
 export module ValidatorMiddleware {
-
-    /**
-     * @description 验证所有请求参数并且抛出异常,当使用数据库服务时会验证表名是否符合标准,如果出现参数错误会返回ClientError
-     * @param ctx
-     * @param next
-     */
-    export async function paramValidator(
+    export async function clientValidator(
         ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
         next: Next
     ) {
         switch (ctx.request.path) {
             case '/client/init': {
-                console.log(ctx.request.body)
                 if (is<OPCUAClientOptions | undefined>(ctx.request.body)) {
+                    Log.info(new ClientInfo(Sources.clientService, Infos.clientCreated, {...ctx.request.body}))
                     await next()
                 } else {
                     throw validateError('OPCUAClientOptions | undefined')
@@ -43,24 +39,44 @@ export module ValidatorMiddleware {
             }
             case '/client/connect': {
                 if (is<{ endpointUrl: string }>(ctx.request.body)) {
+                    Log.info(new ClientInfo(Sources.clientService, Infos.connectionCreated, {...ctx.request.body}))
                     await next()
                 } else {
-                    console.log(ctx.request.body)
                     throw validateError('{ endpointUrl: string }')
                 }
                 break
             }
             case '/client/disconnect': {
                 if (is<{ deleteSubscription: boolean } | undefined>(ctx.request.body)) {
+                    Log.info(new ClientInfo(Sources.clientService, Infos.sessionClosed))
+                    Log.info(new ClientInfo(Sources.clientService, Infos.clientDisconnect))
                     await next()
                 } else {
                     throw validateError('{ deleteSubscription: boolean } | {}')
                 }
                 break
             }
+            case '/client/private_key': {
+                Log.info(new ClientInfo(Sources.clientService, Infos.getPrivateKey))
+                break
+            }
+            case 'client/cert': {
+                Log.info(new ClientInfo(Sources.clientService, Infos.getCertificate))
+                break
+            }
+            default:
+                await next()
+        }
+    }
 
+    export async function sessionValidator(
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
+    ) {
+        switch (ctx.request.body) {
             case '/session/init': {
                 if (is<UserIdentityInfo | undefined>(ctx.request.body)) {
+                    Log.info(new ClientInfo(Sources.sessionService, Infos.sessionCreated))
                     await next()
                 } else {
                     throw validateError('UserIdentityInfo | undefined')
@@ -93,6 +109,7 @@ export module ValidatorMiddleware {
             }
             case '/session/id': {
                 if (is<{ path: string }>(ctx.query)) {
+                    Log.info(new ClientInfo(Sources.sessionService, Infos.getIdByName, {...ctx.request.body}))
                     await next()
                 } else {
                     throw validateError('{ path: string }')
@@ -115,9 +132,19 @@ export module ValidatorMiddleware {
                 }
                 break
             }
+            default:
+                await next()
+        }
+    }
 
+    export async function subscriptValidator(
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
+    ) {
+        switch (ctx.request.path) {
             case '/subscript/init': {
                 if (is<ClientSubscriptionOptions | undefined>(ctx.request.body)) {
+                    Log.info(new ClientInfo(Sources.subscriptService, Infos.installedSub))
                     await next()
                 } else {
                     throw validateError('ClientSubscriptionOptions')
@@ -125,41 +152,59 @@ export module ValidatorMiddleware {
                 break
             }
             case '/subscript/modify': {
-                console.log(ctx.request.body)
                 if (is<ModifySubscriptionOptions>(ctx.request.body)) {
+                    Log.info(new ClientInfo(Sources.subscriptService, Infos.modifySubscription, {...ctx.request.body}))
                     await next()
                 } else {
                     throw validateError('ModifySubscriptionOptions')
                 }
                 break
             }
-            case '/subscript/add_many': {
-                if (is<AddManyParam>(ctx.request.body)) {
+            case '/subscript/item/group': {
+                if (is<SubscriptGroupParam>(ctx.request.body)) {
+                    Log.info(new ClientInfo(Sources.subscriptService, Infos.monitoredItemInit, {...ctx.request.body}))
                     await next()
                 } else {
-                    throw validateError('AddManyParam')
+                    throw validateError('SubscriptGroupParam')
                 }
                 break
             }
-            case '/subscript/add_one': {
-                if (is<AddOneParam>(ctx.request.body)) {
+            case '/subscript/item/single': {
+                if (is<SubscriptSingleParam>(ctx.request.body)) {
+                    Log.info(new ClientInfo(Sources.subscriptService, Infos.monitoredItemInit, {...ctx.request.body}))
                     await next()
                 } else {
-                    throw validateError('AddOneParam')
+                    throw validateError('SubscriptSingleParam')
                 }
                 break
             }
-            case '/subscript/delete_items': {
-                if (is<string[]>(ctx.request.body)) {
+            case '/subscript/item/delete': {
+                if (is<NodeID[]>(ctx.request.body)) {
+                    Log.info(new ClientInfo(Sources.subscriptService, Infos.monitoredItemTerminate, {...ctx.request.body}))
                     await next()
                 } else {
-                    throw validateError('string[]')
+                    throw validateError('NodeID[]')
                 }
                 break
             }
+            case '/subscript/terminate': {
+                Log.info(new ClientInfo(Sources.subscriptService, Infos.terminateSub))
+                await next()
+                break
+            }
+            default:
+                await next()
+        }
+    }
 
+    export async function certValidator(
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
+    ) {
+        switch (ctx.request.body) {
             case '/cert/create': {
                 if (is<CreateSelfSignCertificateParam1>(ctx.request.body)) {
+                    Log.info(new ClientInfo(Sources.paramValidator, Infos.certCreated))
                     await next()
                 } else {
                     throw validateError('CreateSelfSignCertificateParam1')
@@ -174,7 +219,16 @@ export module ValidatorMiddleware {
                 }
                 break
             }
+            default:
+                await next()
+        }
+    }
 
+    export async function dbValidator(
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
+    ) {
+        switch (ctx.request.body) {
             case '/db/init': {
                 if (is<{ createMode: TableCreateModes, tableName?: string, fields?: IFieldNames }>(ctx.request.body)) {
                     validateDbName(ctx.request.body['tableName'])
@@ -185,7 +239,7 @@ export module ValidatorMiddleware {
                 break
             }
             case '/db/insert': {
-                if (is<DbData>(ctx.request.body)) {
+                if (is<MessageModel>(ctx.request.body)) {
                     await next()
                 } else {
                     throw validateError('CreateSelfSignCertificateParam1')
@@ -193,7 +247,7 @@ export module ValidatorMiddleware {
                 break
             }
             case '/db/insert_many': {
-                if (is<DbData[]>(ctx.request.body)) {
+                if (is<MessageModel[]>(ctx.request.body)) {
                     await next()
                 } else {
                     throw validateError('CreateSelfSignCertificateParam1')
@@ -202,7 +256,25 @@ export module ValidatorMiddleware {
             }
             case '/db/create_table': {
                 if (is<{ tableName?: string, fieldNames?: IFieldNames } | undefined>(ctx.request.body)) {
-                    if (ctx.request.body) validateDbName(ctx.request.body['tableName'])
+                    if (ctx.request.body) {
+                        if ('tableName' in ctx.request.body) {
+                            if (!validateDbName(ctx.request.body['tableName'] as string)) {
+                                throw new ClientError(Sources.paramValidator, Errors.unFormatDbName,
+                                    'It cannot start with a number. The name can only contain: ' +
+                                    'Chinese characters, numbers, lowercase letters, underscores, and the length is within 2-15 characters')
+                            }
+                        }
+                        if ('fieldNames' in ctx.request.body && ctx.request.body['fieldNames']) {
+                            let key: keyof IFieldNames
+                            for (key in ctx.request.body['fieldNames']) {
+                                if (!validateDbName(ctx.request.body['fieldNames'][key])) {
+                                    throw new ClientError(Sources.paramValidator, Errors.unFormatDbName,
+                                        'It cannot start with a number. The name can only contain: ' +
+                                        'Chinese characters, numbers, lowercase letters, underscores, and the length is within 2-15 characters')
+                                }
+                            }
+                        }
+                    }
                     await next()
                 } else {
                     throw validateError('{ tableName?: string, fieldNames?: IFieldNames } | undefined')
@@ -225,7 +297,6 @@ export module ValidatorMiddleware {
                 }
                 break
             }
-
             default:
                 await next()
         }

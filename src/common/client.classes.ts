@@ -48,7 +48,7 @@ export class UaSubscription {
         this.subscription = ClientSubscription.create(session, subOptions)
         this.subscription
             .on('started', () => {
-                Log.info(new ClientInfo(Sources.subscription, Infos.installedSub))
+                Log.info(new ClientInfo(Sources.subscriptService, Infos.installedSub))
             })
             .on('keepalive', () => {
             })
@@ -59,9 +59,9 @@ export class UaSubscription {
     async terminateSubscription() {
         if (this.subscription) {
             await this.subscription.terminate()
-            Log.info(new ClientInfo(Sources.subscription, Infos.terminateSub))
+            Log.info(new ClientInfo(Sources.subscriptService, Infos.terminateSub))
         } else {
-            throw Log.error(new ClientError(Sources.subscription, Errors.noSubscription))
+            throw Log.error(new ClientError(Sources.subscriptService, Errors.noSubscription))
         }
     }
 
@@ -101,7 +101,7 @@ export class UaSubscription {
                     console.log('err')
                 })
         } else {
-            throw Log.error(new ClientError(Sources.subscription, Errors.noSubscription))
+            throw Log.error(new ClientError(Sources.subscriptService, Errors.noSubscription))
         }
         // let a:ReadValueIdOptions={
         //     nodeId:'nice',
@@ -169,7 +169,7 @@ export class UaSession {
             try {
                 await this.session.close(deleteSubscription)
             } catch (e: any) {
-                throw Log.error(new ClientError(Sources.subscription, Errors.errorClosingSession, e.message))
+                throw Log.error(new ClientError(Sources.subscriptService, Errors.errorClosingSession, e.message))
             }
         }
     }

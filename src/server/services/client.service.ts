@@ -5,33 +5,32 @@ import {
     OPCUAClientOptions,
     SecurityPolicy,
 } from 'node-opcua'
-import {Log} from '../../common/log'
-import {Errors, Infos, Sources, Warns} from '../../common/enums'
+import {Errors, Sources, Warns} from '../../common/enums'
 import {SessionService} from './session.service'
-import {ClientError, ClientInfo, ClientWarn} from '../models/infos.model'
+import {ClientError, ClientWarn} from '../models/infos.model'
 
 export module ClientService {
 
-
-    export let client: OPCUAClient = OPCUAClient.create({
-        applicationName: 'NodeOPCUA-Client',
-        connectionStrategy: {
-            initialDelay: 1000,
-            maxRetry: 10,
-        },
-        keepSessionAlive: true,
-        securityMode: MessageSecurityMode.None,
-        securityPolicy: SecurityPolicy.None,
-        endpointMustExist: false,
-        requestedSessionTimeout: 3600,
-    })
+    export let client!: OPCUAClient
     export let uaConnectionAlive: boolean = false
     export let currentServer: string = 'no server'
 
     export function createClient(clientOptions?: OPCUAClientOptions) {
         try {
-            if (clientOptions) client = OPCUAClient.create(clientOptions)
-            Log.info(new ClientInfo(Sources.clientService, Infos.clientCreated))
+            client = clientOptions
+                ? OPCUAClient.create(clientOptions)
+                : OPCUAClient.create({
+                    applicationName: 'NodeOPCUA-Client',
+                    connectionStrategy: {
+                        initialDelay: 1000,
+                        maxRetry: 10,
+                    },
+                    keepSessionAlive: true,
+                    securityMode: MessageSecurityMode.None,
+                    securityPolicy: SecurityPolicy.None,
+                    endpointMustExist: false,
+                    requestedSessionTimeout: 3600,
+                })
         } catch (e: any) {
             throw new ClientError(Sources.clientService, Errors.errorCreateClient, e.message)
         }
@@ -41,7 +40,6 @@ export module ClientService {
         try {
             await client.connect(endpointUrl)
             uaConnectionAlive = true
-            Log.info(new ClientInfo(Sources.clientService, Infos.connectionCreated, {Endpoint: endpointUrl}))
         } catch (e: any) {
             throw new ClientError(Sources.clientService, Errors.errorConnecting, e.message)
         }
@@ -56,19 +54,18 @@ export module ClientService {
                     await SessionService.closeSession()
                 }
                 uaConnectionAlive = false
-                Log.info(new ClientInfo(Sources.clientService, Infos.sessionClosed))
             } catch (e: any) {
                 throw new ClientError(Sources.clientService, Errors.errorClosingSession, e.message)
             }
         }
         await client.disconnect()
-        Log.info(new ClientInfo(Sources.clientService, Infos.clientDisconnect))
+
     }
 
     export async function getServersOnNetwork(options?: FindServersOnNetworkRequestOptions) {
         try {
             let servers = await client.findServersOnNetwork(options)
-            if (!servers) Log.warn(new ClientWarn(Sources.clientService, Warns.serversNotExist))
+            if (!servers) throw new ClientWarn(Sources.clientService, Warns.serversNotExist)
             return servers
         } catch (e: any) {
             throw new ClientError(Sources.clientService, Errors.errorGetServers, e.message)
@@ -78,7 +75,7 @@ export module ClientService {
     export async function getEndpoints() {
         try {
             let endpoints = await client.getEndpoints()
-            if (!endpoints) Log.warn(new ClientWarn(Sources.clientService, Warns.endPointsNotExist))
+            if (!endpoints) throw new ClientWarn(Sources.clientService, Warns.endPointsNotExist)
             return endpoints
         } catch (e: any) {
             throw new ClientError(Sources.clientService, Errors.errorGetEndpoints, e.message)
@@ -86,12 +83,10 @@ export module ClientService {
     }
 
     export function getPrivateKey() {
-        Log.info(new ClientInfo(Sources.clientService, Infos.getPrivateKey))
         return client.getPrivateKey()
     }
 
     export function getClientCert() {
-        Log.info(new ClientInfo(Sources.clientService, Infos.getCertificate))
         return client.getCertificate()
     }
 }

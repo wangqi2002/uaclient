@@ -4,7 +4,7 @@ import {DbService} from '../services/db.service'
 import {ResponseModel} from '../models/response.model'
 import {TableCreateModes} from '../../common/enums'
 import 'koa-body/lib/index'
-import {DbData} from '../models/db.model'
+import {MessageModel} from '../models/message.model'
 
 export module DbController {
     export async function init(
@@ -25,7 +25,7 @@ export module DbController {
         next: Next
     ) {
         try {
-            let data: DbData = ctx.request.body
+            let data: MessageModel = ctx.request.body
             DbService.insert(data)
         } catch (e: any) {
             throw e
@@ -37,7 +37,7 @@ export module DbController {
         next: Next
     ) {
         try {
-            let dataList: DbData[] = ctx.request.body
+            let dataList: MessageModel[] = ctx.request.body
             DbService.insertMany(dataList)
         } catch (e: any) {
             throw e

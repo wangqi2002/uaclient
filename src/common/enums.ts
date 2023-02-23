@@ -21,6 +21,7 @@ export enum ServerStatusCodes {
 
 export enum ServerMessage {
     success = 'success',
+    warn = 'warn',
     error = 'internal error',
 }
 
@@ -29,7 +30,7 @@ export enum Sources {
     server = 'Server',
     dataAccess = 'DataAccess',
     clientService = 'ClientService',
-    subscription = 'SessionSubscription',
+    subscriptService = 'SessionSubscription',
     sessionService = 'ClientSession',
     paramValidator = 'ParamValidator',
     certService = 'CertificateService',
@@ -44,30 +45,31 @@ export enum Warns {
 }
 
 export enum Errors {
-    errorClosingSession = 'An exception occurred while closing the session',
-    errorConnecting = 'An exception occurred maybe the endpoint url not exist',
-    errorCreatingSub = 'An exception occurred while creating the subscription',
-    errorWriting = 'An exception occurred while writing to the server',
-    errorMonitoringItem = 'An exception occurred monitoring item',
-    errorTerminatingItemGroup = 'An exception occurred terminating item',
-    errorGetEndpoints = 'An exception occurred getting endpoints',
+    errorClosingSession = 'Exception closing session',
+    errorConnecting = 'Exception connecting to server',
+    errorCreatingSub = 'Exception creating subscription',
+    errorWriting = 'Exception writing to server',
+    errorMonitoringItem = 'Exception monitoring item',
+    errorGetEndpoints = 'Exception getting endpoints',
     noSubscription = 'Subscription does not exist',
     wrongIndexOfArray = 'You input the wrong index of array',
-    internalError = 'An exception occurred in server',
-    errorGetServers = 'An exception occurred while getting servers on network',
-    errorCreateClient = 'An exception occurred while creating client',
-    errorGetNodeByName = 'An exception occurred while getting node id by browse name',
-    errorBrowsing = 'An exception occurred while browsing',
-    errorReading = 'An exception occurred while reading',
-    errorChangeIdentity = 'An exception occurred while changing identity of session',
-    errorCreateSession = 'An exception occurred while creating session',
+    internalError = 'Exception occurred in server',
+    errorGetServers = 'Exception getting servers on network',
+    errorCreateClient = 'Exception creating client',
+    errorGetNodeByName = 'Exception getting node id by browse name',
+    errorBrowsing = 'Exception browsing',
+    errorReading = 'Exception reading',
+    errorChangeIdentity = 'Exception changing identity of session',
+    errorCreateSession = 'Exception creating session',
     errorValidateParam = 'Wrong Param',
-    errorCreatCert = 'An exception occurred while creating certificate',
-    errorTrustCert = 'An exception occurred while trusting certificate of server',
-    errorRejectCert = 'An exception occurred while rejecting certificate of server',
-    errorGetTrust = 'An exception occurred while getting trust status',
+    errorCreatCert = 'Exception creating certificate',
+    errorTrustCert = 'Exception trusting certificate of server',
+    errorRejectCert = 'Exception rejecting certificate of server',
+    errorGetTrust = 'Exception getting trust status',
     unFormatDbName = 'Wrong format database name input',
     wrongJsonScheme = 'Wrong Json scheme ,check the request body',
+    errorAddMonitoredItem = 'Exception adding monitored item',
+    errorModifySub = 'Exception modifying subscription',
 }
 
 export enum Infos {

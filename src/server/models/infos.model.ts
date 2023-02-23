@@ -28,8 +28,8 @@ export class ClientWarn extends InfosModel {
 export class ClientError extends InfosModel {
     error?: string
 
-    constructor(source: Sources, information: Errors, error?: string, message?: object,) {
-        super(source, information, message)
+    constructor(source: Sources, information: Errors, error?: string) {
+        super(source, information)
         if (error) this.error = error
     }
 }

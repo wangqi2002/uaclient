@@ -1,15 +1,17 @@
 import Router = require("koa-router")
 import {SubscriptController} from '../controllers/subscript.controller'
+import {ValidatorMiddleware} from '../middlewares/validator.middleware'
 
-export module SubscriptRouter{
-    export let router=new Router({
-        prefix:'/subscript'
+export module SubscriptRouter {
+    export let router = new Router({
+        prefix: '/subscript'
     })
+    router.use(ValidatorMiddleware.subscriptValidator)
 
     router.post('/init', SubscriptController.init)
     router.post('/modify', SubscriptController.modify)
-    router.post('/add_many',SubscriptController.addItemGroup)
-    router.post('/add_one', SubscriptController.addItem)
-    router.post('/delete_items', SubscriptController.deleteItems)
+    router.post('/item/group', SubscriptController.addItemGroup)
+    router.post('/item/single', SubscriptController.addItem)
+    router.post('/item/delete', SubscriptController.deleteItems)
     router.get('/terminate', SubscriptController.terminate)
 }

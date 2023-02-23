@@ -19,7 +19,9 @@ export module Operations {
     }
 
     export async function close() {
-        MessageQueue.closeMq()
+        MessageQueue.closeMq().forEach((messages) => {
+            DbService.insertMany(messages)
+        })
         await SessionService.closeSession(true)
         DbService.closeDb()
     }

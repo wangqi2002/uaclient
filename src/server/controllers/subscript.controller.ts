@@ -3,8 +3,12 @@ import {IRouterParamContext} from 'koa-router'
 import {Next, ParameterizedContext} from 'koa'
 import {ResponseModel} from '../models/response.model'
 import 'koa-body/lib/index'
+import {EventEmitter} from 'events'
 
 export module SubscriptController {
+
+    export let events = new EventEmitter()
+
     export async function init(
         ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
         next: Next
@@ -12,6 +16,7 @@ export module SubscriptController {
         try {
             SubscriptService.createSubscription(ctx.request.body)
             ctx.body = new ResponseModel()
+            events.emit('init', ctx.request.body)
         } catch (e: any) {
             throw e
         }
@@ -24,6 +29,7 @@ export module SubscriptController {
         try {
             await SubscriptService.modifySubscription(ctx.request.body)
             ctx.body = new ResponseModel()
+            events.emit('modify', ctx.request.body)
         } catch (e: any) {
             throw e
         }
@@ -34,8 +40,9 @@ export module SubscriptController {
         next: Next
     ) {
         try {
-            SubscriptService.addMonitoredItemGroup(ctx.request.body)
+            SubscriptService.addMonitoredItems(ctx.request.body)
             ctx.body = new ResponseModel()
+            events.emit('add_many', ctx.request.body)
         } catch (e: any) {
             throw e
         }
@@ -45,13 +52,6 @@ export module SubscriptController {
         ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
         next: Next
     ) {
-        // let param = ctx.request.body
-        // if (param['item'] && param['displayNames']) {
-        //     let item = param['item']
-        //     let displayName = param['displayName']
-        //     SubscriptService.addMonitoredItem(item, displayName)
-        //     ctx.body = new ResponseModel(ServerMessage.success)
-        // }
         try {
             SubscriptService.addMonitoredItem(ctx.request.body)
             ctx.body = new ResponseModel()

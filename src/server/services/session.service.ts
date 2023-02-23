@@ -14,11 +14,10 @@ import {
     UserTokenType,
     WriteValueOptions
 } from 'node-opcua'
-import {Log} from '../../common/log'
-import {Errors, Infos, Sources, Warns} from '../../common/enums'
+import {Errors, Sources, Warns} from '../../common/enums'
 import {ClientService} from './client.service'
 import {is} from 'typia'
-import {ClientError, ClientInfo, ClientWarn} from '../models/infos.model'
+import {ClientError, ClientWarn} from '../models/infos.model'
 
 export module SessionService {
     export let session!: ClientSession
@@ -33,7 +32,6 @@ export module SessionService {
                     ? ClientService.client.endpoint.server.applicationName.text.toString()
                     : 'Default Server'
             }
-            Log.info(new ClientInfo(Sources.sessionService, Infos.sessionCreated))
         } catch (e: any) {
             throw new ClientError(Sources.sessionService, Errors.errorCreateSession, e.message)
         }
@@ -52,18 +50,10 @@ export module SessionService {
             try {
                 await session.close(deleteSubscription)
             } catch (e: any) {
-                throw new ClientError(Sources.subscription, Errors.errorClosingSession, e.message)
+                throw new ClientError(Sources.subscriptService, Errors.errorClosingSession, e.message)
             }
         }
     }
-
-    // export function addSubscription(subOptions?: Object) {
-    //     try {
-    //         uaSubscriptions = new UaSubscription(this.session, subOptions)
-    //     } catch (e: any) {
-    //         throw new ClientError(Sources.clientSession, Errors.errorCreatingSub, {Error: e.message})
-    //     }
-    // }
 
     export async function readByNodeId(nodeToRead: ReadValueIdOptions, maxAge?: number): Promise<DataValue> {
         try {
@@ -81,7 +71,7 @@ export module SessionService {
             if (browseResult.references) {
                 resultList = browseResult.references
             } else {
-                Log.warn(new ClientWarn(Sources.sessionService, Warns.emptyRootFolder))
+                throw new ClientWarn(Sources.sessionService, Warns.emptyRootFolder)
             }
             return resultList
         } catch (e: any) {
@@ -93,9 +83,7 @@ export module SessionService {
         try {
             relativePathBNF = '/' + relativePathBNF
             let browsePath = makeBrowsePath(rootNode, relativePathBNF)
-            let result = await session.translateBrowsePath(browsePath)
-            Log.info(new ClientInfo(Sources.sessionService, Infos.getIdByName, {Path: browsePath}))
-            return result
+            return await session.translateBrowsePath(browsePath)
         } catch (e: any) {
             throw new ClientError(Sources.sessionService, Errors.errorGetNodeByName, e.message)
         }

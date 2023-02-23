@@ -1,5 +1,5 @@
 import {EventEmitter} from 'events'
-import {DbData, IDbData, IFieldNames} from '../models/db.model'
+import {IDbData, IFieldNames} from '../models/db.model'
 import {TableCreateModes} from '../../common/enums'
 import {formatDateY, formatDateYM, formatDateYMD, formatDateYMW} from '../utils/util'
 import {Config} from '../../config/config.default'
@@ -10,6 +10,7 @@ import {SessionService} from './session.service'
 import {MessageSecurityMode, SecurityPolicy} from 'node-opcua'
 import Path from 'path'
 import {CertificateService} from './certificate.service'
+import {MessageModel} from '../models/message.model'
 import Database = require('better-sqlite3')
 
 // import {AttributeIds, DataValue, MessageSecurityMode, SecurityPolicy} from 'node-opcua'
@@ -29,8 +30,8 @@ export module DbService {
         displayNameF: 'DisplayName',
         valueF: 'Value',
         dataTypeF: 'DataType',
-        sourceTimeStampF: 'SourceTimeStamp',
-        serverTimeStampF: 'ServerTimeStamp',
+        sourceTimestampF: 'SourceTimestamp',
+        serverTimestampF: 'ServerTimestamp',
         statusCodeF: 'StatusCode',
     }
     export let events = new EventEmitter()
@@ -57,7 +58,7 @@ export module DbService {
         }
         if (tableName) defaultTableName = tableName
         if (fields) defaultFieldNames = {...fields}
-        MessageQueue.queueEvents.on('full', (dataList: DbData[]) => {
+        MessageQueue.queueEvents.on('full', (dataList: MessageModel[]) => {
             DbService.insertMany(dataList)
         })
     }
@@ -69,8 +70,8 @@ export module DbService {
     export function insert(data: IDbData) {
         let sql = `INSERT INTO ${defaultTableName}
                    (${defaultFieldNames.serverF}, ${defaultFieldNames.nodeIdF}, ${defaultFieldNames.displayNameF},
-                    ${defaultFieldNames.valueF}, ${defaultFieldNames.dataTypeF}, ${defaultFieldNames.sourceTimeStampF},
-                    ${defaultFieldNames.serverTimeStampF}, ${defaultFieldNames.statusCodeF})
+                    ${defaultFieldNames.valueF}, ${defaultFieldNames.dataTypeF}, ${defaultFieldNames.sourceTimestampF},
+                    ${defaultFieldNames.serverTimestampF}, ${defaultFieldNames.statusCodeF})
                    VALUES (@server, @nodeId, @displayName, @value, @dataType, @sourceTimeStamp, @serverTimeStamp,
                            @statusCode)`
         let stmt = db.prepare(sql)
@@ -85,8 +86,8 @@ export module DbService {
     export function insertMany(dataList: IDbData[]) {
         let sql = `INSERT INTO ${defaultTableName}
                    (${defaultFieldNames.serverF}, ${defaultFieldNames.nodeIdF}, ${defaultFieldNames.displayNameF},
-                    ${defaultFieldNames.valueF}, ${defaultFieldNames.dataTypeF}, ${defaultFieldNames.sourceTimeStampF},
-                    ${defaultFieldNames.serverTimeStampF}, ${defaultFieldNames.statusCodeF})
+                    ${defaultFieldNames.valueF}, ${defaultFieldNames.dataTypeF}, ${defaultFieldNames.sourceTimestampF},
+                    ${defaultFieldNames.serverTimestampF}, ${defaultFieldNames.statusCodeF})
                    VALUES (@server, @nodeId, @displayName, @value, @dataType, @sourceTimeStamp, @serverTimeStamp,
                            @statusCode)`
         let stmt = db.prepare(sql)
@@ -96,6 +97,29 @@ export module DbService {
             }
         })
         insert(dataList)
+        events.emit('insertedMany')
+    }
+
+    /**
+     * @description 有问题急需修改
+     * @param data
+     */
+    export function insertList(data: Map<string, MessageModel[]>) {
+        let sql = `INSERT INTO ${defaultTableName}
+                   (${defaultFieldNames.serverF}, ${defaultFieldNames.nodeIdF}, ${defaultFieldNames.displayNameF},
+                    ${defaultFieldNames.valueF}, ${defaultFieldNames.dataTypeF}, ${defaultFieldNames.sourceTimestampF},
+                    ${defaultFieldNames.serverTimestampF}, ${defaultFieldNames.statusCodeF})
+                   VALUES (@server, @nodeId, @displayName, @value, @dataType, @sourceTimeStamp, @serverTimeStamp,
+                           @statusCode)`
+        let stmt = db.prepare(sql)
+        let insert = db.transaction((params: MessageModel[]) => {
+            for (let param of params) {
+                stmt.run({...param})
+            }
+        })
+        data.forEach((messages) => {
+            insert(messages)
+        })
         events.emit('insertedMany')
     }
 
@@ -116,8 +140,8 @@ export module DbService {
                        ${fields.displayNameF}     TEXT NOT NULL,
                        ${fields.valueF}           TEXT NOT NULL,
                        ${fields.dataTypeF}        TEXT NOT NULL,
-                       ${fields.sourceTimeStampF} TEXT NOT NULL,
-                       ${fields.serverTimeStampF} TEXT NOT NULL,
+                       ${fields.sourceTimestampF} TEXT NOT NULL,
+                       ${fields.serverTimestampF} TEXT NOT NULL,
                        ${fields.statusCodeF}      TEXT NOT NULL
                    )`
         let stmt = db.prepare(sql)
