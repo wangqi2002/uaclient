@@ -4,7 +4,6 @@ import {DbService} from '../services/db.service'
 import {ResponseModel} from '../models/response.model'
 import {TableCreateModes} from '../../common/enums'
 import 'koa-body/lib/index'
-import {MessageModel} from '../models/message.model'
 
 export module DbController {
     export async function init(
@@ -25,10 +24,10 @@ export module DbController {
         next: Next
     ) {
         try {
-            let data: MessageModel = ctx.request.body
-            DbService.insert(data)
+            DbService.insert(ctx.request.body)
+            ctx.body = new ResponseModel()
         } catch (e: any) {
-            throw e
+            console.log(e)
         }
     }
 
@@ -37,8 +36,8 @@ export module DbController {
         next: Next
     ) {
         try {
-            let dataList: MessageModel[] = ctx.request.body
-            DbService.insertMany(dataList)
+            DbService.insertMany(ctx.request.body)
+            ctx.body = new ResponseModel()
         } catch (e: any) {
             throw e
         }
@@ -49,8 +48,8 @@ export module DbController {
         next: Next
     ) {
         try {
-            let {tableName, fieldNames} = ctx.request.body
-            DbService.createTable(tableName, fieldNames)
+            DbService.createTable(ctx.request.body['tableName'], ctx.request.body['fieldNames'])
+            ctx.body = new ResponseModel()
         } catch (e: any) {
             throw e
         }
@@ -62,6 +61,7 @@ export module DbController {
     ) {
         try {
             DbService.closeDb()
+            ctx.body = new ResponseModel()
         } catch (e: any) {
             throw e
         }
@@ -72,8 +72,8 @@ export module DbController {
         next: Next
     ) {
         try {
-            let fileName = ctx.request.body
-            await DbService.backUp(fileName)
+            await DbService.backUp(ctx.request.body['fileName'])
+            ctx.body = new ResponseModel()
         } catch (e: any) {
             throw e
         }
@@ -86,6 +86,7 @@ export module DbController {
         try {
             let {fileName, options} = ctx.request.body
             DbService.configDb(fileName, options)
+            ctx.body = new ResponseModel()
         } catch (e: any) {
             throw e
         }

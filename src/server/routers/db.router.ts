@@ -12,7 +12,8 @@ export module DbRouter {
     router.post('/insert', DbController.insert)
     router.post('/insert_many', DbController.insertMany)
     router.post('/create_table', DbController.createTable)
-    router.post('/close', DbController.closeDb)
     router.post('/backup', DbController.backUp)
     router.post('/config', DbController.config)
+
+    router.get('/close', DbController.closeDb)
 }

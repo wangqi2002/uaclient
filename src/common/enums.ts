@@ -26,50 +26,63 @@ export enum ServerMessage {
 }
 
 export enum Sources {
-    addressSpace = 'AddressSpace',
     server = 'Server',
-    dataAccess = 'DataAccess',
     clientService = 'ClientService',
     subscriptService = 'SessionSubscription',
     sessionService = 'ClientSession',
     paramValidator = 'ParamValidator',
     certService = 'CertificateService',
-    bodyTrans = 'BodyTransfer',
+    dbService = 'DBService',
 }
 
 export enum Warns {
     endPointsNotExist = 'Endpoints does not exist',
     serversNotExist = 'There is no server on this network',
     emptyRootFolder = 'Empty root folder',
-    nonExistentItem = 'This item doesnt exist',
+    nonExistentItem = 'This item do not exist',
 }
 
 export enum Errors {
-    errorClosingSession = 'Exception closing session',
-    errorConnecting = 'Exception connecting to server',
-    errorCreatingSub = 'Exception creating subscription',
-    errorWriting = 'Exception writing to server',
-    errorMonitoringItem = 'Exception monitoring item',
+    //client errors
+    errorConnecting = 'Exception connecting server',
     errorGetEndpoints = 'Exception getting endpoints',
-    noSubscription = 'Subscription does not exist',
-    wrongIndexOfArray = 'You input the wrong index of array',
-    internalError = 'Exception occurred in server',
     errorGetServers = 'Exception getting servers on network',
     errorCreateClient = 'Exception creating client',
+
+    //session errors
+    errorClosingSession = 'Exception closing session',
+    errorWriting = 'Exception writing to server',
     errorGetNodeByName = 'Exception getting node id by browse name',
     errorBrowsing = 'Exception browsing',
     errorReading = 'Exception reading',
     errorChangeIdentity = 'Exception changing identity of session',
     errorCreateSession = 'Exception creating session',
-    errorValidateParam = 'Wrong Param',
+
+    //subscript errors
+    errorCreatingSub = 'Exception creating subscription',
+    errorMonitoringItem = 'Exception monitoring item',
+    noSubscription = 'Subscription does not exist',
+    wrongIndexOfArray = 'Wrong index of array',
+    errorAddMonitoredItem = 'Exception adding monitored item',
+    errorModifySub = 'Exception modifying subscription',
+
+    //cert errors
     errorCreatCert = 'Exception creating certificate',
     errorTrustCert = 'Exception trusting certificate of server',
     errorRejectCert = 'Exception rejecting certificate of server',
     errorGetTrust = 'Exception getting trust status',
+
+    //db errors
+    errorTableMode = 'Wrong table create mode',
+    errorSqlite = 'Exception occurred in sqlite',
+    errorCloseDb = 'Exception closing database',
+    errorBackUp = 'Exception backup database',
+
+    //other errors
+    internalError = 'Exception occurred in server',
+    errorValidateParam = 'Wrong Param',
     unFormatDbName = 'Wrong format database name input',
     wrongJsonScheme = 'Wrong Json scheme ,check the request body',
-    errorAddMonitoredItem = 'Exception adding monitored item',
-    errorModifySub = 'Exception modifying subscription',
 }
 
 export enum Infos {

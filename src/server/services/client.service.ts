@@ -72,11 +72,19 @@ export module ClientService {
         }
     }
 
-    export async function getEndpoints() {
+    export async function getEndpoints(reduce?: boolean) {
         try {
             let endpoints = await client.getEndpoints()
             if (!endpoints) throw new ClientWarn(Sources.clientService, Warns.endPointsNotExist)
-            return endpoints
+            if (reduce) {
+                return endpoints.map(endpoint => ({
+                    endpointUrl: endpoint.endpointUrl,
+                    securityMode: endpoint.securityMode.toString(),
+                    securityPolicy: endpoint.securityPolicyUri ? endpoint.securityPolicyUri.toString() : undefined,
+                }))
+            } else {
+                return endpoints
+            }
         } catch (e: any) {
             throw new ClientError(Sources.clientService, Errors.errorGetEndpoints, e.message)
         }

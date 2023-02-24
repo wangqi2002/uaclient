@@ -31,7 +31,6 @@ export module CertificateService {
     export async function createCertificate(params: CreateSelfSignCertificateParam1) {
         try {
             await certificate.createSelfSignedCertificate({...params})
-
         } catch (e: any) {
             throw new ClientError(Sources.certService, Errors.errorCreatCert, e.message)
         }

@@ -9,13 +9,8 @@ import {SessionService} from './session.service'
 import {Errors, Sources, Warns} from '../../common/enums'
 import {MessageQueue} from '../../common/mq'
 import {MessageModel} from '../models/message.model'
-import {SubscriptGroupParam, SubscriptSingleParam} from '../models/params.model'
+import {ItemAndName, SubscriptGroupParam, SubscriptSingleParam} from '../models/params.model'
 import {ClientError, ClientWarn} from '../models/infos.model'
-
-interface ItemAndName {
-    displayName: string
-    monitoredItem: ClientMonitoredItem
-}
 
 export module SubscriptService {
     export let subscription!: ClientSubscription

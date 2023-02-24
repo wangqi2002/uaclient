@@ -56,7 +56,7 @@ export module ClientController {
         next: Next
     ) {
         try {
-            let endpoints = await ClientService.getEndpoints()
+            let endpoints = await ClientService.getEndpoints(ctx.request.body)
             ctx.body = new ResponseModel(endpoints)
         } catch (e: any) {
             throw e

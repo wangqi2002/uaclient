@@ -15,11 +15,10 @@ import {Errors, Infos, Sources, TableCreateModes} from '../../common/enums'
 import {NodeID, SubscriptGroupParam, SubscriptSingleParam} from '../models/params.model'
 import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
-import {IFieldNames} from '../models/db.model'
+import {IDbData, IFieldNames} from '../models/db.model'
 import Database from 'better-sqlite3'
 import {ClientError, ClientInfo} from '../models/infos.model'
 import {validateDbName} from '../utils/util'
-import {MessageModel} from '../models/message.model'
 import {Log} from '../../common/log'
 
 export module ValidatorMiddleware {
@@ -39,6 +38,15 @@ export module ValidatorMiddleware {
             }
             case '/client/connect': {
                 if (is<{ endpointUrl: string }>(ctx.request.body)) {
+                    Log.info(new ClientInfo(Sources.clientService, Infos.connectionCreated, {...ctx.request.body}))
+                    await next()
+                } else {
+                    throw validateError('{ endpointUrl: string }')
+                }
+                break
+            }
+            case '/client/endpoints': {
+                if (is<{ reduce: boolean } | undefined>(ctx.request.body)) {
                     Log.info(new ClientInfo(Sources.clientService, Infos.connectionCreated, {...ctx.request.body}))
                     await next()
                 } else {
@@ -239,18 +247,18 @@ export module ValidatorMiddleware {
                 break
             }
             case '/db/insert': {
-                if (is<MessageModel>(ctx.request.body)) {
+                if (is<IDbData>(ctx.request.body)) {
                     await next()
                 } else {
-                    throw validateError('CreateSelfSignCertificateParam1')
+                    throw validateError('IDbData')
                 }
                 break
             }
             case '/db/insert_many': {
-                if (is<MessageModel[]>(ctx.request.body)) {
+                if (is<IDbData[]>(ctx.request.body)) {
                     await next()
                 } else {
-                    throw validateError('CreateSelfSignCertificateParam1')
+                    throw validateError('IDbData[]')
                 }
                 break
             }

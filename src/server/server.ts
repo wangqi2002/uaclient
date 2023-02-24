@@ -13,8 +13,6 @@ export module Server {
     export const app = new Koa()
     app.use(koaBody())
     app.use(ErrorMiddleware.handleError)
-    // app.use(TransferMiddleware.bodyTransfer)
-    // app.use(ValidatorMiddleware.paramValidator)
 
     app.use(ClientRouter.router.routes())
     app.use(SessionRouter.router.routes())
