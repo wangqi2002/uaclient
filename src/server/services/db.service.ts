@@ -1,25 +1,16 @@
 import {EventEmitter} from 'events'
-import {IDbData, IFieldNames} from '../models/db.model'
 import {Errors, Sources, TableCreateModes} from '../../common/enums'
-import {formatDateY, formatDateYM, formatDateYMD, formatDateYMW} from '../utils/util'
 import {Config} from '../../config/config.default'
 import {existsSync} from 'fs'
 import {ClientError} from '../models/infos.model'
+import {DateFormatter} from '../utils/util'
+import {IDbData, IFieldNames} from '../models/params.model'
 import Database = require('better-sqlite3')
 
 export module DbService {
     export let db = new Database(Config.dbPath, {verbose: console.log})
-    export let defaultTableName: string = formatDateYMW(new Date())
-    export let defaultFieldNames: IFieldNames = {
-        serverF: 'Server',
-        nodeIdF: 'NodeId',
-        displayNameF: 'DisplayName',
-        valueF: 'Value',
-        dataTypeF: 'DataType',
-        sourceTimestampF: 'SourceTimestamp',
-        serverTimestampF: 'ServerTimestamp',
-        statusCodeF: 'StatusCode',
-    }
+    export let defaultTableName: string = Config.defaultTable
+    export let defaultFieldNames: IFieldNames = Config.defaultFieldNames
     let sql_insertMany = ''
     let stmt_insertMany: any
     export let events = new EventEmitter()
@@ -50,19 +41,19 @@ export module DbService {
         switch (createMode) {
             case TableCreateModes.default:
             case TableCreateModes.createPerWeek: {
-                defaultTableName = formatDateYMW(new Date())
+                defaultTableName = DateFormatter.formatDateYMW(new Date())
                 break
             }
             case TableCreateModes.createPerDay: {
-                defaultTableName = formatDateYMD(new Date())
+                defaultTableName = DateFormatter.formatDateYMD(new Date())
                 break
             }
             case TableCreateModes.createPerMonth: {
-                defaultTableName = formatDateYM(new Date())
+                defaultTableName = DateFormatter.formatDateYM(new Date())
                 break
             }
             case TableCreateModes.createPerYear: {
-                defaultTableName = formatDateY(new Date())
+                defaultTableName = DateFormatter.formatDateY(new Date())
                 break
             }
             case TableCreateModes.customTableName:

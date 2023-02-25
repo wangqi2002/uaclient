@@ -9,24 +9,42 @@ import {SessionService} from './session.service'
 import {Errors, Sources, Warns} from '../../common/enums'
 import {MessageQueue} from '../../common/mq'
 import {MessageModel} from '../models/message.model'
-import {ItemAndName, SubscriptGroupParam, SubscriptSingleParam} from '../models/params.model'
+import {ItemAndName, NodeID, SubscriptGroupParam, SubscriptSingleParam} from '../models/params.model'
 import {ClientError, ClientWarn} from '../models/infos.model'
+import {Config} from '../../config/config.default'
 
 export module SubscriptService {
     export let subscription!: ClientSubscription
     let monitoredItems: Map<string, ItemAndName> = new Map()
+    let subscriptionOption = Config.defaultSubscript
 
-    export function createSubscription(
-        subOptions: ClientSubscriptionOptions = {
-            requestedLifetimeCount: 60,
-            requestedPublishingInterval: 100,
-            requestedMaxKeepAliveCount: 10,
-            publishingEnabled: true,
-            maxNotificationsPerPublish: 100,
-            priority: 1,
-        },
-    ) {
-        subscription = ClientSubscription.create(SessionService.session, subOptions)
+    function bindingAndPush(monitoredItem: ClientMonitoredItem, displayName: string, itemId: any) {
+        try {
+            itemId = itemId.toString()
+            monitoredItem
+                .on('changed', (data) => {
+                    let item = monitoredItems.get(itemId)
+                    if (item) {
+                        MessageQueue.enqueue(
+                            new MessageModel(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName),
+                        )
+                    }
+                })
+                .on('err', (err) => {
+                    throw new ClientError(Sources.subscriptService, Errors.errorMonitoringItem, err)
+                })
+            monitoredItems.set(itemId, {monitoredItem: monitoredItem, displayName: displayName})
+        } catch (e: any) {
+            throw new ClientError(Sources.subscriptService, Errors.errorBinding, e.message)
+        }
+    }
+
+    export function createSubscription(subOptions: ClientSubscriptionOptions = subscriptionOption) {
+        try {
+            subscription = ClientSubscription.create(SessionService.session, subOptions)
+        } catch (e: any) {
+            throw new ClientError(Sources.subscriptService, Errors.errorCreatingSub, e.message)
+        }
     }
 
     export async function modifySubscription(subOptions: ModifySubscriptionOptions) {
@@ -48,20 +66,24 @@ export module SubscriptService {
      * @param param
      */
     export function addMonitoredItems(param: SubscriptGroupParam) {
-        param.parameters = param.parameters || {samplingInterval: 100, discardOldest: true, queueSize: 10,}
-        param.timeStampToReturn = param.timeStampToReturn || TimestampsToReturn.Both
-        if (subscription) {
-            for (let i = 0; i < param.itemsToMonitor.length; i++) {
-                let monitoredItem = ClientMonitoredItem.create(
-                    subscription,
-                    param.itemsToMonitor[i],
-                    param.parameters,
-                    param.timeStampToReturn
-                )
-                bindingAndPush(monitoredItem, param.displayNames[i], param.itemsToMonitor[i].nodeId)
+        try {
+            param.parameters = param.parameters || {samplingInterval: 100, discardOldest: true, queueSize: 10,}
+            param.timeStampToReturn = param.timeStampToReturn || TimestampsToReturn.Both
+            if (subscription) {
+                for (let i = 0; i < param.itemsToMonitor.length; i++) {
+                    let monitoredItem = ClientMonitoredItem.create(
+                        subscription,
+                        param.itemsToMonitor[i],
+                        param.parameters,
+                        param.timeStampToReturn
+                    )
+                    bindingAndPush(monitoredItem, param.displayNames[i], param.itemsToMonitor[i].nodeId)
+                }
+            } else {
+                throw new ClientWarn(Sources.subscriptService, Warns.noSubscription)
             }
-        } else {
-            throw new ClientError(Sources.subscriptService, Errors.noSubscription)
+        } catch (e: any) {
+            throw new ClientError(Sources.subscriptService, Errors.errorAddMonitoredItem, e.message)
         }
     }
 
@@ -96,7 +118,7 @@ export module SubscriptService {
      * @description monitored items 队列使用map作为存储结构,以nodeId的string作为键
      * @param nodeIds
      */
-    export async function deleteMonitoredItems(nodeIds: string[]) {
+    export async function deleteMonitoredItems(nodeIds: NodeID[]) {
         try {
             for (let nodeId of nodeIds) {
                 let item = monitoredItems.get(nodeId)
@@ -110,22 +132,5 @@ export module SubscriptService {
         } catch (e: any) {
             throw new ClientError(Sources.subscriptService, Errors.wrongIndexOfArray, e.message)
         }
-    }
-
-    function bindingAndPush(monitoredItem: ClientMonitoredItem, displayName: string, itemId: any) {
-        itemId = itemId.toString()
-        monitoredItem
-            .on('changed', (data) => {
-                let item = monitoredItems.get(itemId)
-                if (item) {
-                    MessageQueue.enqueue(
-                        new MessageModel(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName),
-                    )
-                }
-            })
-            .on('err', (err) => {
-                throw new ClientError(Sources.subscriptService, Errors.errorMonitoringItem, err)
-            })
-        monitoredItems.set(itemId, {monitoredItem: monitoredItem, displayName: displayName})
     }
 }

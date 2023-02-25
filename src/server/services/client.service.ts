@@ -1,36 +1,19 @@
-import {
-    FindServersOnNetworkRequestOptions,
-    MessageSecurityMode,
-    OPCUAClient,
-    OPCUAClientOptions,
-    SecurityPolicy,
-} from 'node-opcua'
+import {FindServersOnNetworkRequestOptions, OPCUAClient, OPCUAClientOptions,} from 'node-opcua'
 import {Errors, Sources, Warns} from '../../common/enums'
 import {SessionService} from './session.service'
 import {ClientError, ClientWarn} from '../models/infos.model'
+import {Config} from '../../config/config.default'
 
 export module ClientService {
 
     export let client!: OPCUAClient
     export let uaConnectionAlive: boolean = false
     export let currentServer: string = 'no server'
+    let clientOption = Config.defaultClient
 
-    export function createClient(clientOptions?: OPCUAClientOptions) {
+    export function createClient(clientOptions: OPCUAClientOptions = clientOption) {
         try {
-            client = clientOptions
-                ? OPCUAClient.create(clientOptions)
-                : OPCUAClient.create({
-                    applicationName: 'NodeOPCUA-Client',
-                    connectionStrategy: {
-                        initialDelay: 1000,
-                        maxRetry: 10,
-                    },
-                    keepSessionAlive: true,
-                    securityMode: MessageSecurityMode.None,
-                    securityPolicy: SecurityPolicy.None,
-                    endpointMustExist: false,
-                    requestedSessionTimeout: 3600,
-                })
+            client = OPCUAClient.create(clientOptions)
         } catch (e: any) {
             throw new ClientError(Sources.clientService, Errors.errorCreateClient, e.message)
         }
@@ -45,21 +28,16 @@ export module ClientService {
         }
     }
 
-    export async function disconnectFromServer(deleteSubscription?: boolean) {
+    export async function disconnectFromServer(deleteSubscription: boolean = true) {
         if (SessionService.session) {
             try {
-                if (deleteSubscription) {
-                    await SessionService.closeSession(deleteSubscription)
-                } else {
-                    await SessionService.closeSession()
-                }
+                await SessionService.closeSession(deleteSubscription)
                 uaConnectionAlive = false
             } catch (e: any) {
                 throw new ClientError(Sources.clientService, Errors.errorClosingSession, e.message)
             }
         }
         await client.disconnect()
-
     }
 
     export async function getServersOnNetwork(options?: FindServersOnNetworkRequestOptions) {

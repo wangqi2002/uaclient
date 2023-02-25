@@ -40,6 +40,7 @@ export enum Warns {
     serversNotExist = 'There is no server on this network',
     emptyRootFolder = 'Empty root folder',
     nonExistentItem = 'This item do not exist',
+    noSubscription = 'Subscription does not exist',
 }
 
 export enum Errors {
@@ -61,10 +62,10 @@ export enum Errors {
     //subscript errors
     errorCreatingSub = 'Exception creating subscription',
     errorMonitoringItem = 'Exception monitoring item',
-    noSubscription = 'Subscription does not exist',
     wrongIndexOfArray = 'Wrong index of array',
     errorAddMonitoredItem = 'Exception adding monitored item',
     errorModifySub = 'Exception modifying subscription',
+    errorBinding = 'Exception binding to monitored item',
 
     //cert errors
     errorCreatCert = 'Exception creating certificate',

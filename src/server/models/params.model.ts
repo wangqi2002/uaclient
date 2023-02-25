@@ -19,4 +19,44 @@ export interface ItemAndName {
     monitoredItem: ClientMonitoredItem
 }
 
+export interface IFieldNames {
+    serverF: string
+    nodeIdF: string
+    displayNameF: string
+    statusCodeF: string
+    sourceTimestampF: string
+    serverTimestampF: string
+    valueF: string
+    dataTypeF: string
+}
+
+export interface IDbData {
+    server: string
+    nodeId: string
+    displayName: string
+    value: string
+    dataType: string
+    sourceTimestamp: string
+    serverTimestamp: string
+    statusCode: string
+}
+
+export interface IDbParam {
+    values: IDbData,
+    tableName?: string,
+    /**
+     * @default {
+     *     serverF:'Server',
+     *     nodeIdF:'NodeId',
+     *     displayNameF:'DisplayName',
+     *     serverTimeStampF:'ServerTimeStamp',
+     *     sourceTimeStampF:'SourceTimeStamp',
+     *     statusCodeF:'StatusCode',
+     *     dataTypeF:'DataType',
+     *     valueF:'Value'
+     * }
+     */
+    fieldNames?: IFieldNames
+}
+
 export type NodeID = string

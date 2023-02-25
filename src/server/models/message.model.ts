@@ -1,6 +1,6 @@
 import {DataType, DataValue} from 'node-opcua'
-import {IDbData} from './db.model'
 import {ClientService} from '../services/client.service'
+import {IDbData} from './params.model'
 
 /**
  * @description 定义订阅传递信息并且存入数据库的数据结构

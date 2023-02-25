@@ -131,6 +131,6 @@ export module SessionService {
     }
 
     export async function readHistoryValue(nodesToRead: NodeIdLike, start: DateTime, end: DateTime) {
-        await session.readHistoryValue(nodesToRead, start, end)
+        return await session.readHistoryValue(nodesToRead, start, end)
     }
 }
