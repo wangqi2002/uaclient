@@ -1,8 +1,9 @@
 import {existsSync, readFile, readFileSync, writeFile} from 'fs'
+import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 
 const Log = require('../../common/log')
 
-export module JsonOperator {
+export module JsonUtils {
     /**
      * @description nodeToModify应该传入一个字符串数组,按顺序描述json节点,
      * 前后节点之间应当为父子关系,本函数将最后一个节点的值改为dataToReplace,并写入原json文件
@@ -102,7 +103,7 @@ export module JsonOperator {
     }
 }
 
-export module DateFormatter {
+export module DbUtils {
     /**
      * @description 输出形如yyyy_mm_dd格式的日期字符串
      * @param date
@@ -144,6 +145,20 @@ export module DateFormatter {
             return reg.test(name)
         } else {
             return false
+        }
+    }
+}
+
+export module CertUtils {
+    export function validateCertOptions(param: CreateSelfSignCertificateParam1) {
+        if (!(typeof param.subject === 'string')) {
+            if (param.subject.country) {
+                if (param.subject.country.length > 2) {
+                    return false
+                }
+            }
+        } else {
+            return true
         }
     }
 }

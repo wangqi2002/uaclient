@@ -17,8 +17,8 @@ import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
 import Database from 'better-sqlite3'
 import {ClientError, ClientInfo} from '../models/infos.model'
-import {validateDbName} from '../utils/util'
 import {Log} from '../../common/log'
+import {CertUtils, DbUtils} from '../utils/util'
 
 export module ValidatorMiddleware {
     export async function clientValidator(
@@ -211,8 +211,12 @@ export module ValidatorMiddleware {
         switch (ctx.request.body) {
             case '/cert/create': {
                 if (is<CreateSelfSignCertificateParam1>(ctx.request.body)) {
-                    Log.info(new ClientInfo(Sources.paramValidator, Infos.certCreated))
-                    await next()
+                    if (CertUtils.validateCertOptions(ctx.request.body)) {
+                        Log.info(new ClientInfo(Sources.paramValidator, Infos.certCreated))
+                        await next()
+                    } else {
+                        throw new ClientError(Sources.paramValidator, Errors.errorCertOptions, 'country too long')
+                    }
                 } else {
                     throw validateError('CreateSelfSignCertificateParam1')
                 }
@@ -238,7 +242,7 @@ export module ValidatorMiddleware {
         switch (ctx.request.body) {
             case '/db/init': {
                 if (is<{ createMode: TableCreateModes, tableName?: string, fields?: IFieldNames }>(ctx.request.body)) {
-                    validateDbName(ctx.request.body['tableName'])
+                    DbUtils.validateDbName(ctx.request.body['tableName'])
                     await next()
                 } else {
                     throw validateError('{createMode:TableCreateModes, tableName?:string, fields:IFieldNames}')
@@ -265,7 +269,7 @@ export module ValidatorMiddleware {
                 if (is<{ tableName?: string, fieldNames?: IFieldNames } | undefined>(ctx.request.body)) {
                     if (ctx.request.body) {
                         if ('tableName' in ctx.request.body) {
-                            if (!validateDbName(ctx.request.body['tableName'] as string)) {
+                            if (!DbUtils.validateDbName(ctx.request.body['tableName'] as string)) {
                                 throw new ClientError(Sources.paramValidator, Errors.unFormatDbName,
                                     'It cannot start with a number. The name can only contain: ' +
                                     'Chinese characters, numbers, lowercase letters, underscores, and the length is within 2-15 characters')
@@ -274,7 +278,7 @@ export module ValidatorMiddleware {
                         if ('fieldNames' in ctx.request.body && ctx.request.body['fieldNames']) {
                             let key: keyof IFieldNames
                             for (key in ctx.request.body['fieldNames']) {
-                                if (!validateDbName(ctx.request.body['fieldNames'][key])) {
+                                if (!DbUtils.validateDbName(ctx.request.body['fieldNames'][key])) {
                                     throw new ClientError(Sources.paramValidator, Errors.unFormatDbName,
                                         'It cannot start with a number. The name can only contain: ' +
                                         'Chinese characters, numbers, lowercase letters, underscores, and the length is within 2-15 characters')

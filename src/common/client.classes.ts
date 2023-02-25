@@ -61,7 +61,7 @@ export class UaSubscription {
             await this.subscription.terminate()
             Log.info(new ClientInfo(Sources.subscriptService, Infos.terminateSub))
         } else {
-            throw Log.error(new ClientError(Sources.subscriptService, Errors.noSubscription))
+            // throw Log.error(new ClientError(Sources.subscriptService, Errors.noSubscription))
         }
     }
 
@@ -101,7 +101,7 @@ export class UaSubscription {
                     console.log('err')
                 })
         } else {
-            throw Log.error(new ClientError(Sources.subscriptService, Errors.noSubscription))
+            // throw Log.error(new ClientError(Sources.subscriptService, Errors.noSubscription))
         }
         // let a:ReadValueIdOptions={
         //     nodeId:'nice',

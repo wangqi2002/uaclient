@@ -1,6 +1,6 @@
 import {Configuration, configure, getLogger, Logger} from 'log4js'
 import {EventEmitter} from 'events'
-import {JsonOperator} from '../server/utils/util'
+import {JsonUtils} from '../server/utils/util'
 import {ClientError, ClientInfo, ClientWarn} from '../server/models/infos.model'
 
 /**
@@ -43,7 +43,7 @@ export module Log {
      * @private
      */
     export function loadLogConfig(fileName: string, nodeToLoad: string[]) {
-        let node = JsonOperator.getJsonNode(fileName, nodeToLoad)
+        let node = JsonUtils.getJsonNode(fileName, nodeToLoad)
         configure(node)
     }
 
@@ -57,7 +57,7 @@ export module Log {
         const content = JSON.stringify({
             LogConfig: {...conf},
         })
-        JsonOperator.modifyJsonNode(filePath, nodeToModify, content)
+        JsonUtils.modifyJsonNode(filePath, nodeToModify, content)
         configure(conf)
     }
 }

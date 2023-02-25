@@ -1,5 +1,5 @@
 import {MessageSecurityMode, SecurityPolicy} from 'node-opcua'
-import {DateFormatter} from '../server/utils/util'
+import {DbUtils} from '../server/utils/util'
 
 const dotenv = require('dotenv')
 let Path = require('path')
@@ -19,7 +19,7 @@ export module Config {
     export let dbPath = Path.join(__dirname, "..", "..", process.env.DB_PATH)
         ? Path.join(__dirname, "..", "..", process.env.DB_PATH).toString()
         : Path.join(__dirname, "..", '..', "/db/data.db").toString()
-    export let defaultTable = DateFormatter.formatDateYMW(new Date())
+    export let defaultTable = DbUtils.formatDateYMW(new Date())
     export let defaultFieldNames = {
         serverF: 'Server',
         nodeIdF: 'NodeId',

@@ -72,6 +72,7 @@ export enum Errors {
     errorTrustCert = 'Exception trusting certificate of server',
     errorRejectCert = 'Exception rejecting certificate of server',
     errorGetTrust = 'Exception getting trust status',
+    errorCertOptions = 'Wrong options to create Certificate',
 
     //db errors
     errorTableMode = 'Wrong table create mode',
