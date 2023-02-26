@@ -1,14 +1,15 @@
-import {FindServersOnNetworkRequestOptions, OPCUAClient, OPCUAClientOptions,} from 'node-opcua'
+import {FindServersOnNetworkRequestOptions, MessageSecurityMode, OPCUAClient, OPCUAClientOptions,} from 'node-opcua'
 import {Errors, Sources, Warns} from '../../common/enums'
 import {SessionService} from './session.service'
 import {ClientError, ClientWarn} from '../models/infos.model'
 import {Config} from '../../config/config.default'
+import {EndpointParam} from '../models/params.model'
 
 export module ClientService {
 
     export let client!: OPCUAClient
     export let uaConnectionAlive: boolean = false
-    export let currentServer: string = 'no server'
+    export let currentServer: string = 'No Server'
     let clientOption = Config.defaultClient
 
     export function createClient(clientOptions: OPCUAClientOptions = clientOption) {
@@ -40,6 +41,7 @@ export module ClientService {
         await client.disconnect()
     }
 
+    //todo 测试此项
     export async function getServersOnNetwork(options?: FindServersOnNetworkRequestOptions) {
         try {
             let servers = await client.findServersOnNetwork(options)
@@ -50,15 +52,23 @@ export module ClientService {
         }
     }
 
-    export async function getEndpoints(reduce?: boolean) {
+    //todo 测试此项
+    export async function getEndpoints(params?: EndpointParam) {
         try {
+            if (params && params['clientExist'] === false && params['endpoint']) {
+                client = OPCUAClient.create(clientOption)
+                await connectToServer(params['endpoint'])
+            }
             let endpoints = await client.getEndpoints()
             if (!endpoints) throw new ClientWarn(Sources.clientService, Warns.endPointsNotExist)
-            if (reduce) {
+            if (params && params['reduce']) {
+                let re = /^.*?#/
                 return endpoints.map(endpoint => ({
                     endpointUrl: endpoint.endpointUrl,
-                    securityMode: endpoint.securityMode.toString(),
-                    securityPolicy: endpoint.securityPolicyUri ? endpoint.securityPolicyUri.toString() : undefined,
+                    securityMode: MessageSecurityMode[endpoint.securityMode].toString(),
+                    securityPolicy: endpoint.securityPolicyUri
+                        ? endpoint.securityPolicyUri.toString().replace(re, '')
+                        : undefined
                 }))
             } else {
                 return endpoints

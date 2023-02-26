@@ -12,7 +12,14 @@ import {
 import 'koa-body/lib/index'
 import {is} from 'typia'
 import {Errors, Infos, Sources, TableCreateModes} from '../../common/enums'
-import {IDbData, IFieldNames, NodeID, SubscriptGroupParam, SubscriptSingleParam} from '../models/params.model'
+import {
+    EndpointParam,
+    IDbData,
+    IFieldNames,
+    NodeID,
+    SubscriptGroupParam,
+    SubscriptSingleParam
+} from '../models/params.model'
 import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
 import Database from 'better-sqlite3'
@@ -45,7 +52,7 @@ export module ValidatorMiddleware {
                 break
             }
             case '/client/endpoints': {
-                if (is<{ reduce: boolean } | undefined>(ctx.request.body)) {
+                if (is<EndpointParam | undefined>(ctx.request.body)) {
                     Log.info(new ClientInfo(Sources.clientService, Infos.connectionCreated, {...ctx.request.body}))
                     await next()
                 } else {

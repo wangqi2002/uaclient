@@ -59,4 +59,10 @@ export interface IDbParam {
     fieldNames?: IFieldNames
 }
 
+export interface EndpointParam {
+    reduce?: boolean,
+    clientExist?: boolean,
+    endpoint?: string
+}
+
 export type NodeID = string

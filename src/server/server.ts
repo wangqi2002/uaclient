@@ -7,7 +7,7 @@ import {SubscriptRouter} from './routers/subscript.router'
 import {CertificateRouter} from './routers/certificate.router'
 import {DbRouter} from './routers/db.router'
 import {ErrorMiddleware} from './middlewares/error.middleware'
-
+//todo 性能调优/v8-compile-cache缓存与配置文件
 export module Server {
 
     export const app = new Koa()

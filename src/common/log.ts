@@ -20,19 +20,19 @@ export module Log {
     export let logEvents = new EventEmitter()
 
     export function info(info: ClientInfo) {
-        log.info(info.information, {server: info.server, source: info.source, ...info.message})
+        log.info(info.information, {source: info.source, ...info.message})
         logEvents.emit('info', info)
     }
 
     export function error(info: ClientError) {
         log.error(info.information,
-            {server: info.server, source: info.source, error: info.error, ...info.message})
+            {source: info.source, error: info.error, ...info.message})
         logEvents.emit('error', info)
     }
 
     export function warn(info: ClientWarn) {
         log.warn(info.information,
-            {server: info.server, source: info.source, warn: info.warn, ...info.message})
+            {source: info.source, warn: info.warn, ...info.message})
         logEvents.emit('warn', info)
     }
 

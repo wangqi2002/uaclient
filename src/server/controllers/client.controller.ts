@@ -40,10 +40,7 @@ export module ClientController {
         next: Next
     ) {
         try {
-            let deleteSubscription = ctx.request.body
-            if (ctx.request.body) {
-                let deleteSubscription = Boolean(ctx.request.body['deleteSubscription'])
-            }
+            let deleteSubscription = ctx.request.body['deleteSubscription']
             await ClientService.disconnectFromServer(deleteSubscription)
             ctx.body = new ResponseModel()
         } catch (e: any) {

@@ -16,6 +16,7 @@ export module CertificateService {
         automaticallyAcceptUnknownCertificate: false
     })
 
+    //todo node-opcua-pki命令测试
     /**
      * @description 创建一个证书,dns即domain names,默认证书根文件夹为项目根目录,
      * 默认pem文件存放路径为certificatees/PKI/own/cert/client_cert.pem
