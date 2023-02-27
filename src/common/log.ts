@@ -2,6 +2,7 @@ import {Configuration, configure, getLogger, Logger} from 'log4js'
 import {EventEmitter} from 'events'
 import {JsonUtils} from '../server/utils/util'
 import {ClientError, ClientInfo, ClientWarn} from '../server/models/infos.model'
+import Path from 'path'
 
 /**
  * @description 使用log4js库作为日志
@@ -16,6 +17,17 @@ import {ClientError, ClientInfo, ClientWarn} from '../server/models/infos.model'
  * })
  */
 export module Log {
+    let con = {
+        appenders: {
+            client: {
+                type: 'file',
+                filename: Path.join(__dirname, "..", "..", '/logs/client.log'),
+                maxLogSize: 20000,//文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
+            }
+        },
+        categories: {default: {appenders: ['client'], level: 'info'}}
+    }
+    configure(con)
     let log: Logger = getLogger('client')
     export let logEvents = new EventEmitter()
 

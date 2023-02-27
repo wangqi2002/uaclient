@@ -1,5 +1,6 @@
 import {MessageSecurityMode, SecurityPolicy} from 'node-opcua'
 import {DbUtils} from '../server/utils/util'
+import path from 'path'
 
 const dotenv = require('dotenv')
 let Path = require('path')
@@ -20,6 +21,7 @@ export module Config {
         ? Path.join(__dirname, "..", "..", process.env.DB_PATH).toString()
         : Path.join(__dirname, "..", '..', "/db/data.db").toString()
     export let defaultTable = DbUtils.formatDateYMW(new Date())
+    export let certRoot = path.join(__dirname, '..', '..', '..', 'certificates', 'PKI')
     export let defaultFieldNames = {
         serverF: 'Server',
         nodeIdF: 'NodeId',
@@ -53,5 +55,14 @@ export module Config {
         priority: 1,
     }
 
-
+    export let defaultLog = {
+        appenders: {
+            client: {
+                type: 'file',
+                filename: Path.join(__dirname, "..", "..", '/logs/client.log'),
+                maxLogSize: 20000,//文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
+            }
+        },
+        categories: {default: {appenders: ['client'], level: 'info'}}
+    }
 }

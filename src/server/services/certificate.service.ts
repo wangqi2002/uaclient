@@ -3,15 +3,14 @@ import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
 import {Errors, Sources} from '../../common/enums'
 import {ClientError} from '../models/infos.model'
-import path from 'path'
+import {Config} from '../../config/config.default'
 
-const cry = require("node-opcua-pki")
+// const cry = require("node-opcua-pki")
 
 
 export module CertificateService {
-    let path = require('path')
     export let certificate = new OPCUACertificateManager({
-        rootFolder: path.join(__dirname, '..', '..', '..', 'certificates', 'PKI'),
+        rootFolder: Config.certRoot,
         name: 'pki',
         automaticallyAcceptUnknownCertificate: false
     })
@@ -78,27 +77,27 @@ export module CertificateService {
     }
 }
 
-async function f() {
-    try {
-        await CertificateService.createCertificate({
-            "outputFile": path.join(__dirname, '..', '..', '..', 'certificates/PKI/own/certs/client_cert.pem'),
-            "subject": {
-                "commonName": "UaExpert@WIN-4D29EPFU0V6",
-                "organization": "uaclient",
-                "organizationalUnit": "uaclient",
-                "locality": "mas",
-                "state": "ah",
-                "country": "cn",
-                "domainComponent": "cn"
-            },
-            "applicationUri": "uaclient",
-            "dns": ["WIN-4D29EPFU0V6"],
-            "startDate": new Date(),
-            "validity": 10
-        })
-    } catch (e) {
-        console.log(e)
-    }
-}
+// async function f() {
+//     try {
+//         await CertificateService.createCertificate({
+//             "outputFile": path.join(__dirname, '..', '..', '..', 'certificates/PKI/own/certs/client_cert.pem'),
+//             "subject": {
+//                 "commonName": "UaExpert@WIN-4D29EPFU0V6",
+//                 "organization": "uaclient",
+//                 "organizationalUnit": "uaclient",
+//                 "locality": "mas",
+//                 "state": "ah",
+//                 "country": "cn",
+//                 "domainComponent": "cn"
+//             },
+//             "applicationUri": "uaclient",
+//             "dns": ["WIN-4D29EPFU0V6"],
+//             "startDate": new Date(),
+//             "validity": 10
+//         })
+//     } catch (e) {
+//         console.log(e)
+//     }
+// }
 
 // f()

@@ -1,0 +1,22 @@
+[2023-02-27T12:07:44.591] [INFO] client - Client created {
+  source: 'ClientService',
+  applicationName: 'NodeOPCUA-Clien',
+  connectionStrategy: { initialDelay: 1000, maxRetry: 1 },
+  securityMode: 1,
+  securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
+  endpointMustExist: false,
+  certificateFile: 'F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\certs\\client_cert.pem',
+  privateKeyFile: 'F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\private\\private_key.pem'
+}
+[2023-02-27T12:07:46.972] [INFO] client - Established connection {
+  source: 'ClientService',
+  endpointUrl: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer'
+}
+[2023-02-27T12:11:53.899] [INFO] client - Established connection {
+  source: 'ClientService',
+  endpointUrl: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer'
+}
+[2023-02-27T12:11:53.901] [ERROR] client - Exception connecting server {
+  source: 'ClientService',
+  error: "Cannot read properties of undefined (reading 'connect')"
+}
