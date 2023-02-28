@@ -41,6 +41,7 @@ export enum Warns {
     emptyRootFolder = 'Empty root folder',
     nonExistentItem = 'This item do not exist',
     noSubscription = 'Subscription does not exist',
+    pathNotExist = 'The path do not exist',
 }
 
 export enum Errors {
@@ -58,6 +59,8 @@ export enum Errors {
     errorReading = 'Exception reading',
     errorChangeIdentity = 'Exception changing identity of session',
     errorCreateSession = 'Exception creating session',
+    errorReadHistory = 'Exception reading history value',
+    errorHistoryRead = 'Exception getting history read',
 
     //subscript errors
     errorCreatingSub = 'Exception creating subscription',
@@ -76,9 +79,12 @@ export enum Errors {
 
     //db errors
     errorTableMode = 'Wrong table create mode',
-    errorSqlite = 'Exception occurred in sqlite',
+    errorInitStmt = 'Exception occurred init sqlite',
     errorCloseDb = 'Exception closing database',
     errorBackUp = 'Exception backup database',
+    errorCreatTable = 'Exception creating table',
+    errorInsert = 'Exception inserting into table',
+    errorConfigDb = 'Exception configuring database',
 
     //other errors
     internalError = 'Exception occurred in server',

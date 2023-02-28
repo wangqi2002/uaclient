@@ -9,7 +9,7 @@ import {DbRouter} from './routers/db.router'
 import {ErrorMiddleware} from './middlewares/error.middleware'
 
 require('v8-compile-cache')
-//todo 性能调优/v8-compile-cache缓存与配置文件
+//todo 性能调优/v8-compile-cache缓存
 export module Server {
     export const app = new Koa()
 

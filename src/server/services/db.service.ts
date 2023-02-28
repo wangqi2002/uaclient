@@ -1,19 +1,19 @@
-import {EventEmitter} from 'events'
-import {Errors, Sources, TableCreateModes} from '../../common/enums'
+import {Errors, Sources, TableCreateModes, Warns} from '../../common/enums'
 import {Config} from '../../config/config.default'
 import {existsSync} from 'fs'
-import {ClientError} from '../models/infos.model'
+import {ClientError, ClientWarn} from '../models/infos.model'
 import {DbUtils} from '../utils/util'
 import {IDbData, IFieldNames} from '../models/params.model'
 import Database = require('better-sqlite3')
-
+//todo 全面测试数据库模块
 export module DbService {
     export let db = new Database(Config.dbPath, {verbose: console.log})
     export let defaultTableName: string = Config.defaultTable
     export let defaultFieldNames: IFieldNames = Config.defaultFieldNames
     let sql_insertMany = ''
     let stmt_insertMany: any
-    export let events = new EventEmitter()
+
+    // export let events = new EventEmitter()
 
     function initStmt(sqlChoose: string) {
         try {
@@ -33,7 +33,7 @@ export module DbService {
                 }
             }
         } catch (e: any) {
-            throw new ClientError(Sources.dbService, Errors.errorSqlite, e.message)
+            throw new ClientError(Sources.dbService, Errors.errorInitStmt, e.message)
         }
     }
 
@@ -66,7 +66,9 @@ export module DbService {
             default:
                 throw new ClientError(Sources.dbService, Errors.errorTableMode)
         }
-        // createTable(tableName, fields)
+        if (!db.prepare(`SELECT * FROM sqlite_master where type='table' and name='${defaultTableName}'`).get()) {
+            createTable(tableName, fields)
+        }
         initStmt('many')
     }
 
@@ -87,9 +89,9 @@ export module DbService {
                                @statusCode)`
             let stmt = db.prepare(sql)
             stmt.run({...data})
-            events.emit('inserted')
+            // events.emit('inserted')
         } catch (e: any) {
-            throw e
+            throw new ClientError(Sources.dbService, Errors.errorInsert, e.message)
         }
     }
 
@@ -105,9 +107,9 @@ export module DbService {
                 }
             })
             insert(dataList)
-            events.emit('insertedMany')
+            // events.emit('insertedMany')
         } catch (e: any) {
-            throw e
+            throw new ClientError(Sources.dbService, Errors.errorInsert, e.message)
         }
     }
 
@@ -135,14 +137,22 @@ export module DbService {
                        )`
             let stmt = db.prepare(sql)
             stmt.run()
-            events.emit('created', tableName)
+            // events.emit('created', tableName)
         } catch (e: any) {
-            throw e
+            throw new ClientError(Sources.dbService, Errors.errorCreatTable, e.message)
         }
     }
 
     export function configDb(fileName: string, options: Database.Options) {
-        if (existsSync(fileName)) db = new Database(fileName, options)
+        try {
+            if (existsSync(fileName)) {
+                db = new Database(fileName, options)
+            } else {
+                throw new ClientWarn(Sources.dbService, Warns.pathNotExist)
+            }
+        } catch (e: any) {
+            throw new ClientError(Sources.dbService, Errors.errorConfigDb, e.message)
+        }
     }
 
     export function closeDb() {

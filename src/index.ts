@@ -1,5 +1,7 @@
-const { app, BrowserWindow } = require('electron');
+const {app, BrowserWindow} = require('electron');
 const path = require('path');
+
+//todo 配置文件使用electron-store模块数据保存在JSON文件中app.getPath(‘userData’)
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {

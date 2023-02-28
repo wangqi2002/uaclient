@@ -11,6 +11,8 @@ export module SessionRouter {
     router.post('/write', SessionController.write)
     router.post('/read', SessionController.readById)
     router.post('/browse', SessionController.browse)
+    router.post('/history', SessionController.history)
+    router.post('/history/value', SessionController.historyValue)
 
     router.get('/id', SessionController.getIdByName)
     router.get('/browse/root', SessionController.browseRoot)

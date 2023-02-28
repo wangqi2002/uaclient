@@ -3,6 +3,7 @@ import {IRouterParamContext} from 'koa-router'
 import {
     BrowseDescriptionLike,
     ClientSubscriptionOptions,
+    HistoryReadRequest,
     ModifySubscriptionOptions,
     OPCUAClientOptions,
     ReadValueIdOptions,
@@ -14,6 +15,7 @@ import {is} from 'typia'
 import {Errors, Infos, Sources, TableCreateModes} from '../../common/enums'
 import {
     EndpointParam,
+    HistoryValueParam,
     IDbData,
     IFieldNames,
     NodeID,
@@ -143,6 +145,22 @@ export module ValidatorMiddleware {
                     await next()
                 } else {
                     throw validateError('{ nodes: BrowseDescriptionLike, browseNext: boolean }')
+                }
+                break
+            }
+            case '/session/history': {
+                if (is<HistoryReadRequest>(ctx.request.body)) {
+                    await next()
+                } else {
+                    throw validateError('HistoryReadRequest')
+                }
+                break
+            }
+            case '/session/history/value': {
+                if (is<HistoryValueParam>(ctx.request.body)) {
+                    await next()
+                } else {
+                    throw validateError('HistoryValueParam')
                 }
                 break
             }

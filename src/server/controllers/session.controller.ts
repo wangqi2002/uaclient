@@ -85,10 +85,6 @@ export module SessionController {
             let param = ctx.request.body
             await SessionService.writeToServer(param)
             ctx.body = new ResponseModel()
-            // if (param && 'nodeToWrite' in param) {
-            //     let nodes: WriteValueOptions[] = param['nodeToWrite']
-            //
-            // }
         } catch (e: any) {
             throw e
         }
@@ -111,9 +107,7 @@ export module SessionController {
         next: Next
     ) {
         try {
-            let node = ctx.request.body.node
-            let browseNext = Boolean(ctx.request.body['browseNext'])
-            let result = await SessionService.browse(node, browseNext)
+            let result = await SessionService.browse(ctx.request.body['node'], ctx.request.body['browseNext'])
             ctx.body = new ResponseModel(result)
         } catch (e: any) {
             throw e
@@ -125,6 +119,30 @@ export module SessionController {
         next: Next
     ) {
         try {
+            ctx.body = new ResponseModel(SessionService.serverCert())
+        } catch (e: any) {
+            throw e
+        }
+    }
+
+    export async function history(
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
+    ) {
+        try {
+            await SessionService.historyRead(ctx.request.body)
+            ctx.body = new ResponseModel(SessionService.serverCert())
+        } catch (e: any) {
+            throw e
+        }
+    }
+
+    export async function historyValue(
+        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+        next: Next
+    ) {
+        try {
+            await SessionService.readHistoryValue(ctx.request.body)
             ctx.body = new ResponseModel(SessionService.serverCert())
         } catch (e: any) {
             throw e

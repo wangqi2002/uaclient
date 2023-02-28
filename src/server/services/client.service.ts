@@ -52,7 +52,6 @@ export module ClientService {
         }
     }
 
-    //todo 测试此项
     export async function getEndpoints(params?: EndpointParam) {
         try {
             if (params && params['clientExist'] === false && params['endpoint']) {

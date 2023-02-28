@@ -3,11 +3,9 @@ import {
     BrowseDescriptionOptions,
     ClientSession,
     DataValue,
-    DateTime,
     HistoryReadRequest,
     makeBrowsePath,
     makeResultMask,
-    NodeIdLike,
     ReadValueIdOptions,
     ReferenceDescription,
     UserIdentityInfo,
@@ -18,6 +16,7 @@ import {Errors, Sources, Warns} from '../../common/enums'
 import {ClientService} from './client.service'
 import {is} from 'typia'
 import {ClientError, ClientWarn} from '../models/infos.model'
+import {HistoryValueParam} from '../models/params.model'
 
 export module SessionService {
     export let session!: ClientSession
@@ -123,14 +122,25 @@ export module SessionService {
     }
 
     export function serverCert() {
-        return session.serverCertificate.toString('utf8')
+        return session.serverCertificate.toString()
     }
 
+    //todo 是否可用?
     export async function historyRead(request: HistoryReadRequest) {
-        return await session.historyRead(request)
+        try {
+            return await session.historyRead(request)
+        } catch (e: any) {
+            throw new ClientError(Sources.sessionService, Errors.errorHistoryRead, e.message)
+        }
     }
 
-    export async function readHistoryValue(nodesToRead: NodeIdLike, start: DateTime, end: DateTime) {
-        return await session.readHistoryValue(nodesToRead, start, end)
+    export async function readHistoryValue(param: HistoryValueParam) {
+        try {
+            let {nodeToRead, start, end, options} = param
+            if (options) return await session.readHistoryValue(nodeToRead, start, end, options)
+            return await session.readHistoryValue(nodeToRead, start, end)
+        } catch (e: any) {
+            throw new ClientError(Sources.sessionService, Errors.errorReadHistory, e.message)
+        }
     }
 }

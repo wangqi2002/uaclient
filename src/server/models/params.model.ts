@@ -1,4 +1,7 @@
 import {ClientMonitoredItem, MonitoringParametersOptions, ReadValueIdOptions, TimestampsToReturn} from 'node-opcua'
+import {NodeIdLike} from 'node-opcua-nodeid'
+import {DateTime} from 'node-opcua-basic-types'
+import {ExtraReadHistoryValueParameters, HistoryReadValueIdOptions2} from 'node-opcua-client/source/client_session'
 
 export interface SubscriptSingleParam {
     itemToMonitor: ReadValueIdOptions,
@@ -63,6 +66,13 @@ export interface EndpointParam {
     reduce?: boolean,
     clientExist?: boolean,
     endpoint?: string
+}
+
+export interface HistoryValueParam {
+    nodeToRead: NodeIdLike | HistoryReadValueIdOptions2,
+    start: DateTime,
+    end: DateTime,
+    options?: ExtraReadHistoryValueParameters
 }
 
 export type NodeID = string
