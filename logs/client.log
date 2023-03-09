@@ -1,0 +1,25 @@
+[2023-03-09T20:59:37.728] [ERROR] client - Exception browsing {
+  source: 'ClientSession',
+  error: "Cannot read properties of undefined (reading 'browse')",
+  stack: "TypeError: Cannot read properties of undefined (reading 'browse')\n" +
+    '    at Object.<anonymous> (F:\\idea_projects\\uaclient\\src\\server\\services\\opcua.services\\session.service.js:79:65)\n' +
+    '    at Generator.next (<anonymous>)\n' +
+    '    at F:\\idea_projects\\uaclient\\src\\server\\services\\opcua.services\\session.service.js:8:71\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at __awaiter (F:\\idea_projects\\uaclient\\src\\server\\services\\opcua.services\\session.service.js:4:12)\n' +
+    '    at Object.browseRootFolder (F:\\idea_projects\\uaclient\\src\\server\\services\\opcua.services\\session.service.js:77:16)\n' +
+    '    at F:\\idea_projects\\uaclient\\src\\server\\controllers\\session.controller.js:104:69\n' +
+    '    at Generator.next (<anonymous>)\n' +
+    '    at F:\\idea_projects\\uaclient\\src\\server\\controllers\\session.controller.js:8:71\n' +
+    '    at new Promise (<anonymous>)'
+}
+[2023-03-09T21:15:01.787] [INFO] client - Client created {
+  source: 'ClientService',
+  applicationName: 'uaclient',
+  connectionStrategy: { initialDelay: 1000, maxRetry: 1 },
+  securityMode: 1,
+  securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
+  endpointMustExist: false,
+  certificateFile: 'F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\certs\\client_cert.pem',
+  privateKeyFile: 'F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\private\\private_key.pem'
+}
