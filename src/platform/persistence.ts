@@ -1,7 +1,7 @@
-import {DataTypes, ModelAttributes, ModelCtor, Sequelize} from 'sequelize'
+import {ModelAttributes, ModelCtor, Sequelize} from 'sequelize'
 import path from 'path'
 
-export module DataService {
+export module Persistence {
     const sequelize = new Sequelize({
         dialect: 'sqlite',
         storage: path.join(__dirname, '..', '..', '/databases/data.db')
@@ -12,7 +12,7 @@ export module DataService {
         try {
             await sequelize.authenticate()
             currentModel = await sequelize.define(tableName, attributes, {timestamps: false})
-            await DataService.currentModel.sync()
+            await Persistence.currentModel.sync()
         } catch (e: any) {
             throw e
         }
@@ -35,10 +35,3 @@ export module DataService {
     }
 
 }
-
-async function f() {
-    await DataService.init('nice', {name: {type: DataTypes.STRING}})
-    DataService.insert({name: 'okok'})
-}
-
-// f()

@@ -1,4 +1,4 @@
-import {SubscriptService} from '../services/opcua.services/subscript.service'
+import {SubscriptService} from '../services/subscript.service'
 import {IRouterParamContext} from 'koa-router'
 import {Next, ParameterizedContext} from 'koa'
 import {ResponseModel} from '../models/response.model'

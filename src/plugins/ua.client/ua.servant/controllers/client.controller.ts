@@ -1,4 +1,4 @@
-import {ClientService} from '../services/opcua.services/client.service'
+import {ClientService} from '../services/client.service'
 import {ResponseModel} from '../models/response.model'
 import {Next, ParameterizedContext} from 'koa'
 import {IRouterParamContext} from 'koa-router'

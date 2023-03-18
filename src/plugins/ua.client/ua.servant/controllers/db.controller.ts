@@ -1,6 +1,6 @@
 import {IRouterParamContext} from 'koa-router'
 import {Next, ParameterizedContext} from 'koa'
-import {DbService} from '../services/opcua.services/db.service'
+import {DbService} from '../services/db.service'
 import {ResponseModel} from '../models/response.model'
 import {TableCreateModes} from '../../common/ua.enums'
 import 'koa-body/lib/index'
@@ -54,41 +54,4 @@ export module DbController {
             throw e
         }
     }
-
-    // export async function closeDb(
-    //     ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
-    //     next: Next
-    // ) {
-    //     try {
-    //         DbService.closeDb()
-    //         ctx.body = new ResponseModel()
-    //     } catch (e: any) {
-    //         throw e
-    //     }
-    // }
-    //
-    // export async function backUp(
-    //     ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
-    //     next: Next
-    // ) {
-    //     try {
-    //         await DbService.backUp(ctx.request.body['fileName'])
-    //         ctx.body = new ResponseModel()
-    //     } catch (e: any) {
-    //         throw e
-    //     }
-    // }
-    //
-    // export async function config(
-    //     ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
-    //     next: Next
-    // ) {
-    //     try {
-    //         let {fileName, options} = ctx.request.body
-    //         DbService.configDb(fileName, options)
-    //         ctx.body = new ResponseModel()
-    //     } catch (e: any) {
-    //         throw e
-    //     }
-    // }
 }

@@ -1,6 +1,6 @@
 import {MessageQueue} from './broker'
-import {SessionService} from '../plugins/ua.client/ua.server/services/opcua.services/session.service'
-import {DbService} from '../plugins/ua.client/ua.server/services/opcua.services/db.service'
+import {SessionService} from '../plugins/ua.client/ua.servant/services/session.service'
+import {DbService} from '../plugins/ua.client/ua.servant/services/db.service'
 import {Log} from './log'
 import {Configuration} from 'log4js'
 

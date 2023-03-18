@@ -24,11 +24,13 @@ import {
 } from '../models/params.model'
 import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
-import Database from 'better-sqlite3'
 import {ClientError, ClientInfo, Log} from '../../../../platform/log'
 import {CertUtils, DbUtils} from '../utils/util'
+import {DbService} from '../services/db.service'
+import {Broker} from '../../../../platform/broker'
+import {Config} from '../../config/config.default'
 
-export module ValidatorMiddleware {
+export module AgentMiddleware {
     export async function clientValidator(
         ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
         next: Next
@@ -264,9 +266,19 @@ export module ValidatorMiddleware {
         next: Next
     ) {
         switch (ctx.request.body) {
+            /**
+             * @description 此处绑定了pipe的事件,并且当
+             */
             case '/db/init': {
                 if (is<{ createMode: TableCreateModes, tableName?: string, fields?: IFieldNames }>(ctx.request.body)) {
                     DbUtils.validateDbName(ctx.request.body['tableName'])
+                    DbService.events.on('init', () => {
+                        Broker.createPipe(Config.defaultPipeName)
+                        let events = Broker.getPipeEvents(Config.defaultPipeName)
+                        events?.on('pushed', (data) => {
+                            DbService.insert(data)
+                        })
+                    })
                     await next()
                 } else {
                     throw validateError('{createMode:TableCreateModes, tableName?:string, fields:IFieldNames}')
@@ -316,26 +328,11 @@ export module ValidatorMiddleware {
                 }
                 break
             }
-            case '/db/backup': {
-                if (is<{ fileName: string }>(ctx.request.body)) {
-                    await next()
-                } else {
-                    throw validateError('{ fileName: string }')
-                }
-                break
-            }
-            case '/db/config': {
-                if (is<{ fileName: string, options: Database.Options }>(ctx.request.body)) {
-                    await next()
-                } else {
-                    throw validateError('{ fileName: string, options: Database.Options }')
-                }
-                break
-            }
             default:
                 await next()
         }
     }
+
 
     function validateError(paramType: any) {
         return new ClientError(UaSources.paramValidator, UaErrors.errorValidateParam, `Supposed to be ${paramType}`)

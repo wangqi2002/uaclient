@@ -1,5 +1,5 @@
 import {DataType, DataValue} from 'node-opcua'
-import {ClientService} from '../services/opcua.services/client.service'
+import {ClientService} from '../services/client.service'
 import {IDbData} from './params.model'
 
 /**

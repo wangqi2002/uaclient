@@ -1,4 +1,4 @@
-import {SessionService} from '../services/opcua.services/session.service'
+import {SessionService} from '../services/session.service'
 import {Next, ParameterizedContext} from 'koa'
 import {IRouterParamContext} from 'koa-router'
 import {ResponseModel} from '../models/response.model'

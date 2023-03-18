@@ -12,11 +12,11 @@ import {
     UserTokenType,
     WriteValueOptions
 } from 'node-opcua'
-import {UaErrors, UaSources, UaWarns} from '../../../common/ua.enums'
+import {UaErrors, UaSources, UaWarns} from '../../common/ua.enums'
 import {ClientService} from './client.service'
 import {is} from 'typia'
-import {HistoryValueParam} from '../../models/params.model'
-import {ClientError, ClientWarn} from '../../../../../platform/log'
+import {HistoryValueParam} from '../models/params.model'
+import {ClientError, ClientWarn} from '../../../../platform/log'
 
 export module SessionService {
     export let session!: ClientSession

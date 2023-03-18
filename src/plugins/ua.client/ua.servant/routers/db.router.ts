@@ -1,12 +1,12 @@
 import Router = require("koa-router")
 import {DbController} from '../controllers/db.controller'
-import {ValidatorMiddleware} from '../middlewares/validator.middleware'
+import {AgentMiddleware} from '../middlewares/agent.middleware'
 
 export module DbRouter {
     export let router = new Router({
         prefix: '/db'
     })
-    router.use(ValidatorMiddleware.dbValidator)
+    router.use(AgentMiddleware.dbValidator)
 
     router.post('/init', DbController.init)
     router.post('/insert', DbController.insert)

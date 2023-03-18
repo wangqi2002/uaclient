@@ -1,13 +1,13 @@
 import Router = require("koa-router")
 
 import {ClientController} from '../controllers/client.controller'
-import {ValidatorMiddleware} from '../middlewares/validator.middleware'
+import {AgentMiddleware} from '../middlewares/agent.middleware'
 
 export module ClientRouter {
     export let router = new Router({
         prefix: '/client'
     })
-    router.use(ValidatorMiddleware.clientValidator)
+    router.use(AgentMiddleware.clientValidator)
 
     router.post('/init', ClientController.init)
     router.post('/connect', ClientController.connect)

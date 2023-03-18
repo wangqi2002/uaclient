@@ -6,12 +6,12 @@ import {
     TimestampsToReturn
 } from 'node-opcua'
 import {SessionService} from './session.service'
-import {UaErrors, UaSources, UaWarns} from '../../../common/ua.enums'
-import {Broker, MessageQueue} from '../../../../../platform/broker'
-import {UaMessage} from '../../models/message.model'
-import {ItemAndName, NodeID, SubscriptGroupParam, SubscriptSingleParam} from '../../models/params.model'
-import {Config} from '../../../config/config.default'
-import {ClientError, ClientWarn} from '../../../../../platform/log'
+import {UaErrors, UaSources, UaWarns} from '../../common/ua.enums'
+import {Broker, MessageQueue} from '../../../../platform/broker'
+import {UaMessage} from '../models/message.model'
+import {ItemAndName, NodeID, SubscriptGroupParam, SubscriptSingleParam} from '../models/params.model'
+import {Config} from '../../config/config.default'
+import {ClientError, ClientWarn} from '../../../../platform/log'
 
 export module SubscriptService {
     export let subscription!: ClientSubscription
@@ -29,7 +29,7 @@ export module SubscriptService {
                             new UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName),
                         )
                         Broker.receive(
-                            'ua',
+                            Config.defaultPipeName,
                             monitoredItem.itemToMonitor.nodeId.toString(),
                             new UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName),
                         )

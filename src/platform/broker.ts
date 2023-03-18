@@ -1,5 +1,5 @@
 import {EventEmitter} from 'events'
-import {UaMessage} from '../plugins/ua.client/ua.server/models/message.model'
+import {UaMessage} from '../plugins/ua.client/ua.servant/models/message.model'
 import {Config} from '../plugins/ua.client/config/config.default'
 
 //todo 重写messageQueue模块以适应所有形式的消息
@@ -106,7 +106,7 @@ export module Broker {
     }
 
     export function createPipe(pipeId: string,) {
-
+        pipes.set(pipeId, new MessagePipe())
     }
 
     export function getPipeEvents(pipeId: string) {

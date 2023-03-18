@@ -85,6 +85,7 @@ export enum UaErrors {
     errorCreatTable = 'Exception creating table',
     errorInsert = 'Exception inserting into table',
     errorConfigDb = 'Exception configuring database',
+    errorInitDb = 'Exception init database',
 
     //other errors
     internalError = 'Exception occurred in server',

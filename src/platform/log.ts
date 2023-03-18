@@ -1,5 +1,5 @@
 import {Configuration, configure, getLogger, Logger} from 'log4js'
-import {JsonUtils} from '../plugins/ua.client/ua.server/utils/util'
+import {JsonUtils} from '../plugins/ua.client/ua.servant/utils/util'
 import Path from 'path'
 
 export type Source = string | undefined

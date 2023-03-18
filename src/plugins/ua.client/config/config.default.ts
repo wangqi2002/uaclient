@@ -1,5 +1,5 @@
 import {MessageSecurityMode, SecurityPolicy} from 'node-opcua'
-import {DbUtils} from '../ua.server/utils/util'
+import {DbUtils} from '../ua.servant/utils/util'
 import path from 'path'
 import {DataTypes} from 'sequelize'
 
@@ -24,57 +24,46 @@ export module Config {
     export let defaultTable = DbUtils.formatDateYMW(new Date())
     export let certRoot = path.join(__dirname, '..', '..', 'ua.client', 'certificates', 'PKI')
 
-    export let defaultFieldNames = {
-        serverF: 'server',
-        nodeIdF: 'nodeId',
-        displayNameF: 'displayName',
-        valueF: 'value',
-        dataTypeF: 'dataType',
-        sourceTimestampF: 'sourceTimestamp',
-        serverTimestampF: 'serverTimestamp',
-        statusCodeF: 'statusCode',
-    }
-
     export let defaultAttributes = {
         server: {
             type: DataTypes.STRING,
             allowNull: false,
-            field: defaultFieldNames.serverF,
+            field: 'server',
         },
         nodeId: {
             type: DataTypes.STRING,
             allowNull: false,
-            field: defaultFieldNames.nodeIdF,
+            field: 'nodeId',
         },
         displayName: {
             type: DataTypes.STRING,
             allowNull: false,
-            field: defaultFieldNames.displayNameF,
+            field: 'displayName',
         },
         value: {
             type: DataTypes.STRING,
             allowNull: false,
-            field: defaultFieldNames.valueF,
+            field: 'value',
         },
         dataType: {
             type: DataTypes.STRING,
             allowNull: false,
-            field: defaultFieldNames.dataTypeF,
+            field: 'dataType',
         },
         sourceTimestamp: {
             type: DataTypes.STRING,
             allowNull: false,
-            field: defaultFieldNames.sourceTimestampF,
+            field: 'sourceTimestamp',
         },
         serverTimestamp: {
             type: DataTypes.STRING,
             allowNull: false,
-            field: defaultFieldNames.serverTimestampF,
+            field: 'serverTimestamp',
         },
         statusCode: {
             type: DataTypes.STRING,
             allowNull: false,
-            field: defaultFieldNames.statusCodeF,
+            field: 'statusCode',
         },
     }
 
@@ -110,4 +99,6 @@ export module Config {
         },
         categories: {default: {appenders: ['client'], level: 'info'}}
     }
+
+    export let defaultPipeName = 'ua'
 }

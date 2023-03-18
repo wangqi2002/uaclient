@@ -1,6 +1,6 @@
 import {IRouterParamContext} from 'koa-router'
 import {Next, ParameterizedContext} from 'koa'
-import {CertificateService} from '../services/opcua.services/certificate.service'
+import {CertificateService} from '../services/certificate.service'
 import {ResponseModel} from '../models/response.model'
 
 export module CertificateController{
