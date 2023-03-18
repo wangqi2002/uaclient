@@ -1,15 +1,19 @@
 import {Configuration, configure, getLogger, Logger} from 'log4js'
 import {JsonUtils} from '../plugins/ua.client/ua.server/utils/util'
 import Path from 'path'
-import {Errors, Infos, Sources, Warns} from '../plugins/ua.client/common/ua.enums'
+
+export type Source = string | undefined
+export type Warn = string
+export type Error = string
+export type Info = string
 
 export class InfoModel {
     timeStamp: string
-    source: Sources
+    source: Source
     information: string
     message?: object
 
-    constructor(source: Sources, information: string, message?: object) {
+    constructor(source: Source, information: string, message?: object) {
         this.timeStamp = new Date().toLocaleString()
         this.source = source
         this.information = information
@@ -20,7 +24,7 @@ export class InfoModel {
 export class ClientWarn extends InfoModel {
     warn?: string
 
-    constructor(source: Sources, information: Warns, warn?: string, message?: object) {
+    constructor(source: string, information: Warn, warn?: string, message?: object) {
         super(source, information, message)
         if (warn) this.warn = warn
     }
@@ -30,7 +34,7 @@ export class ClientError extends InfoModel {
     error?: string
     trace?: string
 
-    constructor(source: Sources, information: Errors, error?: string, trace?: string) {
+    constructor(source: string, information: Error, error?: string, trace?: string) {
         super(source, information)
         if (error) this.error = error
         if (trace) this.trace = trace
@@ -39,7 +43,7 @@ export class ClientError extends InfoModel {
 
 export class ClientInfo extends InfoModel {
 
-    constructor(source: Sources, information: Infos, message?: object) {
+    constructor(source: string, information: Info, message?: object) {
         super(source, information, message)
     }
 }

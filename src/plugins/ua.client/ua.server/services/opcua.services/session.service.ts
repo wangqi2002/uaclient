@@ -12,7 +12,7 @@ import {
     UserTokenType,
     WriteValueOptions
 } from 'node-opcua'
-import {Errors, Sources, Warns} from '../../../common/ua.enums'
+import {UaErrors, UaSources, UaWarns} from '../../../common/ua.enums'
 import {ClientService} from './client.service'
 import {is} from 'typia'
 import {HistoryValueParam} from '../../models/params.model'
@@ -32,7 +32,7 @@ export module SessionService {
                     : 'Default Server'
             }
         } catch (e: any) {
-            throw new ClientError(Sources.sessionService, Errors.errorCreateSession, e.message, e.stack)
+            throw new ClientError(UaSources.sessionService, UaErrors.errorCreateSession, e.message, e.stack)
         }
     }
 
@@ -40,7 +40,7 @@ export module SessionService {
         try {
             await session.changeUser(userInfo)
         } catch (e: any) {
-            throw new ClientError(Sources.sessionService, Errors.errorChangeIdentity, e.message, e.stack)
+            throw new ClientError(UaSources.sessionService, UaErrors.errorChangeIdentity, e.message, e.stack)
         }
     }
 
@@ -49,7 +49,7 @@ export module SessionService {
             try {
                 await session.close(deleteSubscription)
             } catch (e: any) {
-                throw new ClientError(Sources.subscriptService, Errors.errorClosingSession, e.message, e.stack)
+                throw new ClientError(UaSources.subscriptService, UaErrors.errorClosingSession, e.message, e.stack)
             }
         }
     }
@@ -59,7 +59,7 @@ export module SessionService {
             if (maxAge) return await session.read(nodeToRead, maxAge)
             return await session.read(nodeToRead)
         } catch (e: any) {
-            throw new ClientError(Sources.sessionService, Errors.errorReading, e.message, e.stack)
+            throw new ClientError(UaSources.sessionService, UaErrors.errorReading, e.message, e.stack)
         }
     }
 
@@ -70,11 +70,11 @@ export module SessionService {
             if (browseResult.references) {
                 resultList = browseResult.references
             } else {
-                throw new ClientWarn(Sources.sessionService, Warns.emptyRootFolder)
+                throw new ClientWarn(UaSources.sessionService, UaWarns.emptyRootFolder)
             }
             return resultList
         } catch (e: any) {
-            throw new ClientError(Sources.sessionService, Errors.errorBrowsing, e.message, e.stack)
+            throw new ClientError(UaSources.sessionService, UaErrors.errorBrowsing, e.message, e.stack)
         }
     }
 
@@ -84,7 +84,7 @@ export module SessionService {
             let browsePath = makeBrowsePath(rootNode, relativePathBNF)
             return await session.translateBrowsePath(browsePath)
         } catch (e: any) {
-            throw new ClientError(Sources.sessionService, Errors.errorGetNodeByName, e.message, e.stack)
+            throw new ClientError(UaSources.sessionService, UaErrors.errorGetNodeByName, e.message, e.stack)
         }
     }
 
@@ -92,7 +92,7 @@ export module SessionService {
         try {
             return await session.write(nodesToWrite)
         } catch (e: any) {
-            throw new ClientError(Sources.sessionService, Errors.errorWriting, e.message, e.stack)
+            throw new ClientError(UaSources.sessionService, UaErrors.errorWriting, e.message, e.stack)
         }
     }
 
@@ -117,7 +117,7 @@ export module SessionService {
             }
             return result
         } catch (e: any) {
-            throw new ClientError(Sources.sessionService, Errors.errorBrowsing, e.message, e.stack)
+            throw new ClientError(UaSources.sessionService, UaErrors.errorBrowsing, e.message, e.stack)
         }
     }
 
@@ -130,7 +130,7 @@ export module SessionService {
         try {
             return await session.historyRead(request)
         } catch (e: any) {
-            throw new ClientError(Sources.sessionService, Errors.errorHistoryRead, e.message, e.stack)
+            throw new ClientError(UaSources.sessionService, UaErrors.errorHistoryRead, e.message, e.stack)
         }
     }
 
@@ -140,7 +140,7 @@ export module SessionService {
             if (options) return await session.readHistoryValue(nodeToRead, start, end, options)
             return await session.readHistoryValue(nodeToRead, start, end)
         } catch (e: any) {
-            throw new ClientError(Sources.sessionService, Errors.errorReadHistory, e.message, e.stack)
+            throw new ClientError(UaSources.sessionService, UaErrors.errorReadHistory, e.message, e.stack)
         }
     }
 }

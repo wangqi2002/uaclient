@@ -31,6 +31,6 @@ export module Operations {
             DbService.insertMany(messages)
         })
         await SessionService.closeSession(true)
-        DbService.closeDb()
+        // DbService.closeDb()
     }
 }

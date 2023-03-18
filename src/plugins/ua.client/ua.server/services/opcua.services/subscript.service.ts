@@ -6,7 +6,7 @@ import {
     TimestampsToReturn
 } from 'node-opcua'
 import {SessionService} from './session.service'
-import {Errors, Sources, Warns} from '../../../common/ua.enums'
+import {UaErrors, UaSources, UaWarns} from '../../../common/ua.enums'
 import {Broker, MessageQueue} from '../../../../../platform/broker'
 import {UaMessage} from '../../models/message.model'
 import {ItemAndName, NodeID, SubscriptGroupParam, SubscriptSingleParam} from '../../models/params.model'
@@ -36,11 +36,11 @@ export module SubscriptService {
                     }
                 })
                 .on('err', (err) => {
-                    throw new ClientError(Sources.subscriptService, Errors.errorMonitoringItem, err)
+                    throw new ClientError(UaSources.subscriptService, UaErrors.errorMonitoringItem, err)
                 })
             monitoredItems.set(itemId, {monitoredItem: monitoredItem, displayName: displayName})
         } catch (e: any) {
-            throw new ClientError(Sources.subscriptService, Errors.errorBinding, e.message, e.stack)
+            throw new ClientError(UaSources.subscriptService, UaErrors.errorBinding, e.message, e.stack)
         }
     }
 
@@ -48,7 +48,7 @@ export module SubscriptService {
         try {
             subscription = ClientSubscription.create(SessionService.session, subOptions)
         } catch (e: any) {
-            throw new ClientError(Sources.subscriptService, Errors.errorCreatingSub, e.message, e.stack)
+            throw new ClientError(UaSources.subscriptService, UaErrors.errorCreatingSub, e.message, e.stack)
         }
     }
 
@@ -56,7 +56,7 @@ export module SubscriptService {
         try {
             await subscription.modify(subOptions)
         } catch (e: any) {
-            throw new ClientError(Sources.subscriptService, Errors.errorModifySub, e.message, e.stack)
+            throw new ClientError(UaSources.subscriptService, UaErrors.errorModifySub, e.message, e.stack)
         }
     }
 
@@ -85,10 +85,10 @@ export module SubscriptService {
                     bindingAndPush(monitoredItem, param.displayNames[i], param.itemsToMonitor[i].nodeId)
                 }
             } else {
-                throw new ClientWarn(Sources.subscriptService, Warns.noSubscription)
+                throw new ClientWarn(UaSources.subscriptService, UaWarns.noSubscription)
             }
         } catch (e: any) {
-            throw new ClientError(Sources.subscriptService, Errors.errorAddMonitoredItem, e.message, e.stack)
+            throw new ClientError(UaSources.subscriptService, UaErrors.errorAddMonitoredItem, e.message, e.stack)
         }
     }
 
@@ -108,7 +108,7 @@ export module SubscriptService {
             )
             bindingAndPush(monitoredItem, param.displayName, param.itemToMonitor.nodeId)
         } catch (e: any) {
-            throw new ClientError(Sources.subscriptService, Errors.errorAddMonitoredItem, e.message, e.stack)
+            throw new ClientError(UaSources.subscriptService, UaErrors.errorAddMonitoredItem, e.message, e.stack)
         }
     }
 
@@ -131,11 +131,11 @@ export module SubscriptService {
                     await item.monitoredItem.terminate()
                     monitoredItems.delete(nodeId)
                 } else {
-                    throw new ClientWarn(Sources.subscriptService, Warns.nonExistentItem, nodeId)
+                    throw new ClientWarn(UaSources.subscriptService, UaWarns.nonExistentItem, nodeId)
                 }
             }
         } catch (e: any) {
-            throw new ClientError(Sources.subscriptService, Errors.wrongIndexOfArray, e.message, e.stack)
+            throw new ClientError(UaSources.subscriptService, UaErrors.wrongIndexOfArray, e.message, e.stack)
         }
     }
 }

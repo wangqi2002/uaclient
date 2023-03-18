@@ -25,7 +25,7 @@ export enum ServerMessage {
     error = 'internal error',
 }
 
-export enum Sources {
+export enum UaSources {
     server = 'Server',
     clientService = 'ClientService',
     subscriptService = 'SessionSubscription',
@@ -35,7 +35,7 @@ export enum Sources {
     dbService = 'DBService',
 }
 
-export enum Warns {
+export enum UaWarns {
     endPointsNotExist = 'Endpoints does not exist',
     serversNotExist = 'There is no server on this network',
     emptyRootFolder = 'Empty root folder',
@@ -44,7 +44,7 @@ export enum Warns {
     pathNotExist = 'The path do not exist',
 }
 
-export enum Errors {
+export enum UaErrors {
     //client errors
     errorConnecting = 'Exception connecting server',
     errorGetEndpoints = 'Exception getting endpoints',
@@ -93,7 +93,7 @@ export enum Errors {
     wrongJsonScheme = 'Wrong Json scheme ,check the request body',
 }
 
-export enum Infos {
+export enum UaInfos {
     clientDisconnect = 'Client disconnected',
     clientCreated = 'Client created',
     connectionCreated = 'Established connection',

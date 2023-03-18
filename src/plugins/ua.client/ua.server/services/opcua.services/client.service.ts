@@ -1,5 +1,5 @@
 import {FindServersOnNetworkRequestOptions, MessageSecurityMode, OPCUAClient, OPCUAClientOptions,} from 'node-opcua'
-import {Errors, Sources, Warns} from '../../../common/ua.enums'
+import {UaErrors, UaSources, UaWarns} from '../../../common/ua.enums'
 import {SessionService} from './session.service'
 import {Config} from '../../../config/config.default'
 import {EndpointParam} from '../../models/params.model'
@@ -16,7 +16,7 @@ export module ClientService {
         try {
             client = OPCUAClient.create(clientOptions)
         } catch (e: any) {
-            throw new ClientError(Sources.clientService, Errors.errorCreateClient, e.message, e.stack)
+            throw new ClientError(UaSources.clientService, UaErrors.errorCreateClient, e.message, e.stack)
         }
     }
 
@@ -25,7 +25,7 @@ export module ClientService {
             await client.connect(endpointUrl)
             uaConnectionAlive = true
         } catch (e: any) {
-            throw new ClientError(Sources.clientService, Errors.errorConnecting, e.message, e.stack)
+            throw new ClientError(UaSources.clientService, UaErrors.errorConnecting, e.message, e.stack)
         }
     }
 
@@ -35,7 +35,7 @@ export module ClientService {
                 await SessionService.closeSession(deleteSubscription)
                 uaConnectionAlive = false
             } catch (e: any) {
-                throw new ClientError(Sources.clientService, Errors.errorClosingSession, e.message, e.stack)
+                throw new ClientError(UaSources.clientService, UaErrors.errorClosingSession, e.message, e.stack)
             }
         }
         await client.disconnect()
@@ -45,10 +45,10 @@ export module ClientService {
     export async function getServersOnNetwork(options?: FindServersOnNetworkRequestOptions) {
         try {
             let servers = await client.findServersOnNetwork(options)
-            if (!servers) throw new ClientWarn(Sources.clientService, Warns.serversNotExist)
+            if (!servers) throw new ClientWarn(UaSources.clientService, UaWarns.serversNotExist)
             return servers
         } catch (e: any) {
-            throw new ClientError(Sources.clientService, Errors.errorGetServers, e.message, e.stack)
+            throw new ClientError(UaSources.clientService, UaErrors.errorGetServers, e.message, e.stack)
         }
     }
 
@@ -59,7 +59,7 @@ export module ClientService {
                 await connectToServer(params['endpoint'])
             }
             let endpoints = await client.getEndpoints()
-            if (!endpoints) throw new ClientWarn(Sources.clientService, Warns.endPointsNotExist)
+            if (!endpoints) throw new ClientWarn(UaSources.clientService, UaWarns.endPointsNotExist)
             if (params && params['reduce']) {
                 let re = /^.*?#/
                 return endpoints.map(endpoint => ({
@@ -73,7 +73,7 @@ export module ClientService {
                 return endpoints
             }
         } catch (e: any) {
-            throw new ClientError(Sources.clientService, Errors.errorGetEndpoints, e.message, e.stack)
+            throw new ClientError(UaSources.clientService, UaErrors.errorGetEndpoints, e.message, e.stack)
         }
     }
 

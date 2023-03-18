@@ -55,40 +55,40 @@ export module DbController {
         }
     }
 
-    export async function closeDb(
-        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
-        next: Next
-    ) {
-        try {
-            DbService.closeDb()
-            ctx.body = new ResponseModel()
-        } catch (e: any) {
-            throw e
-        }
-    }
-
-    export async function backUp(
-        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
-        next: Next
-    ) {
-        try {
-            await DbService.backUp(ctx.request.body['fileName'])
-            ctx.body = new ResponseModel()
-        } catch (e: any) {
-            throw e
-        }
-    }
-
-    export async function config(
-        ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
-        next: Next
-    ) {
-        try {
-            let {fileName, options} = ctx.request.body
-            DbService.configDb(fileName, options)
-            ctx.body = new ResponseModel()
-        } catch (e: any) {
-            throw e
-        }
-    }
+    // export async function closeDb(
+    //     ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+    //     next: Next
+    // ) {
+    //     try {
+    //         DbService.closeDb()
+    //         ctx.body = new ResponseModel()
+    //     } catch (e: any) {
+    //         throw e
+    //     }
+    // }
+    //
+    // export async function backUp(
+    //     ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+    //     next: Next
+    // ) {
+    //     try {
+    //         await DbService.backUp(ctx.request.body['fileName'])
+    //         ctx.body = new ResponseModel()
+    //     } catch (e: any) {
+    //         throw e
+    //     }
+    // }
+    //
+    // export async function config(
+    //     ctx: ParameterizedContext<any, IRouterParamContext<any, {}>, any>,
+    //     next: Next
+    // ) {
+    //     try {
+    //         let {fileName, options} = ctx.request.body
+    //         DbService.configDb(fileName, options)
+    //         ctx.body = new ResponseModel()
+    //     } catch (e: any) {
+    //         throw e
+    //     }
+    // }
 }

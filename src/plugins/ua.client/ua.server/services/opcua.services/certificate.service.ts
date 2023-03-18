@@ -1,7 +1,7 @@
 import {OPCUACertificateManager} from 'node-opcua'
 import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
-import {Errors, Sources} from '../../../common/ua.enums'
+import {UaErrors, UaSources} from '../../../common/ua.enums'
 import {Config} from '../../../config/config.default'
 import {ClientError} from '../../../../../platform/log'
 
@@ -44,7 +44,7 @@ export module CertificateService {
         try {
             await certificate.createSelfSignedCertificate({...params})
         } catch (e: any) {
-            throw new ClientError(Sources.certService, Errors.errorCreatCert, e.message, e.stack)
+            throw new ClientError(UaSources.certService, UaErrors.errorCreatCert, e.message, e.stack)
         }
     }
 
@@ -52,7 +52,7 @@ export module CertificateService {
         try {
             await certificate.trustCertificate(serverCertificate)
         } catch (e: any) {
-            throw new ClientError(Sources.certService, Errors.errorTrustCert, e.message, e.stack)
+            throw new ClientError(UaSources.certService, UaErrors.errorTrustCert, e.message, e.stack)
         }
     }
 
@@ -60,7 +60,7 @@ export module CertificateService {
         try {
             await certificate.rejectCertificate(serverCertificate)
         } catch (e: any) {
-            throw new ClientError(Sources.certService, Errors.errorRejectCert, e.message, e.stack)
+            throw new ClientError(UaSources.certService, UaErrors.errorRejectCert, e.message, e.stack)
         }
     }
 
@@ -72,7 +72,7 @@ export module CertificateService {
         try {
             return await certificate.getTrustStatus(serverCertificate)
         } catch (e: any) {
-            throw new ClientError(Sources.certService, Errors.errorGetTrust, e.message, e.stack)
+            throw new ClientError(UaSources.certService, UaErrors.errorGetTrust, e.message, e.stack)
         }
     }
 }

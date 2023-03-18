@@ -12,7 +12,7 @@ import {
 } from 'node-opcua'
 import 'koa-body/lib/index'
 import {is} from 'typia'
-import {Errors, Infos, Sources, TableCreateModes} from '../../common/ua.enums'
+import {TableCreateModes, UaErrors, UaInfos, UaSources} from '../../common/ua.enums'
 import {
     EndpointParam,
     HistoryValueParam,
@@ -36,7 +36,7 @@ export module ValidatorMiddleware {
         switch (ctx.request.path) {
             case '/client/init': {
                 if (is<OPCUAClientOptions | undefined>(ctx.request.body)) {
-                    Log.info(new ClientInfo(Sources.clientService, Infos.clientCreated, {...ctx.request.body}))
+                    Log.info(new ClientInfo(UaSources.clientService, UaInfos.clientCreated, {...ctx.request.body}))
                     await next()
                 } else {
                     throw validateError('OPCUAClientOptions | undefined')
@@ -45,7 +45,7 @@ export module ValidatorMiddleware {
             }
             case '/client/connect': {
                 if (is<{ endpointUrl: string }>(ctx.request.body)) {
-                    Log.info(new ClientInfo(Sources.clientService, Infos.connectionCreated, {...ctx.request.body}))
+                    Log.info(new ClientInfo(UaSources.clientService, UaInfos.connectionCreated, {...ctx.request.body}))
                     await next()
                 } else {
                     throw validateError('{ endpointUrl: string }')
@@ -54,7 +54,7 @@ export module ValidatorMiddleware {
             }
             case '/client/endpoints': {
                 if (is<EndpointParam | undefined>(ctx.request.body)) {
-                    Log.info(new ClientInfo(Sources.clientService, Infos.connectionCreated, {...ctx.request.body}))
+                    Log.info(new ClientInfo(UaSources.clientService, UaInfos.connectionCreated, {...ctx.request.body}))
                     await next()
                 } else {
                     throw validateError('{ endpointUrl: string }')
@@ -63,8 +63,8 @@ export module ValidatorMiddleware {
             }
             case '/client/disconnect': {
                 if (is<{ deleteSubscription: boolean } | undefined>(ctx.request.body)) {
-                    Log.info(new ClientInfo(Sources.clientService, Infos.sessionClosed))
-                    Log.info(new ClientInfo(Sources.clientService, Infos.clientDisconnect))
+                    Log.info(new ClientInfo(UaSources.clientService, UaInfos.sessionClosed))
+                    Log.info(new ClientInfo(UaSources.clientService, UaInfos.clientDisconnect))
                     await next()
                 } else {
                     throw validateError('{ deleteSubscription: boolean } | {}')
@@ -72,11 +72,11 @@ export module ValidatorMiddleware {
                 break
             }
             case '/client/private_key': {
-                Log.info(new ClientInfo(Sources.clientService, Infos.getPrivateKey))
+                Log.info(new ClientInfo(UaSources.clientService, UaInfos.getPrivateKey))
                 break
             }
             case 'client/cert': {
-                Log.info(new ClientInfo(Sources.clientService, Infos.getCertificate))
+                Log.info(new ClientInfo(UaSources.clientService, UaInfos.getCertificate))
                 break
             }
             default:
@@ -91,7 +91,7 @@ export module ValidatorMiddleware {
         switch (ctx.request.body) {
             case '/session/init': {
                 if (is<UserIdentityInfo | undefined>(ctx.request.body)) {
-                    Log.info(new ClientInfo(Sources.sessionService, Infos.sessionCreated))
+                    Log.info(new ClientInfo(UaSources.sessionService, UaInfos.sessionCreated))
                     await next()
                 } else {
                     throw validateError('UserIdentityInfo | undefined')
@@ -124,7 +124,7 @@ export module ValidatorMiddleware {
             }
             case '/session/id': {
                 if (is<{ path: string }>(ctx.query)) {
-                    Log.info(new ClientInfo(Sources.sessionService, Infos.getIdByName, {...ctx.request.body}))
+                    Log.info(new ClientInfo(UaSources.sessionService, UaInfos.getIdByName, {...ctx.request.body}))
                     await next()
                 } else {
                     throw validateError('{ path: string }')
@@ -175,7 +175,7 @@ export module ValidatorMiddleware {
         switch (ctx.request.path) {
             case '/subscript/init': {
                 if (is<ClientSubscriptionOptions | undefined>(ctx.request.body)) {
-                    Log.info(new ClientInfo(Sources.subscriptService, Infos.installedSub))
+                    Log.info(new ClientInfo(UaSources.subscriptService, UaInfos.installedSub))
                     await next()
                 } else {
                     throw validateError('ClientSubscriptionOptions')
@@ -184,7 +184,7 @@ export module ValidatorMiddleware {
             }
             case '/subscript/modify': {
                 if (is<ModifySubscriptionOptions>(ctx.request.body)) {
-                    Log.info(new ClientInfo(Sources.subscriptService, Infos.modifySubscription, {...ctx.request.body}))
+                    Log.info(new ClientInfo(UaSources.subscriptService, UaInfos.modifySubscription, {...ctx.request.body}))
                     await next()
                 } else {
                     throw validateError('ModifySubscriptionOptions')
@@ -193,7 +193,7 @@ export module ValidatorMiddleware {
             }
             case '/subscript/item/group': {
                 if (is<SubscriptGroupParam>(ctx.request.body)) {
-                    Log.info(new ClientInfo(Sources.subscriptService, Infos.monitoredItemInit, {...ctx.request.body}))
+                    Log.info(new ClientInfo(UaSources.subscriptService, UaInfos.monitoredItemInit, {...ctx.request.body}))
                     await next()
                 } else {
                     throw validateError('SubscriptGroupParam')
@@ -202,7 +202,7 @@ export module ValidatorMiddleware {
             }
             case '/subscript/item/single': {
                 if (is<SubscriptSingleParam>(ctx.request.body)) {
-                    Log.info(new ClientInfo(Sources.subscriptService, Infos.monitoredItemInit, {...ctx.request.body}))
+                    Log.info(new ClientInfo(UaSources.subscriptService, UaInfos.monitoredItemInit, {...ctx.request.body}))
                     await next()
                 } else {
                     throw validateError('SubscriptSingleParam')
@@ -211,7 +211,7 @@ export module ValidatorMiddleware {
             }
             case '/subscript/item/delete': {
                 if (is<NodeID[]>(ctx.request.body)) {
-                    Log.info(new ClientInfo(Sources.subscriptService, Infos.monitoredItemTerminate, {...ctx.request.body}))
+                    Log.info(new ClientInfo(UaSources.subscriptService, UaInfos.monitoredItemTerminate, {...ctx.request.body}))
                     await next()
                 } else {
                     throw validateError('NodeID[]')
@@ -219,7 +219,7 @@ export module ValidatorMiddleware {
                 break
             }
             case '/subscript/terminate': {
-                Log.info(new ClientInfo(Sources.subscriptService, Infos.terminateSub))
+                Log.info(new ClientInfo(UaSources.subscriptService, UaInfos.terminateSub))
                 await next()
                 break
             }
@@ -236,10 +236,10 @@ export module ValidatorMiddleware {
             case '/cert/create': {
                 if (is<CreateSelfSignCertificateParam1>(ctx.request.body)) {
                     if (CertUtils.validateCertOptions(ctx.request.body)) {
-                        Log.info(new ClientInfo(Sources.paramValidator, Infos.certCreated))
+                        Log.info(new ClientInfo(UaSources.paramValidator, UaInfos.certCreated))
                         await next()
                     } else {
-                        throw new ClientError(Sources.paramValidator, Errors.errorCertOptions, 'country too long')
+                        throw new ClientError(UaSources.paramValidator, UaErrors.errorCertOptions, 'country too long')
                     }
                 } else {
                     throw validateError('CreateSelfSignCertificateParam1')
@@ -294,7 +294,7 @@ export module ValidatorMiddleware {
                     if (ctx.request.body) {
                         if ('tableName' in ctx.request.body) {
                             if (!DbUtils.validateDbName(ctx.request.body['tableName'] as string)) {
-                                throw new ClientError(Sources.paramValidator, Errors.unFormatDbName,
+                                throw new ClientError(UaSources.paramValidator, UaErrors.unFormatDbName,
                                     'It cannot start with a number. The name can only contain: ' +
                                     'Chinese characters, numbers, lowercase letters, underscores, and the length is within 2-15 characters')
                             }
@@ -303,7 +303,7 @@ export module ValidatorMiddleware {
                             let key: keyof IFieldNames
                             for (key in ctx.request.body['fieldNames']) {
                                 if (!DbUtils.validateDbName(ctx.request.body['fieldNames'][key])) {
-                                    throw new ClientError(Sources.paramValidator, Errors.unFormatDbName,
+                                    throw new ClientError(UaSources.paramValidator, UaErrors.unFormatDbName,
                                         'It cannot start with a number. The name can only contain: ' +
                                         'Chinese characters, numbers, lowercase letters, underscores, and the length is within 2-15 characters')
                                 }
@@ -338,6 +338,6 @@ export module ValidatorMiddleware {
     }
 
     function validateError(paramType: any) {
-        return new ClientError(Sources.paramValidator, Errors.errorValidateParam, `Supposed to be ${paramType}`)
+        return new ClientError(UaSources.paramValidator, UaErrors.errorValidateParam, `Supposed to be ${paramType}`)
     }
 }

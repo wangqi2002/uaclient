@@ -12,7 +12,7 @@ export class UaMessage implements IDbData {
     statusCode: string
     sourceTimestamp: string
     serverTimestamp: string
-    value: any
+    value: string
     dataType: string
 
     constructor(dataValue: DataValue, nodeId: string, displayName: string) {
@@ -26,7 +26,7 @@ export class UaMessage implements IDbData {
         this.sourceTimestamp = dataValue.sourceTimestamp
             ? dataValue.sourceTimestamp.toLocaleString()
             : new Date().toLocaleDateString()
-        this.value = dataValue.value.value
+        this.value = dataValue.value.value.toString()
         this.dataType = DataType[dataValue.value.dataType].toString()
     }
 }

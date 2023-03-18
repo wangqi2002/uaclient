@@ -1,6 +1,7 @@
 import {MessageSecurityMode, SecurityPolicy} from 'node-opcua'
 import {DbUtils} from '../ua.server/utils/util'
 import path from 'path'
+import {DataTypes} from 'sequelize'
 
 const dotenv = require('dotenv')
 let Path = require('path')
@@ -22,15 +23,59 @@ export module Config {
         : Path.join(__dirname, "..", "..", "..", "..", "/databases/data.db").toString()
     export let defaultTable = DbUtils.formatDateYMW(new Date())
     export let certRoot = path.join(__dirname, '..', '..', 'ua.client', 'certificates', 'PKI')
+
     export let defaultFieldNames = {
-        serverF: 'Server',
-        nodeIdF: 'NodeId',
-        displayNameF: 'DisplayName',
-        valueF: 'Value',
-        dataTypeF: 'DataType',
-        sourceTimestampF: 'SourceTimestamp',
-        serverTimestampF: 'ServerTimestamp',
-        statusCodeF: 'StatusCode',
+        serverF: 'server',
+        nodeIdF: 'nodeId',
+        displayNameF: 'displayName',
+        valueF: 'value',
+        dataTypeF: 'dataType',
+        sourceTimestampF: 'sourceTimestamp',
+        serverTimestampF: 'serverTimestamp',
+        statusCodeF: 'statusCode',
+    }
+
+    export let defaultAttributes = {
+        server: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            field: defaultFieldNames.serverF,
+        },
+        nodeId: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            field: defaultFieldNames.nodeIdF,
+        },
+        displayName: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            field: defaultFieldNames.displayNameF,
+        },
+        value: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            field: defaultFieldNames.valueF,
+        },
+        dataType: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            field: defaultFieldNames.dataTypeF,
+        },
+        sourceTimestamp: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            field: defaultFieldNames.sourceTimestampF,
+        },
+        serverTimestamp: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            field: defaultFieldNames.serverTimestampF,
+        },
+        statusCode: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            field: defaultFieldNames.statusCodeF,
+        },
     }
 
     export let defaultClient = {
