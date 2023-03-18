@@ -2,7 +2,7 @@ import {Errors, ServerMessage, ServerStatusCodes, Sources} from '../../common/ua
 import {Next, ParameterizedContext} from 'koa'
 import {IRouterParamContext} from 'koa-router'
 import {ResponseModel} from '../models/response.model'
-import {ClientError, ClientWarn, Log} from '../../../../core/log'
+import {ClientError, ClientWarn, Log} from '../../../../platform/log'
 
 export module ErrorMiddleware {
 

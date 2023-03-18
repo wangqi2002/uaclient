@@ -3,7 +3,7 @@ import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
 import {Errors, Sources} from '../../../common/ua.enums'
 import {Config} from '../../../config/config.default'
-import {ClientError} from '../../../../../core/log'
+import {ClientError} from '../../../../../platform/log'
 
 // const cry = require("node-opcua-pki")
 

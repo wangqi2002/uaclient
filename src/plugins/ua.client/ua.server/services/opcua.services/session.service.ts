@@ -16,7 +16,7 @@ import {Errors, Sources, Warns} from '../../../common/ua.enums'
 import {ClientService} from './client.service'
 import {is} from 'typia'
 import {HistoryValueParam} from '../../models/params.model'
-import {ClientError, ClientWarn} from '../../../../../core/log'
+import {ClientError, ClientWarn} from '../../../../../platform/log'
 
 export module SessionService {
     export let session!: ClientSession

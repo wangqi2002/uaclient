@@ -3,7 +3,7 @@ import {Config} from '../../../config/config.default'
 import {existsSync} from 'fs'
 import {DbUtils} from '../../utils/util'
 import {IDbData, IFieldNames} from '../../models/params.model'
-import {ClientError, ClientWarn} from '../../../../../core/log'
+import {ClientError, ClientWarn} from '../../../../../platform/log'
 import Database = require('better-sqlite3')
 //todo 全面测试数据库模块
 export module DbService {

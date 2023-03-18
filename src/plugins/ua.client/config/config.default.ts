@@ -60,7 +60,7 @@ export module Config {
             client: {
                 type: 'file',
                 filename: Path.join(__dirname, "..", "..", "..", "..", '/logs/client.log'),
-                maxLogSize: 20000,//文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
+                maxLogSize: 50000,//文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
             }
         },
         categories: {default: {appenders: ['client'], level: 'info'}}

@@ -25,7 +25,7 @@ import {
 import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
 import Database from 'better-sqlite3'
-import {ClientError, ClientInfo, Log} from '../../../../core/log'
+import {ClientError, ClientInfo, Log} from '../../../../platform/log'
 import {CertUtils, DbUtils} from '../utils/util'
 
 export module ValidatorMiddleware {

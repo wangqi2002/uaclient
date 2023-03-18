@@ -1,4 +1,4 @@
-import {MessageQueue} from './mq'
+import {MessageQueue} from './broker'
 import {SessionService} from '../plugins/ua.client/ua.server/services/opcua.services/session.service'
 import {DbService} from '../plugins/ua.client/ua.server/services/opcua.services/db.service'
 import {Log} from './log'

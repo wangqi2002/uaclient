@@ -1,0 +1,32 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.custom-menu {
+    height: 40px;
+    width: 100%;
+    background-color: cornflowerblue;
+    /* 支持拖动 */
+    -webkit-app-region: drag;
+}
+
+.custom-menu ul {
+    list-style: none;
+}
+
+.custom-menu ul li {
+    float: left;
+    width: 50px;
+    line-height: 40px;
+    text-align: center;
+    margin-left: 10px;
+    cursor: default;
+    /* 不支持drag */
+    -webkit-app-region: no-drag;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}

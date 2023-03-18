@@ -1,7 +1,7 @@
 import {existsSync, readFile, readFileSync, writeFile} from 'fs'
 import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 
-const Log = require('../../../../core/log')
+const Log = require('../../../../platform/log')
 
 export module JsonUtils {
     /**
