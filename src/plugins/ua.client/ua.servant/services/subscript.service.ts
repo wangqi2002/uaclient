@@ -7,11 +7,11 @@ import {
 } from 'node-opcua'
 import {SessionService} from './session.service'
 import {UaErrors, UaSources, UaWarns} from '../../common/ua.enums'
-import {Broker, MessageQueue} from '../../../../platform/broker'
+import {Broker, MessageQueue} from '../../../../platform/base/broker'
 import {UaMessage} from '../models/message.model'
 import {ItemAndName, NodeID, SubscriptGroupParam, SubscriptSingleParam} from '../models/params.model'
 import {Config} from '../../config/config.default'
-import {ClientError, ClientWarn} from '../../../../platform/log'
+import {ClientError, ClientWarn} from '../../../../platform/base/log'
 
 export module SubscriptService {
     export let subscription!: ClientSubscription

@@ -3,7 +3,7 @@ import {UaErrors, UaSources, UaWarns} from '../../common/ua.enums'
 import {SessionService} from './session.service'
 import {Config} from '../../config/config.default'
 import {EndpointParam} from '../models/params.model'
-import {ClientError, ClientWarn} from '../../../../platform/log'
+import {ClientError, ClientWarn} from '../../../../platform/base/log'
 
 export module ClientService {
 

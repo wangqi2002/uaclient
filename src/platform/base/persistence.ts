@@ -4,7 +4,8 @@ import path from 'path'
 export module Persistence {
     const sequelize = new Sequelize({
         dialect: 'sqlite',
-        storage: path.join(__dirname, '..', '..', '/databases/data.db')
+        storage: path.join(__dirname, '..', '..', '/databases/data.db'),
+        logging: false
     })
     export let currentModel: ModelCtor<any>
 
@@ -33,5 +34,7 @@ export module Persistence {
             throw e
         }
     }
+
+    //todo crud,备份/配置
 
 }

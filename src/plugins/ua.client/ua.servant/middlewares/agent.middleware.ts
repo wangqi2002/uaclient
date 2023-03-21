@@ -24,11 +24,8 @@ import {
 } from '../models/params.model'
 import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
-import {ClientError, ClientInfo, Log} from '../../../../platform/log'
+import {ClientError, ClientInfo, Log} from '../../../../platform/base/log'
 import {CertUtils, DbUtils} from '../utils/util'
-import {DbService} from '../services/db.service'
-import {Broker} from '../../../../platform/broker'
-import {Config} from '../../config/config.default'
 
 export module AgentMiddleware {
     export async function clientValidator(
@@ -272,13 +269,7 @@ export module AgentMiddleware {
             case '/db/init': {
                 if (is<{ createMode: TableCreateModes, tableName?: string, fields?: IFieldNames }>(ctx.request.body)) {
                     DbUtils.validateDbName(ctx.request.body['tableName'])
-                    DbService.events.on('init', () => {
-                        Broker.createPipe(Config.defaultPipeName)
-                        let events = Broker.getPipeEvents(Config.defaultPipeName)
-                        events?.on('pushed', (data) => {
-                            DbService.insert(data)
-                        })
-                    })
+
                     await next()
                 } else {
                     throw validateError('{createMode:TableCreateModes, tableName?:string, fields:IFieldNames}')

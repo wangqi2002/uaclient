@@ -23,3 +23,355 @@
   certificateFile: 'F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\certs\\client_cert.pem',
   privateKeyFile: 'F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\private\\private_key.pem'
 }
+[2023-03-18T21:51:51.830] [INFO] client - Client created {
+  source: 'ClientService',
+  applicationName: 'uaclient',
+  connectionStrategy: { initialDelay: 1000, maxRetry: 1 },
+  securityMode: 1,
+  securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
+  endpointMustExist: false,
+  certificateFile: 'F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\certs\\client_cert.pem',
+  privateKeyFile: 'F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\private\\private_key.pem'
+}
+[2023-03-18T21:54:16.692] [INFO] client - Established connection {
+  source: 'ClientService',
+  reduce: true,
+  clientExist: false,
+  endpoint: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer'
+}
+[2023-03-18T21:55:09.050] [INFO] client - Established connection {
+  source: 'ClientService',
+  endpointUrl: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer'
+}
+[2023-03-18T21:55:09.052] [ERROR] client - Exception connecting server {
+  source: 'ClientService',
+  error: 'invalid internal state = connected',
+  stack: 'Error: invalid internal state = connected\n' +
+    '    at OPCUAClientImpl.connect (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-client\\dist\\private\\client_base_impl.js:623:22)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\thenify\\index.js:72:10\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at OPCUAClientImpl.connect (F:\\idea_projects\\uaclient\\node_modules\\thenify\\index.js:70:12)\n' +
+    '    at Object.<anonymous> (F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\services\\client.service.js:35:44)\n' +
+    '    at Generator.next (<anonymous>)\n' +
+    '    at F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\services\\client.service.js:8:71\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at __awaiter (F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\services\\client.service.js:4:12)\n' +
+    '    at Object.connectToServer (F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\services\\client.service.js:33:16)'
+}
+[2023-03-18T21:55:40.522] [ERROR] client - Exception creating session {
+  source: 'ClientSession',
+  error: 'ClientSecureChannelLayer => Socket is closed ! while processing CreateSessionRequest',
+  stack: 'Error: ClientSecureChannelLayer => Socket is closed ! while processing CreateSessionRequest\n' +
+    '    at ClientSecureChannelLayer._performMessageTransaction (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-secure-channel\\dist\\source\\client\\client_secure_channel_layer.js:941:29)\n' +
+    '    at ClientSecureChannelLayer.performMessageTransaction (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-secure-channel\\dist\\source\\client\\client_secure_channel_layer.js:404:14)\n' +
+    '    at OPCUAClientImpl.performMessageTransaction (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-client\\dist\\private\\client_base_impl.js:737:29)\n' +
+    '    at OPCUAClientImpl.__createSession_step3 (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-client\\dist\\private\\opcua_client_impl.js:619:14)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\node-opcua-client\\dist\\private\\opcua_client_impl.js:677:18\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)'
+}
+[2023-03-18T21:55:53.035] [INFO] client - Session closed { source: 'ClientService' }
+[2023-03-18T21:55:53.035] [INFO] client - Client disconnected { source: 'ClientService' }
+[2023-03-18T21:55:56.212] [INFO] client - Established connection {
+  source: 'ClientService',
+  endpointUrl: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer'
+}
+[2023-03-18T21:56:43.229] [INFO] client - Installed subscription on session { source: 'SessionSubscription' }
+[2023-03-18T21:56:50.441] [INFO] client - Monitored item initialized {
+  source: 'SessionSubscription',
+  itemToMonitor: { nodeId: 'ns=3;i=1001' },
+  displayName: 'Counter'
+}
+[2023-03-18T21:58:10.733] [INFO] client - Client created {
+  source: 'ClientService',
+  applicationName: 'uaclient',
+  connectionStrategy: { initialDelay: 1000, maxRetry: 1 },
+  securityMode: 1,
+  securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
+  endpointMustExist: false,
+  certificateFile: 'F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\certs\\client_cert.pem',
+  privateKeyFile: 'F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\private\\private_key.pem'
+}
+[2023-03-18T21:58:13.907] [INFO] client - Established connection {
+  source: 'ClientService',
+  endpointUrl: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer'
+}
+[2023-03-18T21:58:13.956] [ERROR] client - Exception connecting server {
+  source: 'ClientService',
+  error: 'Invalid lockfile specified :F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\certs\\client_cert.pem.lock',
+  stack: 'Error: Invalid lockfile specified :F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\certs\\client_cert.pem.lock\n' +
+    '    at adjustOptions (F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:230:15)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:137:19\n' +
+    '    at Generator.next (<anonymous>)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:27:71\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at __awaiter (F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:23:12)\n' +
+    '    at lock (F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:136:12)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:200:15\n' +
+    '    at Generator.next (<anonymous>)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:27:71'
+}
+[2023-03-18T21:58:15.770] [ERROR] client - Exception creating session {
+  source: 'ClientSession',
+  error: undefined,
+  stack: 'Error\n' +
+    '    at assert (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-assert\\dist\\index.js:11:21)\n' +
+    '    at OPCUAClientImpl._createSession (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-client\\dist\\private\\opcua_client_impl.js:863:40)\n' +
+    '    at OPCUAClientImpl.createSession (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-client\\dist\\private\\opcua_client_impl.js:272:14)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\thenify\\index.js:72:10\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at OPCUAClientImpl.createSession (F:\\idea_projects\\uaclient\\node_modules\\thenify\\index.js:70:12)\n' +
+    '    at Object.<anonymous> (F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\services\\session.service.js:26:86)\n' +
+    '    at Generator.next (<anonymous>)\n' +
+    '    at F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\services\\session.service.js:8:71\n' +
+    '    at new Promise (<anonymous>)'
+}
+[2023-03-18T21:58:19.046] [INFO] client - Installed subscription on session { source: 'SessionSubscription' }
+[2023-03-18T21:58:19.048] [ERROR] client - Exception creating subscription {
+  source: 'SessionSubscription',
+  error: "Cannot read properties of undefined (reading 'getPublishEngine')",
+  stack: "TypeError: Cannot read properties of undefined (reading 'getPublishEngine')\n" +
+    '    at new ClientSubscriptionImpl (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-client\\dist\\private\\client_subscription_impl.js:105:42)\n' +
+    '    at client_subscription_1.ClientSubscription.create (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-client\\dist\\private\\client_subscription_impl.js:763:12)\n' +
+    '    at Object.createSubscription (F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\services\\subscript.service.js:46:77)\n' +
+    '    at F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\controllers\\subscript.controller.js:23:54\n' +
+    '    at Generator.next (<anonymous>)\n' +
+    '    at F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\controllers\\subscript.controller.js:8:71\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at __awaiter (F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\controllers\\subscript.controller.js:4:12)\n' +
+    '    at init (F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\controllers\\subscript.controller.js:21:16)\n' +
+    '    at dispatch (F:\\idea_projects\\uaclient\\node_modules\\koa-compose\\index.js:42:32)'
+}
+[2023-03-18T21:58:29.211] [INFO] client - Monitored item initialized {
+  source: 'SessionSubscription',
+  itemsToMonitor: [ { nodeId: 'ns=3;i=1001' }, { nodeId: 'ns=3;i=1002' } ],
+  displayNames: [ 'Counter', 'Random' ]
+}
+[2023-03-18T21:58:29.212] [ERROR] client - Exception adding monitored item { source: 'SessionSubscription', error: undefined, stack: undefined }
+[2023-03-18T21:58:40.346] [INFO] client - Monitored item initialized {
+  source: 'SessionSubscription',
+  itemToMonitor: { nodeId: 'ns=3;i=1001' },
+  displayName: 'Counter'
+}
+[2023-03-18T21:58:40.348] [ERROR] client - Exception adding monitored item {
+  source: 'SessionSubscription',
+  error: "Cannot read properties of undefined (reading 'constructor')",
+  stack: "TypeError: Cannot read properties of undefined (reading 'constructor')\n" +
+    '    at new ClientMonitoredItemImpl (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-client\\dist\\private\\client_monitored_item_impl.js:40:54)\n' +
+    '    at ClientMonitoredItem_create (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-client\\dist\\private\\client_subscription_impl.js:728:27)\n' +
+    '    at client_monitored_item_1.ClientMonitoredItem.create (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-client\\dist\\private\\client_monitored_item_impl.js:303:70)\n' +
+    '    at Object.addMonitoredItem (F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\services\\subscript.service.js:103:66)\n' +
+    '    at F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\controllers\\subscript.controller.js:62:54\n' +
+    '    at Generator.next (<anonymous>)\n' +
+    '    at F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\controllers\\subscript.controller.js:8:71\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at __awaiter (F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\controllers\\subscript.controller.js:4:12)\n' +
+    '    at addItem (F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\controllers\\subscript.controller.js:60:16)'
+}
+[2023-03-18T21:58:57.613] [INFO] client - Installed subscription on session { source: 'SessionSubscription' }
+[2023-03-18T21:58:57.613] [ERROR] client - Exception creating subscription {
+  source: 'SessionSubscription',
+  error: "Cannot read properties of undefined (reading 'getPublishEngine')",
+  stack: "TypeError: Cannot read properties of undefined (reading 'getPublishEngine')\n" +
+    '    at new ClientSubscriptionImpl (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-client\\dist\\private\\client_subscription_impl.js:105:42)\n' +
+    '    at client_subscription_1.ClientSubscription.create (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-client\\dist\\private\\client_subscription_impl.js:763:12)\n' +
+    '    at Object.createSubscription (F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\services\\subscript.service.js:46:77)\n' +
+    '    at F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\controllers\\subscript.controller.js:23:54\n' +
+    '    at Generator.next (<anonymous>)\n' +
+    '    at F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\controllers\\subscript.controller.js:8:71\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at __awaiter (F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\controllers\\subscript.controller.js:4:12)\n' +
+    '    at init (F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\controllers\\subscript.controller.js:21:16)\n' +
+    '    at dispatch (F:\\idea_projects\\uaclient\\node_modules\\koa-compose\\index.js:42:32)'
+}
+[2023-03-18T21:59:07.268] [ERROR] client - Exception creating session {
+  source: 'ClientSession',
+  error: undefined,
+  stack: 'Error\n' +
+    '    at assert (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-assert\\dist\\index.js:11:21)\n' +
+    '    at OPCUAClientImpl._createSession (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-client\\dist\\private\\opcua_client_impl.js:863:40)\n' +
+    '    at OPCUAClientImpl.createSession (F:\\idea_projects\\uaclient\\node_modules\\node-opcua-client\\dist\\private\\opcua_client_impl.js:272:14)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\thenify\\index.js:72:10\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at OPCUAClientImpl.createSession (F:\\idea_projects\\uaclient\\node_modules\\thenify\\index.js:70:12)\n' +
+    '    at Object.<anonymous> (F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\services\\session.service.js:26:86)\n' +
+    '    at Generator.next (<anonymous>)\n' +
+    '    at F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\services\\session.service.js:8:71\n' +
+    '    at new Promise (<anonymous>)'
+}
+[2023-03-18T21:59:10.905] [INFO] client - Client created {
+  source: 'ClientService',
+  applicationName: 'uaclient',
+  connectionStrategy: { initialDelay: 1000, maxRetry: 1 },
+  securityMode: 1,
+  securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
+  endpointMustExist: false,
+  certificateFile: 'F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\certs\\client_cert.pem',
+  privateKeyFile: 'F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\private\\private_key.pem'
+}
+[2023-03-18T21:59:13.487] [INFO] client - Established connection {
+  source: 'ClientService',
+  endpointUrl: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer'
+}
+[2023-03-18T21:59:13.513] [ERROR] client - Exception connecting server {
+  source: 'ClientService',
+  error: 'Invalid lockfile specified :F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\certs\\client_cert.pem.lock',
+  stack: 'Error: Invalid lockfile specified :F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\certs\\client_cert.pem.lock\n' +
+    '    at adjustOptions (F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:230:15)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:137:19\n' +
+    '    at Generator.next (<anonymous>)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:27:71\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at __awaiter (F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:23:12)\n' +
+    '    at lock (F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:136:12)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:200:15\n' +
+    '    at Generator.next (<anonymous>)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:27:71'
+}
+[2023-03-18T21:59:29.725] [INFO] client - Established connection {
+  source: 'ClientService',
+  reduce: true,
+  clientExist: false,
+  endpoint: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer'
+}
+[2023-03-18T22:00:33.138] [INFO] client - Client created {
+  source: 'ClientService',
+  applicationName: 'uaclient',
+  connectionStrategy: { initialDelay: 1000, maxRetry: 1 },
+  securityMode: 1,
+  securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
+  endpointMustExist: false,
+  certificateFile: 'F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\certs\\client_cert.pem',
+  privateKeyFile: 'F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\private\\private_key.pem'
+}
+[2023-03-18T22:00:36.065] [INFO] client - Established connection {
+  source: 'ClientService',
+  endpointUrl: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer'
+}
+[2023-03-18T22:00:36.107] [ERROR] client - Exception connecting server {
+  source: 'ClientService',
+  error: 'Invalid lockfile specified :F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\certs\\client_cert.pem.lock',
+  stack: 'Error: Invalid lockfile specified :F:\\idea_projects\\uaclient\\certificates\\PKI\\own\\certs\\client_cert.pem.lock\n' +
+    '    at adjustOptions (F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:230:15)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:137:19\n' +
+    '    at Generator.next (<anonymous>)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:27:71\n' +
+    '    at new Promise (<anonymous>)\n' +
+    '    at __awaiter (F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:23:12)\n' +
+    '    at lock (F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:136:12)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:200:15\n' +
+    '    at Generator.next (<anonymous>)\n' +
+    '    at F:\\idea_projects\\uaclient\\node_modules\\@ster5\\global-mutex\\dist\\source\\index.js:27:71'
+}
+[2023-03-18T22:02:15.018] [INFO] client - Client created {
+  source: 'ClientService',
+  applicationName: 'NodeOPCUA-Client',
+  connectionStrategy: { initialDelay: 1000, maxRetry: 1 },
+  securityMode: 1,
+  securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
+  endpointMustExist: false
+}
+[2023-03-18T22:02:17.423] [INFO] client - Established connection {
+  source: 'ClientService',
+  endpointUrl: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer'
+}
+[2023-03-18T22:02:27.688] [INFO] client - Installed subscription on session { source: 'SessionSubscription' }
+[2023-03-18T22:02:31.388] [INFO] client - Monitored item initialized {
+  source: 'SessionSubscription',
+  itemsToMonitor: [ { nodeId: 'ns=3;i=1001' }, { nodeId: 'ns=3;i=1002' } ],
+  displayNames: [ 'Counter', 'Random' ]
+}
+[2023-03-18T22:04:37.537] [INFO] client - Monitored item initialized {
+  source: 'SessionSubscription',
+  itemToMonitor: { nodeId: 'ns=3;i=1001' },
+  displayName: 'Counter'
+}
+[2023-03-18T22:05:17.472] [INFO] client - Client created {
+  source: 'ClientService',
+  applicationName: 'NodeOPCUA-Client',
+  connectionStrategy: { initialDelay: 1000, maxRetry: 1 },
+  securityMode: 1,
+  securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
+  endpointMustExist: false
+}
+[2023-03-18T22:05:19.736] [INFO] client - Established connection {
+  source: 'ClientService',
+  endpointUrl: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer'
+}
+[2023-03-18T22:05:26.287] [INFO] client - Installed subscription on session { source: 'SessionSubscription' }
+[2023-03-18T22:05:33.586] [INFO] client - Monitored item initialized {
+  source: 'SessionSubscription',
+  itemToMonitor: { nodeId: 'ns=3;i=1001' },
+  displayName: 'Counter'
+}
+[2023-03-18T22:06:26.156] [INFO] client - Client created {
+  source: 'ClientService',
+  applicationName: 'NodeOPCUA-Client',
+  connectionStrategy: { initialDelay: 1000, maxRetry: 1 },
+  securityMode: 1,
+  securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
+  endpointMustExist: false
+}
+[2023-03-18T22:06:28.871] [INFO] client - Established connection {
+  source: 'ClientService',
+  endpointUrl: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer'
+}
+[2023-03-18T22:06:35.173] [INFO] client - Installed subscription on session { source: 'SessionSubscription' }
+[2023-03-18T22:06:41.251] [INFO] client - Monitored item initialized {
+  source: 'SessionSubscription',
+  itemsToMonitor: [ { nodeId: 'ns=3;i=1001' }, { nodeId: 'ns=3;i=1002' } ],
+  displayNames: [ 'Counter', 'Random' ]
+}
+[2023-03-18T22:08:15.546] [INFO] client - Client created {
+  source: 'ClientService',
+  applicationName: 'NodeOPCUA-Client',
+  connectionStrategy: { initialDelay: 1000, maxRetry: 1 },
+  securityMode: 1,
+  securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
+  endpointMustExist: false
+}
+[2023-03-18T22:08:17.124] [INFO] client - Established connection {
+  source: 'ClientService',
+  endpointUrl: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer'
+}
+[2023-03-18T22:08:22.721] [INFO] client - Installed subscription on session { source: 'SessionSubscription' }
+[2023-03-18T22:08:28.242] [INFO] client - Monitored item initialized {
+  source: 'SessionSubscription',
+  itemsToMonitor: [ { nodeId: 'ns=3;i=1001' }, { nodeId: 'ns=3;i=1002' } ],
+  displayNames: [ 'Counter', 'Random' ]
+}
+[2023-03-18T22:09:31.720] [INFO] client - Client created {
+  source: 'ClientService',
+  applicationName: 'NodeOPCUA-Client',
+  connectionStrategy: { initialDelay: 1000, maxRetry: 1 },
+  securityMode: 1,
+  securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
+  endpointMustExist: false
+}
+[2023-03-18T22:09:33.094] [INFO] client - Established connection {
+  source: 'ClientService',
+  endpointUrl: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer'
+}
+[2023-03-18T22:09:38.481] [INFO] client - Installed subscription on session { source: 'SessionSubscription' }
+[2023-03-18T22:09:43.798] [INFO] client - Monitored item initialized {
+  source: 'SessionSubscription',
+  itemsToMonitor: [ { nodeId: 'ns=3;i=1001' }, { nodeId: 'ns=3;i=1002' } ],
+  displayNames: [ 'Counter', 'Random' ]
+}
+[2023-03-18T22:12:46.954] [INFO] client - Client created {
+  source: 'ClientService',
+  applicationName: 'NodeOPCUA-Client',
+  connectionStrategy: { initialDelay: 1000, maxRetry: 1 },
+  securityMode: 1,
+  securityPolicy: 'http://opcfoundation.org/UA/SecurityPolicy#None',
+  endpointMustExist: false
+}
+[2023-03-18T22:12:48.657] [INFO] client - Established connection {
+  source: 'ClientService',
+  endpointUrl: 'opc.tcp://WIN-4D29EPFU0V6:53530/OPCUA/SimulationServer'
+}
+[2023-03-18T22:12:53.969] [INFO] client - Installed subscription on session { source: 'SessionSubscription' }
+[2023-03-18T22:13:00.572] [INFO] client - Monitored item initialized {
+  source: 'SessionSubscription',
+  itemsToMonitor: [ { nodeId: 'ns=3;i=1001' }, { nodeId: 'ns=3;i=1002' } ],
+  displayNames: [ 'Counter', 'Random' ]
+}

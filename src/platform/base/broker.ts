@@ -1,6 +1,6 @@
 import {EventEmitter} from 'events'
-import {UaMessage} from '../plugins/ua.client/ua.servant/models/message.model'
-import {Config} from '../plugins/ua.client/config/config.default'
+import {UaMessage} from '../../plugins/ua.client/ua.servant/models/message.model'
+import {Config} from '../../plugins/ua.client/config/config.default'
 
 //todo 重写messageQueue模块以适应所有形式的消息
 /**
@@ -64,7 +64,7 @@ export class MessagePipe {
     constructor(maxLength?: number) {
         this.content = new Map()
         this.events = new EventEmitter()
-        this.maxLength = maxLength ? maxLength : 200
+        this.maxLength = maxLength ? maxLength : 20
     }
 
     changeMaxLength(length: number) {

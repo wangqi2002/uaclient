@@ -9,7 +9,7 @@ import {DbRouter} from './routers/db.router'
 import {ErrorMiddleware} from './middlewares/error.middleware'
 
 require('v8-compile-cache')
-//todo 性能调优/v8-compile-cache缓存,所有error添加stack
+//todo 性能调优/v8-compile-cache缓存,实现插件系统,模仿vscode的架构设计
 export module Server {
     export const app = new Koa()
     let routers = [
