@@ -22,4 +22,8 @@ export module MainHandler {
             mainWindow.close()
         })
     }
+
+    export function bindEvent(event: string, eventHandler: Function) {
+        ipcMain.on(event, () => eventHandler)
+    }
 }
