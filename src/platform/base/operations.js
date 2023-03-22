@@ -5,7 +5,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             resolve(value);
         });
     }
-
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
             try {
@@ -32,9 +31,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", {value: true});
 exports.Operations = void 0;
-const broker_1 = require("./broker");
-const session_service_1 = require("../../plugins/ua.client/ua.servant/services/session.service");
-const db_service_1 = require("../../plugins/ua.client/ua.servant/services/db.service");
 const log_1 = require("./log");
 //todo electron应用安装时执行create pki命令
 var Operations;
@@ -46,9 +42,7 @@ var Operations;
         let exec = require('child_process').exec;
         exec('npx node-opcua-pki createPKI');
     }
-
     Operations.createPKI = createPKI;
-
     function initByConfig() {
         return __awaiter(this, void 0, void 0, function* () {
         });
@@ -63,22 +57,15 @@ var Operations;
     }
 
     Operations.configureLog = configureLog;
-
-    function configureMQ(length) {
-        broker_1.MessageQueue.changeMaxLength(length);
-    }
-
-    Operations.configureMQ = configureMQ;
-
-    function close() {
-        return __awaiter(this, void 0, void 0, function* () {
-            broker_1.MessageQueue.closeMq().forEach((messages) => {
-                db_service_1.DbService.insertMany(messages);
-            });
-            yield session_service_1.SessionService.closeSession(true);
-            // DbService.closeDb()
-        });
-    }
-
-    Operations.close = close;
+    // export function configureMQ(pipeName:string,length: number) {
+    //     Broker.changeMaxLength(pipeName,length)
+    // }
+    //
+    // export async function close() {
+    //     MessageQueue.closeMq().forEach(() => {
+    //         DbService.insertMany()
+    //     })
+    //     await SessionService.closeSession(true)
+    //     // DbService.closeDb()
+    // }
 })(Operations = exports.Operations || (exports.Operations = {}));

@@ -5,7 +5,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             resolve(value);
         });
     }
-
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
             try {
@@ -43,7 +42,6 @@ var SubscriptService;
 (function (SubscriptService) {
     let monitoredItems = new Map();
     let subscriptionOption = config_default_1.Config.defaultSubscript;
-
     function bindingAndPush(monitoredItem, displayName, itemId) {
         try {
             itemId = itemId.toString();
@@ -51,7 +49,9 @@ var SubscriptService;
                 .on('changed', (data) => {
                     let item = monitoredItems.get(itemId);
                     if (item) {
-                        broker_1.MessageQueue.enqueue(new message_model_1.UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName));
+                        // MessageQueue.enqueue(
+                        //     new UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName),
+                        // )
                         broker_1.Broker.receive(config_default_1.Config.defaultPipeName, monitoredItem.itemToMonitor.nodeId.toString(), new message_model_1.UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName));
                     }
                 })
@@ -63,7 +63,6 @@ var SubscriptService;
             throw new log_1.ClientError(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaErrors.errorBinding, e.message, e.stack);
         }
     }
-
     function createSubscription(subOptions = subscriptionOption) {
         try {
             SubscriptService.subscription = node_opcua_1.ClientSubscription.create(session_service_1.SessionService.session, subOptions);
@@ -71,9 +70,7 @@ var SubscriptService;
             throw new log_1.ClientError(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaErrors.errorCreatingSub, e.message, e.stack);
         }
     }
-
     SubscriptService.createSubscription = createSubscription;
-
     function modifySubscription(subOptions) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -83,9 +80,7 @@ var SubscriptService;
             }
         });
     }
-
     SubscriptService.modifySubscription = modifySubscription;
-
     function terminateSubscription() {
         return __awaiter(this, void 0, void 0, function* () {
             if (SubscriptService.subscription) {
@@ -93,9 +88,7 @@ var SubscriptService;
             }
         });
     }
-
     SubscriptService.terminateSubscription = terminateSubscription;
-
     /**
      * @description 用来同时添加多个monitored item
      * @param param
@@ -116,9 +109,7 @@ var SubscriptService;
             throw new log_1.ClientError(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaErrors.errorAddMonitoredItem, e.message, e.stack);
         }
     }
-
     SubscriptService.addMonitoredItems = addMonitoredItems;
-
     /**
      * @description 创建一个监控节点并且加入到本类的节点数组之中
      * @param param
@@ -133,9 +124,7 @@ var SubscriptService;
             throw new log_1.ClientError(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaErrors.errorAddMonitoredItem, e.message, e.stack);
         }
     }
-
     SubscriptService.addMonitoredItem = addMonitoredItem;
-
     function getMonitoredItems() {
         return __awaiter(this, void 0, void 0, function* () {
             if (SubscriptService.subscription) {
@@ -143,9 +132,7 @@ var SubscriptService;
             }
         });
     }
-
     SubscriptService.getMonitoredItems = getMonitoredItems;
-
     /**
      * @description monitored items 队列使用map作为存储结构,以nodeId的string作为键
      * @param nodeIds
@@ -167,6 +154,5 @@ var SubscriptService;
             }
         });
     }
-
     SubscriptService.deleteMonitoredItems = deleteMonitoredItems;
 })(SubscriptService = exports.SubscriptService || (exports.SubscriptService = {}));

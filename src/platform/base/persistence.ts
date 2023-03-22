@@ -2,7 +2,7 @@ import {ModelAttributes, ModelCtor, Sequelize} from 'sequelize'
 import path from 'path'
 
 export module Persistence {
-    const sequelize = new Sequelize({
+    export const sequelize = new Sequelize({
         dialect: 'sqlite',
         storage: path.join(__dirname, '..', '..', '/databases/data.db'),
         logging: false
@@ -33,6 +33,10 @@ export module Persistence {
         } catch (e: any) {
             throw e
         }
+    }
+
+    export async function read() {
+        currentModel.findAll()
     }
 
     //todo crud,备份/配置

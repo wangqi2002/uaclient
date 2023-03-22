@@ -17,7 +17,7 @@ const sequelize_1 = require("sequelize");
 const path_1 = __importDefault(require("path"));
 var Persistence;
 (function (Persistence) {
-    const sequelize = new sequelize_1.Sequelize({
+    Persistence.sequelize = new sequelize_1.Sequelize({
         dialect: 'sqlite',
         storage: path_1.default.join(__dirname, '..', '..', '/databases/data.db'),
         logging: false
@@ -25,8 +25,8 @@ var Persistence;
     function init(tableName, attributes) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield sequelize.authenticate();
-                Persistence.currentModel = yield sequelize.define(tableName, attributes, { timestamps: false });
+                yield Persistence.sequelize.authenticate();
+                Persistence.currentModel = yield Persistence.sequelize.define(tableName, attributes, { timestamps: false });
                 yield Persistence.currentModel.sync();
             }
             catch (e) {
@@ -57,5 +57,11 @@ var Persistence;
         });
     }
     Persistence.insertMany = insertMany;
+    function read() {
+        return __awaiter(this, void 0, void 0, function* () {
+            Persistence.currentModel.findAll();
+        });
+    }
+    Persistence.read = read;
     //todo crud,备份/配置
 })(Persistence = exports.Persistence || (exports.Persistence = {}));

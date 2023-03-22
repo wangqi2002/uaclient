@@ -1,61 +1,8 @@
 import {EventEmitter} from 'events'
-import {UaMessage} from '../../plugins/ua.client/ua.servant/models/message.model'
-import {Config} from '../../plugins/ua.client/config/config.default'
 
-//todo 重写messageQueue模块以适应所有形式的消息
 /**
- * @description Ua后台发过来的消息的队列,前端只需订阅pushed,
- * 数据库订阅full/close事件即可
- * 当full事件触发之后,会清空队列
- * @author hhj
- * @example
- * UaMessageQueue.queueEvents.on('pushed',(data)=>{
- *     handleData(data)
- * })
- * UaMessageQueue.queueEvents.on('full',(arrayOfMessages:any[])=>{
- *     eventHandle(arrayOfMessages)
- * })
- * UaMessageQueue.queueEvents.on('close', (data) => {
- *     eventHandle(data)
- * })
+ * @description 一个MessagePipe,本质上是一个map其中存储了形如<nodeId,[data1,data2]>的数据,并且定义了events用于订阅使用
  */
-export module MessageQueue {
-    let queue: Map<string, UaMessage[]> = new Map()
-    let maxLength: number = Config.mqLength as number
-    let currentLength = 0
-    export let queueEvents: EventEmitter = new EventEmitter()
-
-    export function changeMaxLength(length: number) {
-        if (length > 0) maxLength = length
-    }
-
-    /**
-     * @description 将信息节点推入消息队列之中
-     * @param message
-     */
-    export function enqueue(message: UaMessage) {
-        let data = queue.get(message.nodeId)
-        if (data) {
-            data.push(message)
-            if (data.length >= maxLength) {
-                queueEvents.emit('full', data)
-                data.length = 0
-            }
-        } else {
-            queue.set(message.nodeId, [message])
-        }
-        queueEvents.emit('pushed', message)
-        currentLength++
-    }
-
-    export function closeMq() {
-        let lastQ = new Map(queue)
-        queueEvents.emit('close', lastQ)
-        queue.clear()
-        return lastQ
-    }
-}
-
 export class MessagePipe {
     content: Map<string, any[]>
     events: EventEmitter
@@ -93,9 +40,24 @@ export class MessagePipe {
     }
 }
 
+/**
+ * @description 一个中间消息转发者,通过自主新建的MessagePipe来实现不同管道的订阅与通信
+ */
 export module Broker {
     let pipes: Map<string, MessagePipe> = new Map<string, MessagePipe>()
 
+    /**
+     * @description 接收消息并且推入pipe中,如果pipe不存在,那么新建一个pipe
+     * @param pipeId
+     * @param messageId
+     * @param message
+     * @example
+     * Broker.receive(
+     *   Config.defaultPipeName,
+     *   messageId,
+     *   new UaMessage(data, nodeId, item.displayName),
+     *)
+     */
     export async function receive(pipeId: string, messageId: string, message: any) {
         let data = pipes.get(pipeId)
         if (!data) {
@@ -105,15 +67,35 @@ export module Broker {
         data.inPipe(messageId, message)
     }
 
+    /**
+     * @description 创建一个MessagePipe
+     * @param pipeId
+     * @example
+     * Broker.createPipe(Config.defaultPipeName)
+     */
     export function createPipe(pipeId: string,) {
         pipes.set(pipeId, new MessagePipe())
     }
 
+    /**
+     * @description 得到你订阅的管道的event,并且利用它进行功能开发
+     * @param pipeId
+     * @example
+     * let events = Broker.getPipeEvents(Config.defaultPipeName)
+     * events?.on('full', (data) => {
+     *    DbService.insertMany(data)
+     * })
+     */
     export function getPipeEvents(pipeId: string) {
         let pipe = pipes.get(pipeId)
         return pipe ? pipe.events : undefined
     }
 
+    /**
+     * @description 可以改变你所指定的MessagePipe中消息队列的长度,默认值为200
+     * @param pipeId
+     * @param length
+     */
     export function changePipeLength(pipeId: string, length: number) {
         let pipe = pipes.get(pipeId)
         if (pipe) {
@@ -121,10 +103,66 @@ export module Broker {
         }
     }
 
+    /**
+     * @description 终结所有当前存在的messagePipe,注意:这会导致pipe中的数据丢失,但是会在消失之前通过close事件发送出去
+     */
     export async function terminateAll() {
         pipes.forEach((pipe) => {
             pipe.terminate()
         })
     }
 }
+
+/**
+ * @description Ua后台发过来的消息的队列,前端只需订阅pushed,
+ * 数据库订阅full/close事件即可
+ * 当full事件触发之后,会清空队列
+ * @author hhj
+ * @example
+ * UaMessageQueue.queueEvents.on('pushed',(data)=>{
+ *     handleData(data)
+ * })
+ * UaMessageQueue.queueEvents.on('full',(arrayOfMessages:any[])=>{
+ *     eventHandle(arrayOfMessages)
+ * })
+ * UaMessageQueue.queueEvents.on('close', (data) => {
+ *     eventHandle(data)
+ * })
+ */
+// export module MessageQueue {
+//     let queue: Map<string, UaMessage[]> = new Map()
+//     let maxLength: number = Config.mqLength as number
+//     let currentLength = 0
+//     export let queueEvents: EventEmitter = new EventEmitter()
+//
+//     export function changeMaxLength(length: number) {
+//         if (length > 0) maxLength = length
+//     }
+//
+//     /**
+//      * @description 将信息节点推入消息队列之中
+//      * @param message
+//      */
+//     export function enqueue(message: UaMessage) {
+//         let data = queue.get(message.nodeId)
+//         if (data) {
+//             data.push(message)
+//             if (data.length >= maxLength) {
+//                 queueEvents.emit('full', data)
+//                 data.length = 0
+//             }
+//         } else {
+//             queue.set(message.nodeId, [message])
+//         }
+//         queueEvents.emit('pushed', message)
+//         currentLength++
+//     }
+//
+//     export function closeMq() {
+//         let lastQ = new Map(queue)
+//         queueEvents.emit('close', lastQ)
+//         queue.clear()
+//         return lastQ
+//     }
+// }
 

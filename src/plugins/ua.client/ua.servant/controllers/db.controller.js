@@ -5,7 +5,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             resolve(value);
         });
     }
-
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
             try {
@@ -49,9 +48,7 @@ var DbController;
             }
         });
     }
-
     DbController.init = init;
-
     function insert(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -62,9 +59,7 @@ var DbController;
             }
         });
     }
-
     DbController.insert = insert;
-
     function insertMany(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -75,9 +70,7 @@ var DbController;
             }
         });
     }
-
     DbController.insertMany = insertMany;
-
     function createTable(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -88,6 +81,5 @@ var DbController;
             }
         });
     }
-
     DbController.createTable = createTable;
 })(DbController = exports.DbController || (exports.DbController = {}));

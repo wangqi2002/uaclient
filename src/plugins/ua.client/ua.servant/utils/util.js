@@ -61,9 +61,7 @@ var JsonUtils;
             });
         }
     }
-
     JsonUtils.modifyJsonNode = modifyJsonNode;
-
     /**
      * @description 用于读取json文件中的指定节点,并返回目标对象/值,
      * nodeToModify应该传入一个字符串数组,按顺序描述json节点,前后节点之间应当为父子关系
@@ -99,7 +97,6 @@ var JsonUtils;
             throw Error('no such file');
         }
     }
-
     JsonUtils.getJsonNode = getJsonNode;
 })(JsonUtils = exports.JsonUtils || (exports.JsonUtils = {}));
 var DbUtils;
@@ -119,9 +116,7 @@ var DbUtils;
             day = '0' + day;
         return `date_${date.getFullYear()}_${month}_${day}`;
     }
-
     DbUtils.formatDateYMD = formatDateYMD;
-
     function formatDateYM(date) {
         let monthN = date.getMonth() + 1;
         let month = monthN.toString();
@@ -133,24 +128,18 @@ var DbUtils;
             day = '0' + day;
         return `month_${date.getFullYear()}_${month}`;
     }
-
     DbUtils.formatDateYM = formatDateYM;
-
     function formatDateYMW(date) {
         let day = date.getDay();
         let d = date.getDate();
         return `week_${date.getFullYear()}_${date.getMonth() + 1}_${Math.ceil((d + 6 - day) / 7)}`;
     }
-
     DbUtils.formatDateYMW = formatDateYMW;
-
     function formatDateY(date) {
         let year = date.getFullYear();
         return `year_${year}`;
     }
-
     DbUtils.formatDateY = formatDateY;
-
     function validateDbName(name) {
         if (typeof name === 'string') {
             let reg = new RegExp('^[\u4E00-\u9FA5A-Za-z_]+[\u4E00-\u9FA5a-z0-9_]{2,15}$');
@@ -159,7 +148,6 @@ var DbUtils;
             return false;
         }
     }
-
     DbUtils.validateDbName = validateDbName;
 })(DbUtils = exports.DbUtils || (exports.DbUtils = {}));
 var CertUtils;
@@ -175,6 +163,5 @@ var CertUtils;
             return true;
         }
     }
-
     CertUtils.validateCertOptions = validateCertOptions;
 })(CertUtils = exports.CertUtils || (exports.CertUtils = {}));

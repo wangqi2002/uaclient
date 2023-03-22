@@ -7,7 +7,6 @@ exports.Log = exports.ClientInfo = exports.ClientError = exports.ClientWarn = ex
 const log4js_1 = require("log4js");
 const util_1 = require("../../plugins/ua.client/ua.servant/utils/util");
 const path_1 = __importDefault(require("path"));
-
 class InfoModel {
     constructor(source, information, message) {
         this.timeStamp = new Date().toLocaleString();
@@ -16,9 +15,7 @@ class InfoModel {
         this.message = message;
     }
 }
-
 exports.InfoModel = InfoModel;
-
 class ClientWarn extends InfoModel {
     constructor(source, information, warn, message) {
         super(source, information, message);
@@ -26,9 +23,7 @@ class ClientWarn extends InfoModel {
             this.warn = warn;
     }
 }
-
 exports.ClientWarn = ClientWarn;
-
 class ClientError extends InfoModel {
     constructor(source, information, error, trace) {
         super(source, information);
@@ -38,28 +33,13 @@ class ClientError extends InfoModel {
             this.trace = trace;
     }
 }
-
 exports.ClientError = ClientError;
-
 class ClientInfo extends InfoModel {
     constructor(source, information, message) {
         super(source, information, message);
     }
 }
-
 exports.ClientInfo = ClientInfo;
-/**
- * @description 使用log4js库作为日志
- * 参照教程https://zhuanlan.zhihu.com/p/22110802,
- * 前端只需订阅info/error/warn事件即可
- * 如果需要配置log,使用Log.configureLog()方法,具体参考log4js配置方法
- * @example
- * const Log = require('log')
- * Log.info('nice')
- *
- * Log.logEvents.on('info',(info,params)=>{
- * })
- */
 var Log;
 (function (Log) {
     let con = {
@@ -74,29 +54,34 @@ var Log;
     };
     (0, log4js_1.configure)(con);
     let log = (0, log4js_1.getLogger)('client');
-
     function info(info) {
-        log.info(info.information, Object.assign({source: info.source}, info.message));
+        try {
+            log.info(info.information, Object.assign({source: info.source}, info.message));
+        } catch (e) {
+            throw e;
+        }
     }
-
     Log.info = info;
-
     function error(info) {
-        log.error(info.information, Object.assign({
-            source: info.source,
-            error: info.error,
-            stack: info.trace
-        }, info.message));
+        try {
+            log.error(info.information, Object.assign({
+                source: info.source,
+                error: info.error,
+                stack: info.trace
+            }, info.message));
+        } catch (e) {
+            throw e;
+        }
     }
-
     Log.error = error;
-
     function warn(info) {
-        log.warn(info.information, Object.assign({source: info.source, warn: info.warn}, info.message));
+        try {
+            log.warn(info.information, Object.assign({source: info.source, warn: info.warn}, info.message));
+        } catch (e) {
+            throw e;
+        }
     }
-
     Log.warn = warn;
-
     /**
      * @description 加载json文件中的log设置
      * @param fileName
@@ -107,9 +92,7 @@ var Log;
         let node = util_1.JsonUtils.getJsonNode(fileName, nodeToLoad);
         (0, log4js_1.configure)(node);
     }
-
     Log.loadLogConfig = loadLogConfig;
-
     /**
      * @description 具体参考log4js配置方法
      * @param conf
@@ -123,6 +106,5 @@ var Log;
         util_1.JsonUtils.modifyJsonNode(filePath, nodeToModify, content);
         (0, log4js_1.configure)(conf);
     }
-
     Log.configureLog = configureLog;
 })(Log = exports.Log || (exports.Log = {}));

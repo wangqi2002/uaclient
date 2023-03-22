@@ -1,6 +1,3 @@
-import {MessageQueue} from './broker'
-import {SessionService} from '../../plugins/ua.client/ua.servant/services/session.service'
-import {DbService} from '../../plugins/ua.client/ua.servant/services/db.service'
 import {Log} from './log'
 import {Configuration} from 'log4js'
 
@@ -22,15 +19,15 @@ export module Operations {
         Log.configureLog(conf, filepath, nodeToModify)
     }
 
-    export function configureMQ(length: number) {
-        MessageQueue.changeMaxLength(length)
-    }
-
-    export async function close() {
-        MessageQueue.closeMq().forEach((messages) => {
-            DbService.insertMany(messages)
-        })
-        await SessionService.closeSession(true)
-        // DbService.closeDb()
-    }
+    // export function configureMQ(pipeName:string,length: number) {
+    //     Broker.changeMaxLength(pipeName,length)
+    // }
+    //
+    // export async function close() {
+    //     MessageQueue.closeMq().forEach(() => {
+    //         DbService.insertMany()
+    //     })
+    //     await SessionService.closeSession(true)
+    //     // DbService.closeDb()
+    // }
 }

@@ -24,6 +24,7 @@
     "bootstrap": "^5.2.3",
     "dotenv": "^16.0.3",
     "electron-squirrel-startup": "^1.0.0",
+    "electron-store": "^8.1.0",
     "jquery": "^3.6.4",
     "koa": "^2.14.1",
     "koa-body": "^6.0.1",

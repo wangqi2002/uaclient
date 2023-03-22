@@ -5,7 +5,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             resolve(value);
         });
     }
-
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
             try {
@@ -39,7 +38,6 @@ const events_1 = require("events");
 var SubscriptController;
 (function (SubscriptController) {
     SubscriptController.events = new events_1.EventEmitter();
-
     function init(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -51,9 +49,7 @@ var SubscriptController;
             }
         });
     }
-
     SubscriptController.init = init;
-
     function modify(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -65,9 +61,7 @@ var SubscriptController;
             }
         });
     }
-
     SubscriptController.modify = modify;
-
     function addItemGroup(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -79,9 +73,7 @@ var SubscriptController;
             }
         });
     }
-
     SubscriptController.addItemGroup = addItemGroup;
-
     function addItem(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -92,9 +84,7 @@ var SubscriptController;
             }
         });
     }
-
     SubscriptController.addItem = addItem;
-
     function getItems(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -105,9 +95,7 @@ var SubscriptController;
             }
         });
     }
-
     SubscriptController.getItems = getItems;
-
     function deleteItems(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -118,9 +106,7 @@ var SubscriptController;
             }
         });
     }
-
     SubscriptController.deleteItems = deleteItems;
-
     function terminate(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -131,6 +117,5 @@ var SubscriptController;
             }
         });
     }
-
     SubscriptController.terminate = terminate;
 })(SubscriptController = exports.SubscriptController || (exports.SubscriptController = {}));

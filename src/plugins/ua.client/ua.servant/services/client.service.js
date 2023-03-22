@@ -5,7 +5,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             resolve(value);
         });
     }
-
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
             try {
@@ -42,7 +41,6 @@ var ClientService;
     ClientService.uaConnectionAlive = false;
     ClientService.currentServer = 'No Server';
     let clientOption = config_default_1.Config.defaultClient;
-
     function createClient(clientOptions = clientOption) {
         try {
             ClientService.client = node_opcua_1.OPCUAClient.create(clientOptions);
@@ -50,9 +48,7 @@ var ClientService;
             throw new log_1.ClientError(ua_enums_1.UaSources.clientService, ua_enums_1.UaErrors.errorCreateClient, e.message, e.stack);
         }
     }
-
     ClientService.createClient = createClient;
-
     function connectToServer(endpointUrl) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -63,9 +59,7 @@ var ClientService;
             }
         });
     }
-
     ClientService.connectToServer = connectToServer;
-
     function disconnectFromServer(deleteSubscription = true) {
         return __awaiter(this, void 0, void 0, function* () {
             if (session_service_1.SessionService.session) {
@@ -79,9 +73,7 @@ var ClientService;
             yield ClientService.client.disconnect();
         });
     }
-
     ClientService.disconnectFromServer = disconnectFromServer;
-
     //todo 测试此项
     function getServersOnNetwork(options) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -95,9 +87,7 @@ var ClientService;
             }
         });
     }
-
     ClientService.getServersOnNetwork = getServersOnNetwork;
-
     function getEndpoints(params) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -125,26 +115,19 @@ var ClientService;
             }
         });
     }
-
     ClientService.getEndpoints = getEndpoints;
-
     function getPrivateKey() {
         return ClientService.client.getPrivateKey();
     }
-
     ClientService.getPrivateKey = getPrivateKey;
-
     function getClientCert() {
         return ClientService.client.getCertificate();
     }
-
     ClientService.getClientCert = getClientCert;
 })(ClientService = exports.ClientService || (exports.ClientService = {}));
-
 function f() {
     return __awaiter(this, void 0, void 0, function* () {
         yield ClientService.connectToServer('a');
     });
 }
-
 // f()

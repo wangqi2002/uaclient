@@ -5,7 +5,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             resolve(value);
         });
     }
-
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
             try {
@@ -48,9 +47,7 @@ var SessionController;
             }
         });
     }
-
     SessionController.init = init;
-
     function changeIdentity(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -62,9 +59,7 @@ var SessionController;
             }
         });
     }
-
     SessionController.changeIdentity = changeIdentity;
-
     function close(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -78,9 +73,7 @@ var SessionController;
             }
         });
     }
-
     SessionController.close = close;
-
     function readById(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -91,9 +84,7 @@ var SessionController;
             }
         });
     }
-
     SessionController.readById = readById;
-
     function getIdByName(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -109,9 +100,7 @@ var SessionController;
             }
         });
     }
-
     SessionController.getIdByName = getIdByName;
-
     function write(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -123,9 +112,7 @@ var SessionController;
             }
         });
     }
-
     SessionController.write = write;
-
     function browseRoot(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -136,9 +123,7 @@ var SessionController;
             }
         });
     }
-
     SessionController.browseRoot = browseRoot;
-
     function browse(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -149,9 +134,7 @@ var SessionController;
             }
         });
     }
-
     SessionController.browse = browse;
-
     function serverCert(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -161,9 +144,7 @@ var SessionController;
             }
         });
     }
-
     SessionController.serverCert = serverCert;
-
     function history(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -174,9 +155,7 @@ var SessionController;
             }
         });
     }
-
     SessionController.history = history;
-
     function historyValue(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -187,6 +166,5 @@ var SessionController;
             }
         });
     }
-
     SessionController.historyValue = historyValue;
 })(SessionController = exports.SessionController || (exports.SessionController = {}));

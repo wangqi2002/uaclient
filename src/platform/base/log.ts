@@ -48,18 +48,6 @@ export class ClientInfo extends InfoModel {
     }
 }
 
-/**
- * @description 使用log4js库作为日志
- * 参照教程https://zhuanlan.zhihu.com/p/22110802,
- * 前端只需订阅info/error/warn事件即可
- * 如果需要配置log,使用Log.configureLog()方法,具体参考log4js配置方法
- * @example
- * const Log = require('log')
- * Log.info('nice')
- *
- * Log.logEvents.on('info',(info,params)=>{
- * })
- */
 export module Log {
     let con = {
         appenders: {
@@ -75,17 +63,27 @@ export module Log {
     let log: Logger = getLogger('client')
 
     export function info(info: ClientInfo) {
-        log.info(info.information, {source: info.source, ...info.message})
+        try {
+            log.info(info.information, {source: info.source, ...info.message})
+        } catch (e: any) {
+            throw e
+        }
     }
 
     export function error(info: ClientError) {
-        log.error(info.information,
-            {source: info.source, error: info.error, stack: info.trace, ...info.message})
+        try {
+            log.error(info.information, {source: info.source, error: info.error, stack: info.trace, ...info.message})
+        } catch (e: any) {
+            throw e
+        }
     }
 
     export function warn(info: ClientWarn) {
-        log.warn(info.information,
-            {source: info.source, warn: info.warn, ...info.message})
+        try {
+            log.warn(info.information, {source: info.source, warn: info.warn, ...info.message})
+        } catch (e: any) {
+            throw e
+        }
     }
 
     /**

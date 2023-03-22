@@ -22,7 +22,6 @@ var Server;
         certificate_router_1.CertificateRouter.router,
         db_router_1.DbRouter.router
     ];
-
     function activateServer() {
         Server.app.use((0, koa_body_1.koaBody)());
         Server.app.use(error_middleware_1.ErrorMiddleware.handleError);
@@ -34,7 +33,6 @@ var Server;
             Server.app.emit('serverCreated', config_default_1.Config.port);
         });
     }
-
     Server.activateServer = activateServer;
 })(Server = exports.Server || (exports.Server = {}));
 Server.activateServer();

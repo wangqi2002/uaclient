@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", {value: true});
 exports.ResponseModel = void 0;
 const ua_enums_1 = require("../../common/ua.enums");
-
 /**
  * @description 用来统一response的格式,默认成功
  */
@@ -19,5 +18,4 @@ class ResponseModel {
         this.data = data;
     }
 }
-
 exports.ResponseModel = ResponseModel;

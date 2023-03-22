@@ -5,7 +5,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             resolve(value);
         });
     }
-
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
             try {
@@ -48,9 +47,7 @@ var ClientController;
             }
         });
     }
-
     ClientController.init = init;
-
     function connect(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -65,9 +62,7 @@ var ClientController;
             }
         });
     }
-
     ClientController.connect = connect;
-
     function disconnect(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -79,9 +74,7 @@ var ClientController;
             }
         });
     }
-
     ClientController.disconnect = disconnect;
-
     function getEndpoints(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -92,9 +85,7 @@ var ClientController;
             }
         });
     }
-
     ClientController.getEndpoints = getEndpoints;
-
     function getPrivateKey(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -104,9 +95,7 @@ var ClientController;
             }
         });
     }
-
     ClientController.getPrivateKey = getPrivateKey;
-
     function getCertificate(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -116,9 +105,7 @@ var ClientController;
             }
         });
     }
-
     ClientController.getCertificate = getCertificate;
-
     function getServers(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -128,6 +115,5 @@ var ClientController;
             }
         });
     }
-
     ClientController.getServers = getServers;
 })(ClientController = exports.ClientController || (exports.ClientController = {}));

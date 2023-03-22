@@ -5,7 +5,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             resolve(value);
         });
     }
-
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
             try {
@@ -44,7 +43,6 @@ var CertificateService;
         name: 'pki',
         automaticallyAcceptUnknownCertificate: false
     });
-
     //todo node-opcua-pki命令测试
     /**
      * @description 创建一个证书,dns即domain names,默认证书根文件夹为项目根目录,
@@ -79,9 +77,7 @@ var CertificateService;
             }
         });
     }
-
     CertificateService.createCertificate = createCertificate;
-
     function trustServerCertificate(serverCertificate) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -91,9 +87,7 @@ var CertificateService;
             }
         });
     }
-
     CertificateService.trustServerCertificate = trustServerCertificate;
-
     function rejectServerCertificate(serverCertificate) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -103,9 +97,7 @@ var CertificateService;
             }
         });
     }
-
     CertificateService.rejectServerCertificate = rejectServerCertificate;
-
     /**
      * @description 返回server证书的信任状态
      * @param serverCertificate
@@ -119,7 +111,6 @@ var CertificateService;
             }
         });
     }
-
     CertificateService.getTrustStatus = getTrustStatus;
 })(CertificateService = exports.CertificateService || (exports.CertificateService = {}));
 // async function f() {

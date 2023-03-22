@@ -5,7 +5,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             resolve(value);
         });
     }
-
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
             try {
@@ -107,9 +106,7 @@ var AgentMiddleware;
             }
         });
     }
-
     AgentMiddleware.clientValidator = clientValidator;
-
     function sessionValidator(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (ctx.request.body) {
@@ -337,9 +334,7 @@ var AgentMiddleware;
             }
         });
     }
-
     AgentMiddleware.sessionValidator = sessionValidator;
-
     function subscriptValidator(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (ctx.request.path) {
@@ -452,9 +447,7 @@ var AgentMiddleware;
             }
         });
     }
-
     AgentMiddleware.subscriptValidator = subscriptValidator;
-
     function certValidator(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (ctx.request.body) {
@@ -490,9 +483,7 @@ var AgentMiddleware;
             }
         });
     }
-
     AgentMiddleware.certValidator = certValidator;
-
     function dbValidator(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (ctx.request.body) {
@@ -568,9 +559,7 @@ var AgentMiddleware;
             }
         });
     }
-
     AgentMiddleware.dbValidator = dbValidator;
-
     function validateError(paramType) {
         return new log_1.ClientError(ua_enums_1.UaSources.paramValidator, ua_enums_1.UaErrors.errorValidateParam, `Supposed to be ${paramType}`);
     }

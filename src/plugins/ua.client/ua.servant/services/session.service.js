@@ -5,7 +5,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             resolve(value);
         });
     }
-
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
             try {
@@ -40,7 +39,6 @@ const log_1 = require("../../../../platform/base/log");
 var SessionService;
 (function (SessionService) {
     SessionService.userIdentity = {type: node_opcua_1.UserTokenType.Anonymous};
-
     function createSession(userInfo) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -57,9 +55,7 @@ var SessionService;
             }
         });
     }
-
     SessionService.createSession = createSession;
-
     function changeIdentity(userInfo) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -69,9 +65,7 @@ var SessionService;
             }
         });
     }
-
     SessionService.changeIdentity = changeIdentity;
-
     function closeSession(deleteSubscription) {
         return __awaiter(this, void 0, void 0, function* () {
             if (SessionService.session) {
@@ -83,9 +77,7 @@ var SessionService;
             }
         });
     }
-
     SessionService.closeSession = closeSession;
-
     function readByNodeId(nodeToRead, maxAge) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -97,9 +89,7 @@ var SessionService;
             }
         });
     }
-
     SessionService.readByNodeId = readByNodeId;
-
     function browseRootFolder() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -116,9 +106,7 @@ var SessionService;
             }
         });
     }
-
     SessionService.browseRootFolder = browseRootFolder;
-
     function getNodeIdByBrowseName(relativePathBNF, rootNode = 'RootFolder') {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -130,9 +118,7 @@ var SessionService;
             }
         });
     }
-
     SessionService.getNodeIdByBrowseName = getNodeIdByBrowseName;
-
     function writeToServer(nodesToWrite) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -142,9 +128,7 @@ var SessionService;
             }
         });
     }
-
     SessionService.writeToServer = writeToServer;
-
     /**
      * @description
      * 返回browseResult,包含references和statusCode和continuation point,
@@ -174,15 +158,11 @@ var SessionService;
             }
         });
     }
-
     SessionService.browse = browse;
-
     function serverCert() {
         return SessionService.session.serverCertificate.toString();
     }
-
     SessionService.serverCert = serverCert;
-
     //todo 是否可用?
     function historyRead(request) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -193,9 +173,7 @@ var SessionService;
             }
         });
     }
-
     SessionService.historyRead = historyRead;
-
     function readHistoryValue(param) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -208,6 +186,5 @@ var SessionService;
             }
         });
     }
-
     SessionService.readHistoryValue = readHistoryValue;
 })(SessionService = exports.SessionService || (exports.SessionService = {}));

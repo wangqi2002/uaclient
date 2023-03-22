@@ -5,7 +5,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             resolve(value);
         });
     }
-
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
             try {
@@ -49,7 +48,6 @@ var DbService;
     DbService.defaultTableName = config_default_1.Config.defaultTable;
     DbService.defaultAttributes = config_default_1.Config.defaultAttributes;
     DbService.events = new events_1.default();
-
     /**
      * @description 用于初始化database,如果表名不存在则创建一个新表
      * @param createMode
@@ -145,9 +143,7 @@ var DbService;
             }
         });
     }
-
     DbService.init = init;
-
     /**
      * @description 传入参数来插入数据,可以指定表名和字段名称
      * @param data
@@ -161,9 +157,7 @@ var DbService;
             }
         });
     }
-
     DbService.insert = insert;
-
     /**
      * @description 连续写入多条数据
      * @param dataList
@@ -177,9 +171,7 @@ var DbService;
             }
         });
     }
-
     DbService.insertMany = insertMany;
-
     /**
      * @description 用于创建一个表,可以定制表名和字段名,输入即可,但注意sqlite3表命名规范
      * @param tableName
@@ -196,6 +188,5 @@ var DbService;
             }
         });
     }
-
     DbService.createTable = createTable;
 })(DbService = exports.DbService || (exports.DbService = {}));

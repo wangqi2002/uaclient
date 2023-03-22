@@ -5,7 +5,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             resolve(value);
         });
     }
-
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
             try {
@@ -47,9 +46,7 @@ var CertificateController;
             }
         });
     }
-
     CertificateController.create = create;
-
     function trust(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -61,9 +58,7 @@ var CertificateController;
             }
         });
     }
-
     CertificateController.trust = trust;
-
     function reject(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -75,9 +70,7 @@ var CertificateController;
             }
         });
     }
-
     CertificateController.reject = reject;
-
     function getTrustStatus(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -88,6 +81,5 @@ var CertificateController;
             }
         });
     }
-
     CertificateController.getTrustStatus = getTrustStatus;
 })(CertificateController = exports.CertificateController || (exports.CertificateController = {}));
