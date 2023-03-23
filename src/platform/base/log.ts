@@ -1,6 +1,6 @@
 import {Configuration, configure, getLogger, Logger} from 'log4js'
-import {JsonUtils} from '../../plugins/ua.client/ua.servant/utils/util'
 import Path from 'path'
+import {ClientConfig, ConfigNames} from './config'
 
 export type Source = string | undefined
 export type Warn = string
@@ -49,17 +49,7 @@ export class ClientInfo extends InfoModel {
 }
 
 export module Log {
-    let con = {
-        appenders: {
-            client: {
-                type: 'file',
-                filename: Path.join(__dirname, "..", "..", '/logs/client.log'),
-                maxLogSize: 50000,//文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
-            }
-        },
-        categories: {default: {appenders: ['client'], level: 'info'}}
-    }
-    configure(con)
+    configureLog()
     let log: Logger = getLogger('client')
 
     export function info(info: ClientInfo) {
@@ -87,27 +77,30 @@ export module Log {
     }
 
     /**
-     * @description 加载json文件中的log设置
-     * @param fileName
-     * @param nodeToLoad
-     * @private
-     */
-    export function loadLogConfig(fileName: string, nodeToLoad: string[]) {
-        let node = JsonUtils.getJsonNode(fileName, nodeToLoad)
-        configure(node)
-    }
-
-    /**
      * @description 具体参考log4js配置方法
      * @param conf
-     * @param filePath
-     * @param nodeToModify
      */
-    export function configureLog(conf: Configuration, filePath: string, nodeToModify: string[]) {
-        const content = JSON.stringify({
-            LogConfig: {...conf},
-        })
-        JsonUtils.modifyJsonNode(filePath, nodeToModify, content)
-        configure(conf)
+    export function configureLog(conf?: Configuration) {
+        try {
+            if (conf) {
+                ClientConfig.set(ConfigNames.log, conf)
+            } else {
+                conf = {
+                    appenders: {
+                        client: {
+                            type: 'file',
+                            filename: Path.join(__dirname, "..", "..", '/logs/client.log'),
+                            maxLogSize: 50000,//文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
+                        }
+                    },
+                    categories: {default: {appenders: ['client'], level: 'info'}}
+                }
+                if (!(ClientConfig.has(ConfigNames.log))) ClientConfig.set(ConfigNames.log, conf)
+                configure(conf)
+            }
+        } catch (e: any) {
+            throw e
+        }
     }
 }
+//todo 安装时,应当初始化log和database服务

@@ -1,27 +1,31 @@
 import {MainHandler} from "./platform/ipc/ipc.handler"
 import {app, BrowserWindow, screen} from "electron"
 import path from 'path'
+import WinState from 'electron-win-state'
 
-const {menu} = require("./workbench/menu")
+//todo 项目实现,手动输入命令实现,electron-squirrel-startup处理安装问题,处理全局路径问题,主进程中实现html页面的加载,插件加载问题
 
-//todo 配置文件使用electron-store模块数据保存在JSON文件中app.getPath(‘userData’)
 
-async function createWindow() {
+app.on("ready", () => {
+    const winState = new WinState({
+        defaultWidth: screen.getPrimaryDisplay().workAreaSize.width * 3 / 4,
+        defaultHeight: screen.getPrimaryDisplay().workAreaSize.height * 3 / 4,
+    })
     const mainWindow = new BrowserWindow({
-        width: screen.getPrimaryDisplay().workAreaSize.width,
-        height: screen.getPrimaryDisplay().workAreaSize.height / 2,
+        ...winState.winOptions,
         frame: false,
+        center: true,
         webPreferences: {
             preload: path.resolve(__dirname, "./preload.js"),
         },
+
     })
-
     mainWindow.webContents.openDevTools()
-    await mainWindow.loadFile(path.join(__dirname, "./workbench/index.html"))
+    mainWindow.loadFile(path.join(__dirname, "./workbench/index.html"))
     MainHandler.initBind(mainWindow)
-}
+    winState.manage(mainWindow)
+})
 
-app.on("ready", createWindow)
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
         app.quit()

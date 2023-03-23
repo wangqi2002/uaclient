@@ -16,7 +16,7 @@ export module Operations {
     }
 
     export async function configureLog(conf: Configuration, filepath: string, nodeToModify: string[]) {
-        Log.configureLog(conf, filepath, nodeToModify)
+        Log.configureLog(conf)
     }
 
     // export function configureMQ(pipeName:string,length: number) {

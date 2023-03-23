@@ -2,16 +2,16 @@
   "name": "uaclient",
   "productName": "uaclient",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "This client solve any problem with plugins in any system for 'Internet of Things'",
   "main": "src/main.js",
   "scripts": {
-    "dev": "nodemon --exec electron .",
+    "dev": "nodemon -e js,html --exec electron .",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",
-    "compile": "npx ttsc"
+    "compile": "nodemon -e ts --exec npx ttsc"
   },
   "keywords": [],
   "author": {
@@ -20,12 +20,11 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@popperjs/core": "^2.11.6",
     "bootstrap": "^5.2.3",
     "dotenv": "^16.0.3",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.1.0",
-    "jquery": "^3.6.4",
+    "electron-win-state": "^1.1.22",
     "koa": "^2.14.1",
     "koa-body": "^6.0.1",
     "koa-router": "^12.0.0",

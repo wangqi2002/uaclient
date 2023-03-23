@@ -1,6 +1,7 @@
 import {ipcMain} from 'electron'
-import {RendererEvents} from './ipc.events'
+import {mainEvents} from './ipc.events'
 import {ClientError, ClientInfo, Log} from '../base/log'
+import {Persistence} from '../base/persistence'
 
 export module MainHandler {
     import BrowserWindow = Electron.BrowserWindow
@@ -8,23 +9,24 @@ export module MainHandler {
     export function initBind(mainWindow: BrowserWindow) {
         mainBind(mainWindow)
         logBind()
+        persistBind()
     }
 
     export function mainBind(mainWindow: BrowserWindow) {
-        ipcMain.on(RendererEvents.mainMenu, () => {
+        ipcMain.on(mainEvents.mainMenu, () => {
 
         })
-        ipcMain.on(RendererEvents.mainMini, () => {
+        ipcMain.on(mainEvents.mainMini, () => {
             mainWindow.minimize()
         })
-        ipcMain.on(RendererEvents.mainMax, () => {
+        ipcMain.on(mainEvents.mainMax, () => {
             if (mainWindow.isMaximized()) {
                 mainWindow.restore()
             } else {
                 mainWindow.maximize()
             }
         })
-        ipcMain.on(RendererEvents.mainClose, () => {
+        ipcMain.on(mainEvents.mainClose, () => {
             mainWindow.close()
         })
     }
@@ -38,6 +40,12 @@ export module MainHandler {
         })
         ipcMain.on('log:warn', (event, args: ClientError) => {
             Log.warn(args)
+        })
+    }
+
+    export function persistBind() {
+        ipcMain.on('persist:init', (event, tableName, attributes) => {
+            Persistence.init(tableName, attributes)
         })
     }
 

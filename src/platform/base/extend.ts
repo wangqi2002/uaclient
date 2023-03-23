@@ -1,10 +1,9 @@
 import {ClientWarn} from './log'
 import {MainHandler} from '../ipc/ipc.handler'
-
-export type activateEvent = string
-export type activateFunction = Function
-
+//todo 修改以使用child_process执行插件
 export module Extend {
+    type activateEvent = string
+    type activateFunction = Function
     let plugins: Map<activateEvent, activateFunction> = new Map()
 
     export function loadExtend(event: activateEvent, func: activateFunction) {
@@ -16,7 +15,10 @@ export module Extend {
         }
     }
 
-    export function activateExtend() {
-
+    export function activateExtend(event: activateEvent) {
+        let func = plugins.get(event)
+        if (func) {
+            func()
+        }
     }
 }

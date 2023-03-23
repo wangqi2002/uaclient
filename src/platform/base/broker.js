@@ -5,7 +5,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
             resolve(value);
         });
     }
-
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) {
             try {
@@ -33,7 +32,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", {value: true});
 exports.Broker = exports.MessagePipe = void 0;
 const events_1 = require("events");
-
 /**
  * @description 一个MessagePipe,本质上是一个map其中存储了形如<nodeId,[data1,data2]>的数据,并且定义了events用于订阅使用
  */
@@ -73,7 +71,6 @@ exports.MessagePipe = MessagePipe;
 var Broker;
 (function (Broker) {
     let pipes = new Map();
-
     /**
      * @description 接收消息并且推入pipe中,如果pipe不存在,那么新建一个pipe
      * @param pipeId
@@ -96,9 +93,7 @@ var Broker;
             data.inPipe(messageId, message);
         });
     }
-
     Broker.receive = receive;
-
     /**
      * @description 创建一个MessagePipe
      * @param pipeId
@@ -108,9 +103,7 @@ var Broker;
     function createPipe(pipeId) {
         pipes.set(pipeId, new MessagePipe());
     }
-
     Broker.createPipe = createPipe;
-
     /**
      * @description 得到你订阅的管道的event,并且利用它进行功能开发
      * @param pipeId
@@ -124,9 +117,7 @@ var Broker;
         let pipe = pipes.get(pipeId);
         return pipe ? pipe.events : undefined;
     }
-
     Broker.getPipeEvents = getPipeEvents;
-
     /**
      * @description 可以改变你所指定的MessagePipe中消息队列的长度,默认值为200
      * @param pipeId
@@ -138,9 +129,7 @@ var Broker;
             pipe.changeMaxLength(length);
         }
     }
-
     Broker.changePipeLength = changePipeLength;
-
     /**
      * @description 终结所有当前存在的messagePipe,注意:这会导致pipe中的数据丢失,但是会在消失之前通过close事件发送出去
      */
@@ -151,7 +140,6 @@ var Broker;
             });
         });
     }
-
     Broker.terminateAll = terminateAll;
 })(Broker = exports.Broker || (exports.Broker = {}));
 /**

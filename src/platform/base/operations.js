@@ -47,15 +47,12 @@ var Operations;
         return __awaiter(this, void 0, void 0, function* () {
         });
     }
-
     Operations.initByConfig = initByConfig;
-
     function configureLog(conf, filepath, nodeToModify) {
         return __awaiter(this, void 0, void 0, function* () {
             log_1.Log.configureLog(conf, filepath, nodeToModify);
         });
     }
-
     Operations.configureLog = configureLog;
     // export function configureMQ(pipeName:string,length: number) {
     //     Broker.changeMaxLength(pipeName,length)
