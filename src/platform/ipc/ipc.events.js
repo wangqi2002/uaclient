@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RendererEvents = void 0;
-var RendererEvents;
-(function (RendererEvents) {
+exports.mainEvents = void 0;
+var mainEvents;
+(function (mainEvents) {
     //main
-    RendererEvents["mainMini"] = "main:mini";
-    RendererEvents["mainMax"] = "main:max";
-    RendererEvents["mainClose"] = "main:close";
-    RendererEvents["mainMenu"] = "main:menu";
-})(RendererEvents = exports.RendererEvents || (exports.RendererEvents = {}));
+    mainEvents["mainMini"] = "main:mini";
+    mainEvents["mainMax"] = "main:max";
+    mainEvents["mainClose"] = "main:close";
+    mainEvents["mainMenu"] = "main:menu";
+})(mainEvents = exports.mainEvents || (exports.mainEvents = {}));

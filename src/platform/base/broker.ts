@@ -1,4 +1,4 @@
-import {EventEmitter} from 'events'
+import { EventEmitter } from "events"
 
 /**
  * @description 一个MessagePipe,本质上是一个map其中存储了形如<nodeId,[data1,data2]>的数据,并且定义了events用于订阅使用
@@ -23,18 +23,18 @@ export class MessagePipe {
         if (data) {
             data.push(message)
             if (data.length >= this.maxLength) {
-                this.events.emit('full', data)
+                this.events.emit("full", data)
                 data.length = 0
             }
         } else {
             this.content.set(message.nodeId, [message])
         }
-        this.events.emit('pushed', message)
+        this.events.emit("pushed", message)
     }
 
     terminate() {
         let copy = new Map(this.content)
-        this.events.emit('close', copy)
+        this.events.emit("close", copy)
         this.content.clear()
         return copy
     }
@@ -73,7 +73,7 @@ export module Broker {
      * @example
      * Broker.createPipe(Config.defaultPipeName)
      */
-    export function createPipe(pipeId: string,) {
+    export function createPipe(pipeId: string) {
         pipes.set(pipeId, new MessagePipe())
     }
 
@@ -165,4 +165,3 @@ export module Broker {
 //         return lastQ
 //     }
 // }
-

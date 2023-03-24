@@ -1,35 +1,14 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) {
-        return value instanceof P ? value : new P(function (resolve) {
-            resolve(value);
-        });
-    }
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) {
-            try {
-                step(generator.next(value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function rejected(value) {
-            try {
-                step(generator["throw"](value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-        }
-
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.Broker = exports.MessagePipe = void 0;
 const events_1 = require("events");
 /**
@@ -49,17 +28,18 @@ class MessagePipe {
         if (data) {
             data.push(message);
             if (data.length >= this.maxLength) {
-                this.events.emit('full', data);
+                this.events.emit("full", data);
                 data.length = 0;
             }
-        } else {
+        }
+        else {
             this.content.set(message.nodeId, [message]);
         }
-        this.events.emit('pushed', message);
+        this.events.emit("pushed", message);
     }
     terminate() {
         let copy = new Map(this.content);
-        this.events.emit('close', copy);
+        this.events.emit("close", copy);
         this.content.clear();
         return copy;
     }

@@ -1,29 +1,35 @@
-import {MainHandler} from "./platform/ipc/ipc.handler"
-import {app, BrowserWindow, screen} from "electron"
-import path from 'path'
-import WinState from 'electron-win-state'
+import { app } from "electron"
 
 //todo 项目实现,手动输入命令实现,electron-squirrel-startup处理安装问题,处理全局路径问题,主进程中实现html页面的加载,插件加载问题
 
+const userData = function getUserDataPath() {}
+const codeCache = function getCodeCachePath() {}
+// let clientLanguage = undefined
+// if ("getPerferredSystemLanguages" in app) {
+//     clientLanguage = app.getPerferredSystemLanguages()?.[0] ??'cn'
+// }
 
-app.on("ready", () => {
-    const winState = new WinState({
-        defaultWidth: screen.getPrimaryDisplay().workAreaSize.width * 3 / 4,
-        defaultHeight: screen.getPrimaryDisplay().workAreaSize.height * 3 / 4,
-    })
-    const mainWindow = new BrowserWindow({
-        ...winState.winOptions,
-        frame: false,
-        center: true,
-        webPreferences: {
-            preload: path.resolve(__dirname, "./preload.js"),
-        },
-
-    })
-    mainWindow.webContents.openDevTools()
-    mainWindow.loadFile(path.join(__dirname, "./workbench/index.html"))
-    MainHandler.initBind(mainWindow)
-    winState.manage(mainWindow)
+function startUp(cachePath?: string, config?: any) {
+    const createMainWindow = require("./workbench/workbench")
+    createMainWindow()
+}
+async function onReady() {
+    startUp()
+}
+let args = function parseCLIArgs() {}
+app.once("ready", () => {
+    if ("trace" in args) {
+        const contentTrace = require("electron").contentTracing
+        const traceOptions = {
+            categoryFilter: /**args["trace-category-filter"] ||**/ "*",
+            traceOptions: /**args["trace-options"] || **/ "record-until-full,enable-sampling",
+        }
+        contentTrace.startRecording(traceOptions).finally(() => {
+            onReady()
+        })
+    } else {
+        onReady()
+    }
 })
 
 app.on("window-all-closed", () => {
@@ -31,8 +37,3 @@ app.on("window-all-closed", () => {
         app.quit()
     }
 })
-// app.on('activate', () => {
-//     if (BrowserWindow.getAllWindows().length === 0) {
-//         createWindow()
-//     }
-// })

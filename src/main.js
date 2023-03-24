@@ -1,41 +1,49 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const ipc_handler_1 = require("./platform/ipc/ipc.handler");
 const electron_1 = require("electron");
-const path_1 = __importDefault(require("path"));
-const electron_win_state_1 = __importDefault(require("electron-win-state"));
-const electron_store_1 = __importDefault(require("electron-store"));
-const { menu } = require("./workbench/menu");
-//todo 配置文件使用electron-store模块数据保存在JSON文件中app.getPath(‘userData’)
-new electron_store_1.default({
-    name: 'client.config',
-    fileExtension: 'json',
-    cwd: electron_1.app.getPath('userData'),
-    clearInvalidConfig: true,
-});
-electron_1.app.on("ready", () => {
-    const winState = new electron_win_state_1.default({
-        defaultWidth: electron_1.screen.getPrimaryDisplay().workAreaSize.width * 3 / 4,
-        defaultHeight: electron_1.screen.getPrimaryDisplay().workAreaSize.height * 3 / 4,
+//todo 项目实现,手动输入命令实现,electron-squirrel-startup处理安装问题,处理全局路径问题,主进程中实现html页面的加载,插件加载问题
+const userData = function getUserDataPath() { };
+const codeCache = function getCodeCachePath() { };
+// let clientLanguage = undefined
+// if ("getPerferredSystemLanguages" in app) {
+//     clientLanguage = app.getPerferredSystemLanguages()?.[0] ??'cn'
+// }
+function startUp(cachePath, config) {
+    const createMainWindow = require("./workbench/workbench");
+    createMainWindow();
+}
+function onReady() {
+    return __awaiter(this, void 0, void 0, function* () {
+        startUp();
     });
-    const mainWindow = new electron_1.BrowserWindow(Object.assign(Object.assign({}, winState.winOptions), { frame: false, center: true, webPreferences: {
-            preload: path_1.default.resolve(__dirname, "./preload.js"),
-        } }));
-    mainWindow.webContents.openDevTools();
-    mainWindow.loadFile(path_1.default.join(__dirname, "./workbench/index.html"));
-    ipc_handler_1.MainHandler.initBind(mainWindow);
-    winState.manage(mainWindow);
+}
+let args = function parseCLIArgs() { };
+electron_1.app.once("ready", () => {
+    if ("trace" in args) {
+        const contentTrace = require("electron").contentTracing;
+        const traceOptions = {
+            categoryFilter: /**args["trace-category-filter"] ||**/ "*",
+            traceOptions: /**args["trace-options"] || **/ "record-until-full,enable-sampling",
+        };
+        contentTrace.startRecording(traceOptions).finally(() => {
+            onReady();
+        });
+    }
+    else {
+        onReady();
+    }
 });
 electron_1.app.on("window-all-closed", () => {
     if (process.platform !== "darwin") {
         electron_1.app.quit();
     }
 });
-// app.on('activate', () => {
-//     if (BrowserWindow.getAllWindows().length === 0) {
-//         createWindow()
-//     }
-// })

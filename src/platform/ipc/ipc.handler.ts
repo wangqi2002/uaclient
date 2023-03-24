@@ -49,7 +49,7 @@ export module MainHandler {
         })
     }
 
-    export function extendBind(event: string, func: Function) {
+    export function extendBind(event: string, func: ) {
         ipcMain.on('extend:' + event, () => func)
     }
 
