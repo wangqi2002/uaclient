@@ -1,7 +1,7 @@
-import {ipcMain} from 'electron'
-import {mainEvents} from './ipc.events'
-import {ClientError, ClientInfo, Log} from '../base/log'
-import {Persistence} from '../base/persistence'
+import { IpcMain, ipcMain, IpcMainEvent } from "electron"
+import { mainEvents } from "./ipc.events"
+import { ClientError, ClientInfo, Log } from "../base/log"
+import { Persistence } from "../base/persistence"
 
 export module MainHandler {
     import BrowserWindow = Electron.BrowserWindow
@@ -13,9 +13,7 @@ export module MainHandler {
     }
 
     export function mainBind(mainWindow: BrowserWindow) {
-        ipcMain.on(mainEvents.mainMenu, () => {
-
-        })
+        ipcMain.on(mainEvents.mainMenu, () => {})
         ipcMain.on(mainEvents.mainMini, () => {
             mainWindow.minimize()
         })
@@ -32,28 +30,28 @@ export module MainHandler {
     }
 
     export function logBind() {
-        ipcMain.on('log:info', (event, args: ClientInfo) => {
+        ipcMain.on("log:info", (event, args: ClientInfo) => {
             Log.info(args)
         })
-        ipcMain.on('log:error', (event, args: ClientError) => {
+        ipcMain.on("log:error", (event, args: ClientError) => {
             Log.error(args)
         })
-        ipcMain.on('log:warn', (event, args: ClientError) => {
+        ipcMain.on("log:warn", (event, args: ClientError) => {
             Log.warn(args)
         })
     }
 
     export function persistBind() {
-        ipcMain.on('persist:init', (event, tableName, attributes) => {
-            Persistence.init(tableName, attributes)
+        ipcMain.on("persist:init", (event, storage, tableName, attributes) => {
+            Persistence.init(storage, tableName, attributes)
         })
     }
 
-    export function extendBind(event: string, func: ) {
-        ipcMain.on('extend:' + event, () => func)
+    export function extendBind(event: string, func: Function) {
+        ipcMain.on("extend:" + event, () => func)
     }
 
-    export function bindEvent(event: string, eventHandler: EventListener) {
+    export function bindEvent(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
         ipcMain.on(event, eventHandler)
     }
 }

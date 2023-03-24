@@ -1,39 +1,55 @@
 import { app } from "electron"
-
+import path from "path"
 //todo 项目实现,手动输入命令实现,electron-squirrel-startup处理安装问题,处理全局路径问题,主进程中实现html页面的加载,插件加载问题
+//todo 全局监听报错
+module ClientMain {
+    const product = require("/src/platform/product.json")
+    const userDataPath = getUserDataPath()
+    app.setPath("userData", userDataPath)
 
-const userData = function getUserDataPath() {}
-const codeCache = function getCodeCachePath() {}
-// let clientLanguage = undefined
-// if ("getPerferredSystemLanguages" in app) {
-//     clientLanguage = app.getPerferredSystemLanguages()?.[0] ??'cn'
-// }
+    const codeCachePath = getCodeCachePath()
 
-function startUp(cachePath?: string, config?: any) {
-    const createMainWindow = require("./workbench/workbench")
-    createMainWindow()
-}
-async function onReady() {
-    startUp()
-}
-let args = function parseCLIArgs() {}
-app.once("ready", () => {
-    if ("trace" in args) {
-        const contentTrace = require("electron").contentTracing
-        const traceOptions = {
-            categoryFilter: /**args["trace-category-filter"] ||**/ "*",
-            traceOptions: /**args["trace-options"] || **/ "record-until-full,enable-sampling",
+    function getCodeCachePath() {
+        const commit = product.commit
+        if (!commit) {
+            return undefined
         }
-        contentTrace.startRecording(traceOptions).finally(() => {
-            onReady()
-        })
-    } else {
-        onReady()
+        return path.join(userDataPath, "CacheData", commit)
     }
-})
+    function getUserDataPath() {
+        return "yes"
+    }
+    // let clientLanguage = undefined
+    // if ("getPerferredSystemLanguages" in app) {
+    //     clientLanguage = app.getPerferredSystemLanguages()?.[0] ??'cn'
+    // }
 
-app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") {
-        app.quit()
+    function startUp(cachePath?: string, config?: any) {
+        const createMainWindow = require("./workbench/workbench")
+        createMainWindow()
     }
-})
+    async function onReady() {
+        startUp()
+    }
+    let args = function parseCLIArgs() {}
+    app.once("ready", () => {
+        if ("trace" in args) {
+            const contentTrace = require("electron").contentTracing
+            const traceOptions = {
+                categoryFilter: /**args["trace-category-filter"] ||**/ "*",
+                traceOptions: /**args["trace-options"] || **/ "record-until-full,enable-sampling",
+            }
+            contentTrace.startRecording(traceOptions).finally(() => {
+                onReady()
+            })
+        } else {
+            onReady()
+        }
+    })
+
+    app.on("window-all-closed", () => {
+        if (process.platform !== "darwin") {
+            app.quit()
+        }
+    })
+}

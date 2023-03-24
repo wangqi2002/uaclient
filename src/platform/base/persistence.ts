@@ -1,27 +1,24 @@
-import {FindOptions, ModelAttributes, ModelCtor, Options, Sequelize} from 'sequelize'
-import path from 'path'
-import {ClientConfig, ConfigNames} from './config'
-import {is} from 'typia'
-
+import { FindOptions, ModelAttributes, ModelCtor, Options, Sequelize } from "sequelize"
+import path from "path"
+import { ClientConfig, ConfigNames } from "./config"
 export module Persistence {
-
     export let sequelize: Sequelize
     export let currentModel: ModelCtor<any>
 
-    export async function init(tableName: string, attributes: ModelAttributes) {
+    export async function init(storage: string, tableName: string, attributes: ModelAttributes) {
         try {
             let options = ClientConfig.get(ConfigNames.persistence)
-            if (is<Options>(options)) {
-                sequelize = new Sequelize(options)
+            if (options) {
+                sequelize = new Sequelize(options as Options)
             } else {
                 sequelize = new Sequelize({
-                    dialect: 'sqlite',
-                    storage: path.join(__dirname, '..', '..', '/databases/data.db'),
-                    logging: false
+                    dialect: "sqlite",
+                    storage: path.join(__dirname, "..", "..", "/databases/data.db"),
+                    logging: false,
                 })
             }
             await sequelize.authenticate()
-            currentModel = await sequelize.define(tableName, attributes, {timestamps: false})
+            currentModel = await sequelize.define(tableName, attributes, { timestamps: false })
             await Persistence.currentModel.sync()
         } catch (e: any) {
             throw e
@@ -30,7 +27,7 @@ export module Persistence {
 
     export async function insert(record: any) {
         try {
-            await currentModel.create({...record})
+            await currentModel.create({ ...record })
         } catch (e: any) {
             throw e
         }
@@ -58,5 +55,4 @@ export module Persistence {
     }
 
     //todo crud,备份/配置
-
 }

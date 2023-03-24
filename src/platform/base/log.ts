@@ -1,6 +1,7 @@
-import {Configuration, configure, getLogger, Logger} from 'log4js'
-import Path from 'path'
-import {ClientConfig, ConfigNames} from './config'
+import { ipcMain } from "electron"
+import { Configuration, configure, getLogger, Logger } from "log4js"
+import Path from "path"
+import { ClientConfig, ConfigNames } from "./config"
 
 export type Source = string | undefined
 export type Warn = string
@@ -42,19 +43,28 @@ export class ClientError extends InfoModel {
 }
 
 export class ClientInfo extends InfoModel {
-
     constructor(source: string, information: Info, message?: object) {
         super(source, information, message)
     }
 }
 
 export module Log {
-    configureLog()
-    let log: Logger = getLogger('client')
+    let log: Logger
+    let events = ipcMain
+
+    export function init(loggerName?: string, config?: Configuration) {
+        configureLog(config)
+        if (loggerName) {
+            log = getLogger(loggerName)
+        } else {
+            log = getLogger("client")
+        }
+    }
 
     export function info(info: ClientInfo) {
         try {
-            log.info(info.information, {source: info.source, ...info.message})
+            log.info(info.information, { source: info.source, ...info.message })
+            events.emit("log:onInfo", info)
         } catch (e: any) {
             throw e
         }
@@ -62,7 +72,8 @@ export module Log {
 
     export function error(info: ClientError) {
         try {
-            log.error(info.information, {source: info.source, error: info.error, stack: info.trace, ...info.message})
+            log.error(info.information, { source: info.source, error: info.error, stack: info.trace, ...info.message })
+            events.emit("log:onError", info)
         } catch (e: any) {
             throw e
         }
@@ -70,7 +81,8 @@ export module Log {
 
     export function warn(info: ClientWarn) {
         try {
-            log.warn(info.information, {source: info.source, warn: info.warn, ...info.message})
+            log.warn(info.information, { source: info.source, warn: info.warn, ...info.message })
+            events.emit("log:onWarn", info)
         } catch (e: any) {
             throw e
         }
@@ -88,14 +100,14 @@ export module Log {
                 conf = {
                     appenders: {
                         client: {
-                            type: 'file',
-                            filename: Path.join(__dirname, "..", "..", '/logs/client.log'),
-                            maxLogSize: 50000,//文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
-                        }
+                            type: "file",
+                            filename: Path.join(__dirname, "..", "..", "/logs/client.log"),
+                            maxLogSize: 50000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
+                        },
                     },
-                    categories: {default: {appenders: ['client'], level: 'info'}}
+                    categories: { default: { appenders: ["client"], level: "info" } },
                 }
-                if (!(ClientConfig.has(ConfigNames.log))) ClientConfig.set(ConfigNames.log, conf)
+                if (!ClientConfig.has(ConfigNames.log)) ClientConfig.set(ConfigNames.log, conf)
                 configure(conf)
             }
         } catch (e: any) {
