@@ -6,8 +6,8 @@ var __awaiter =
             return value instanceof P
                 ? value
                 : new P(function (resolve) {
-                      resolve(value)
-                  })
+                    resolve(value)
+                })
         }
         return new (P || (P = Promise))(function (resolve, reject) {
             function fulfilled(value) {
@@ -41,7 +41,9 @@ function createWindow() {
         const mainWindow = new BrowserWindow({
             width: 800,
             height: 600,
-            frame: false,
+            minWidth: 480,
+            minHeight: 360,
+            // frame: false,
             webPreferences: {
                 preload: path.resolve(__dirname, "./preload.js"),
             },

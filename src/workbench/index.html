@@ -1,49 +1,82 @@
-<!-- index.html -->
 <!DOCTYPE html>
-<html lang="">
-<head>
-    <meta charset="UTF-8"/>
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <title>UniClient</title>
-    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"/>
-</head>
-<body>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-        <button
-                class="navbar-toggler"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#navbarTogglerDemo01"
-                aria-controls="navbarTogglerDemo01"
-                aria-expanded="false"
-                aria-label="Toggle navigation"
-        >
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-            <a href="#">Hidden brand</a>-->
-            <!-- <ul class="navbar-nav me-auto mb-2 mb-lg-0"> -->
-            <!--                <li class="nav-item">-->
-            <!--                    <a class="nav-link active" aria-current="page" href="#">Home</a>-->
-            <!--                </li>-->
-            <!--                <li class="nav-item">-->
-            <!--                    <a class="nav-link" href="#">Link</a>-->
-            <!--                </li>-->
-            <!--                <li class="nav-item">-->
-            <!--                    <a class="nav-link disabled">Disabled</a>-->
-            <!--                </li>-->
-            <!--            </ul>
-            <form class="d-flex" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
-        </div>
-    </div>
-</nav>
+<html>
 
-<script src="bootstrap/js/popper.min.js"></script>
-<script src="bootstrap/js/bootstrap.min.js"></script>
-<script src="index.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="element-ui/index.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/common.css">
+</head>
+
+<body>
+    <div id="app">
+        <el-container class="home-container">
+            <el-header class="main-top">
+                top-bar
+            </el-header>
+            <el-container class="mian-box">
+                <el-aside class="sidebar sidebarRight" width="36px">
+                    left-sidebar
+                </el-aside>
+                <el-container class="exhibition-box">
+                    <el-aside class="subview" width="240px">
+                        <el-row>
+                            <el-col :span="24">
+                                <div class="grid-content bg-purple">
+                                    project-view
+                                </div>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="24">
+                                <div class="grid-content bg-purple">
+                                    address-view
+                                </div>
+                            </el-col>
+                        </el-row>
+                    </el-aside>
+                    <el-container class="content-box">
+                        <el-main>
+                            data-view
+                        </el-main>
+                        <el-footer class="logview">
+                            log-view
+                        </el-footer>
+                    </el-container>
+                    <el-aside class="subview" width="240px">
+                        <el-row>
+                            <el-col :span="24">
+                                <div class="grid-content bg-purple">
+                                    attributes-view
+                                </div>
+                            </el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col :span="24">
+                                <div class="grid-content bg-purple">
+                                    references-view
+                                </div>
+                            </el-col>
+                        </el-row>
+                    </el-aside>
+                </el-container>
+                <el-aside class="sidebar sidebarLeft" width="36px">
+                    right-sidebar
+                </el-aside>
+            </el-container>
+        </el-container>
+    </div>
 </body>
+<script src="vue/vue.js"></script>
+<script src="element-ui/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+            }
+        }
+    })
+</script>
+
 </html>
