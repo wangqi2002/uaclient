@@ -27,4 +27,5 @@ window.addEventListener("DOMContentLoaded", () => {
     maxButton === null || maxButton === void 0 ? void 0 : maxButton.addEventListener('click', ev => {
         ipcRenderer.send(RendererEvents.mainMax);
     });
+    window.ipcRenderer = ipcRenderer
 });

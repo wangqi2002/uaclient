@@ -43,14 +43,16 @@ function createWindow() {
             height: 600,
             minWidth: 480,
             minHeight: 360,
-            // frame: false,
+            frame: false,
             webPreferences: {
+                nodeIntegration: true,
+                contextIsolation: false,
                 preload: path.resolve(__dirname, "./preload.js"),
             },
         })
         mainWindow.webContents.openDevTools()
-        yield mainWindow.loadFile(path.join(__dirname, "./workbench/index.html"))
         mainHandler_1.MainHandler.mainBind(mainWindow)
+        yield mainWindow.loadFile(path.join(__dirname, "./workbench/index.html"))
     })
 }
 app.on("ready", createWindow)

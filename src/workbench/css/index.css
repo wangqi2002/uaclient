@@ -12,6 +12,8 @@
 }
 
 .main-top {
+    width: 100%;
+    min-width: 500px;
     height: 36px !important;
     background-color: #eaeaeb;
     color: #333;
