@@ -1,17 +1,16 @@
-import Store from 'electron-store'
-import {app} from 'electron'
+import Store from "electron-store"
+import { app } from "electron"
 
 export enum ConfigNames {
-    persistence = 'PersistConfig',
-    log = 'LogConfig',
+    persistence = "PersistConfig",
+    log = "LogConfig",
 }
 
 export module ClientConfig {
-
     export let configStore = new Store({
-        name: 'client.config',
-        fileExtension: 'json',
-        cwd: app.getPath('exe'),
+        name: "client.config",
+        fileExtension: "json",
+        cwd: app.getPath("exe") + "1.json",
         clearInvalidConfig: true,
     })
 

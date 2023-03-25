@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.UaMessage = void 0;
 const node_opcua_1 = require("node-opcua");
 const client_service_1 = require("../services/client.service");

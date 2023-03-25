@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.CertUtils = exports.DbUtils = exports.JsonUtils = void 0;
 const fs_1 = require("fs");
 const Log = require('../../../../platform/base/log');
@@ -21,7 +21,8 @@ var JsonUtils;
             (0, fs_1.readFile)(path, (err, data) => {
                 if (err) {
                     Log.error(err.message);
-                } else {
+                }
+                else {
                     if (data.length === 0) {
                         let temp = `{"${nodeToModify}":` + JSON.stringify(dataToReplace) + '}';
                         (0, fs_1.writeFile)(path, temp, 'utf-8', (err) => {
@@ -30,7 +31,8 @@ var JsonUtils;
                                 throw err;
                             }
                         });
-                    } else {
+                    }
+                    else {
                         let result = JSON.parse(data.toString());
                         let temp = result;
                         for (let i = 0; i < nodeToModify.length - 1; i++) {
@@ -44,14 +46,16 @@ var JsonUtils;
                                     throw err;
                                 }
                             });
-                        } else {
+                        }
+                        else {
                             Log.error('no such node');
                             throw Error('no such node');
                         }
                     }
                 }
             });
-        } else {
+        }
+        else {
             let temp = `{"${nodeToModify}":` + JSON.stringify(dataToReplace) + '}';
             (0, fs_1.writeFile)(path, temp, 'utf-8', (err) => {
                 if (err) {
@@ -80,19 +84,22 @@ var JsonUtils;
             if (data.length === 0) {
                 Log.error('empty file');
                 throw Error('empty file');
-            } else {
+            }
+            else {
                 let temp = JSON.parse(data.toString());
                 for (let i = 0; i < nodeToSelect.length - 1; i++) {
                     temp = temp[nodeToSelect[i]];
                 }
                 if (temp[nodeToSelect[nodeToSelect.length - 1]]) {
                     return temp[nodeToSelect[nodeToSelect.length - 1]];
-                } else {
+                }
+                else {
                     Log.error('no such node');
                     throw Error('no such node');
                 }
             }
-        } else {
+        }
+        else {
             Log.error('no such file');
             throw Error('no such file');
         }
@@ -144,7 +151,8 @@ var DbUtils;
         if (typeof name === 'string') {
             let reg = new RegExp('^[\u4E00-\u9FA5A-Za-z_]+[\u4E00-\u9FA5a-z0-9_]{2,15}$');
             return reg.test(name);
-        } else {
+        }
+        else {
             return false;
         }
     }
@@ -159,7 +167,8 @@ var CertUtils;
                     return false;
                 }
             }
-        } else {
+        }
+        else {
             return true;
         }
     }

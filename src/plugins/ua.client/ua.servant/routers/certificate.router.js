@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.CertificateRouter = void 0;
 const Router = require("koa-router");
 const certificate_controller_1 = require("../controllers/certificate.controller");

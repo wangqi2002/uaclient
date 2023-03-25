@@ -1,13 +1,12 @@
 import async from "async"
-import { app, BrowserWindow, ipcMain, screen } from "electron"
-import WinState from "electron-win-state"
-import path from "path"
+import { app } from "electron"
 import { ErrorHandler } from "../platform/base/error"
 import { ClientError, Log } from "../platform/base/log"
 import { MainHandler } from "../platform/ipc/ipc.handler"
-class ClientMain {
-    main(): void {
+class Client {
+    constructor() {
         try {
+            this.requestSingleInstance()
             this.startup()
         } catch (e: any) {
             console.error(e.message)
@@ -30,42 +29,34 @@ class ClientMain {
                 )
             }
         })
-
         try {
+            await this.createWorkbench()
             await this.initServices()
         } catch (e: any) {
             throw e
         }
     }
 
-    quit() {}
+    private quit() {}
 
-    initServices() {
+    private initServices() {
         async.series([])
     }
 
     createService() {}
 
-    setErrorHandler() {}
+    createWorkbench() {
+        require("../workbench/workbench")
+    }
 
-    claimInstance() {}
-}
+    private setErrorHandler(errorHandler: (error: any) => void) {
+        ErrorHandler.setUnexpectedErrorHandler(errorHandler)
+    }
 
-export async function createMainWindow() {
-    const winState = new WinState({
-        defaultWidth: (screen.getPrimaryDisplay().workAreaSize.width * 3) / 4,
-        defaultHeight: (screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
-    })
-    const mainWindow = new BrowserWindow({
-        ...winState.winOptions,
-        frame: false,
-        center: true,
-        webPreferences: {
-            preload: path.resolve(__dirname, "./preload.js"),
-        },
-    })
-    mainWindow.webContents.openDevTools()
-    await mainWindow.loadFile(path.join(__dirname, "./workbench/index.html"))
-    MainHandler.initBind(mainWindow)
-    winState.manage(mainWindow)
+    requestSingleInstance() {
+        if (!app.requestSingleInstanceLock()) {
+            app.quit()
+        }
+    }
 }
+export const client = new Client()

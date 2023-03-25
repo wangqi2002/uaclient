@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Log = exports.ClientInfo = exports.ClientError = exports.ClientWarn = exports.InfoModel = void 0;
+const electron_1 = require("electron");
 const log4js_1 = require("log4js");
 const path_1 = __importDefault(require("path"));
 const config_1 = require("./config");
@@ -42,11 +43,22 @@ class ClientInfo extends InfoModel {
 exports.ClientInfo = ClientInfo;
 var Log;
 (function (Log) {
-    configureLog();
-    let log = (0, log4js_1.getLogger)('client');
+    let log;
+    let events = electron_1.ipcMain;
+    function init(loggerName, config) {
+        configureLog(config);
+        if (loggerName) {
+            log = (0, log4js_1.getLogger)(loggerName);
+        }
+        else {
+            log = (0, log4js_1.getLogger)("client");
+        }
+    }
+    Log.init = init;
     function info(info) {
         try {
             log.info(info.information, Object.assign({ source: info.source }, info.message));
+            events.emit("log:onInfo", info);
         }
         catch (e) {
             throw e;
@@ -56,6 +68,7 @@ var Log;
     function error(info) {
         try {
             log.error(info.information, Object.assign({ source: info.source, error: info.error, stack: info.trace }, info.message));
+            events.emit("log:onError", info);
         }
         catch (e) {
             throw e;
@@ -65,6 +78,7 @@ var Log;
     function warn(info) {
         try {
             log.warn(info.information, Object.assign({ source: info.source, warn: info.warn }, info.message));
+            events.emit("log:onWarn", info);
         }
         catch (e) {
             throw e;
@@ -84,14 +98,14 @@ var Log;
                 conf = {
                     appenders: {
                         client: {
-                            type: 'file',
-                            filename: path_1.default.join(__dirname, "..", "..", '/logs/client.log'),
+                            type: "file",
+                            filename: path_1.default.join(__dirname, "..", "..", "/logs/client.log"),
                             maxLogSize: 50000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
-                        }
+                        },
                     },
-                    categories: { default: { appenders: ['client'], level: 'info' } }
+                    categories: { default: { appenders: ["client"], level: "info" } },
                 };
-                if (!(config_1.ClientConfig.has(config_1.ConfigNames.log)))
+                if (!config_1.ClientConfig.has(config_1.ConfigNames.log))
                     config_1.ClientConfig.set(config_1.ConfigNames.log, conf);
                 (0, log4js_1.configure)(conf);
             }

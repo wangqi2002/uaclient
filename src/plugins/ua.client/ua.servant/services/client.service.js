@@ -1,35 +1,14 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) {
-        return value instanceof P ? value : new P(function (resolve) {
-            resolve(value);
-        });
-    }
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) {
-            try {
-                step(generator.next(value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function rejected(value) {
-            try {
-                step(generator["throw"](value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-        }
-
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientService = void 0;
 const node_opcua_1 = require("node-opcua");
 const ua_enums_1 = require("../../common/ua.enums");
@@ -44,7 +23,8 @@ var ClientService;
     function createClient(clientOptions = clientOption) {
         try {
             ClientService.client = node_opcua_1.OPCUAClient.create(clientOptions);
-        } catch (e) {
+        }
+        catch (e) {
             throw new log_1.ClientError(ua_enums_1.UaSources.clientService, ua_enums_1.UaErrors.errorCreateClient, e.message, e.stack);
         }
     }
@@ -54,7 +34,8 @@ var ClientService;
             try {
                 yield ClientService.client.connect(endpointUrl);
                 ClientService.uaConnectionAlive = true;
-            } catch (e) {
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.clientService, ua_enums_1.UaErrors.errorConnecting, e.message, e.stack);
             }
         });
@@ -66,7 +47,8 @@ var ClientService;
                 try {
                     yield session_service_1.SessionService.closeSession(deleteSubscription);
                     ClientService.uaConnectionAlive = false;
-                } catch (e) {
+                }
+                catch (e) {
                     throw new log_1.ClientError(ua_enums_1.UaSources.clientService, ua_enums_1.UaErrors.errorClosingSession, e.message, e.stack);
                 }
             }
@@ -82,7 +64,8 @@ var ClientService;
                 if (!servers)
                     throw new log_1.ClientWarn(ua_enums_1.UaSources.clientService, ua_enums_1.UaWarns.serversNotExist);
                 return servers;
-            } catch (e) {
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.clientService, ua_enums_1.UaErrors.errorGetServers, e.message, e.stack);
             }
         });
@@ -107,10 +90,12 @@ var ClientService;
                             ? endpoint.securityPolicyUri.toString().replace(re, '')
                             : undefined
                     }));
-                } else {
+                }
+                else {
                     return endpoints;
                 }
-            } catch (e) {
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.clientService, ua_enums_1.UaErrors.errorGetEndpoints, e.message, e.stack);
             }
         });

@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.Server = void 0;
 const Koa = require("koa");
 const koa_body_1 = require("koa-body");

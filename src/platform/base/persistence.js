@@ -15,16 +15,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Persistence = void 0;
 const sequelize_1 = require("sequelize");
 const path_1 = __importDefault(require("path"));
+const config_1 = require("./config");
 var Persistence;
 (function (Persistence) {
-    Persistence.sequelize = new sequelize_1.Sequelize({
-        dialect: 'sqlite',
-        storage: path_1.default.join(__dirname, '..', '..', '/databases/data.db'),
-        logging: false
-    });
-    function init(tableName, attributes) {
+    function init(storage, tableName, attributes) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                let options = config_1.ClientConfig.get(config_1.ConfigNames.persistence);
+                if (options) {
+                    Persistence.sequelize = new sequelize_1.Sequelize(options);
+                }
+                else {
+                    Persistence.sequelize = new sequelize_1.Sequelize({
+                        dialect: "sqlite",
+                        storage: path_1.default.join(__dirname, "..", "..", "/databases/data.db"),
+                        logging: false,
+                    });
+                }
                 yield Persistence.sequelize.authenticate();
                 Persistence.currentModel = yield Persistence.sequelize.define(tableName, attributes, { timestamps: false });
                 yield Persistence.currentModel.sync();
@@ -57,11 +64,21 @@ var Persistence;
         });
     }
     Persistence.insertMany = insertMany;
-    function read() {
+    function read(options) {
         return __awaiter(this, void 0, void 0, function* () {
-            Persistence.currentModel.findAll();
+            return Persistence.currentModel.findAll(options);
         });
     }
     Persistence.read = read;
+    function configureDb(conf) {
+        try {
+            Persistence.sequelize = new sequelize_1.Sequelize(conf);
+            config_1.ClientConfig.set(config_1.ConfigNames.persistence, conf);
+        }
+        catch (e) {
+            throw e;
+        }
+    }
+    Persistence.configureDb = configureDb;
     //todo crud,备份/配置
 })(Persistence = exports.Persistence || (exports.Persistence = {}));

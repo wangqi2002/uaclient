@@ -1,35 +1,14 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) {
-        return value instanceof P ? value : new P(function (resolve) {
-            resolve(value);
-        });
-    }
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) {
-            try {
-                step(generator.next(value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function rejected(value) {
-            try {
-                step(generator["throw"](value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-        }
-
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.SubscriptController = void 0;
 const subscript_service_1 = require("../services/subscript.service");
 const response_model_1 = require("../models/response.model");
@@ -44,7 +23,8 @@ var SubscriptController;
                 subscript_service_1.SubscriptService.createSubscription(ctx.request.body);
                 ctx.body = new response_model_1.ResponseModel();
                 SubscriptController.events.emit('init', ctx.request.body);
-            } catch (e) {
+            }
+            catch (e) {
                 throw e;
             }
         });
@@ -56,7 +36,8 @@ var SubscriptController;
                 yield subscript_service_1.SubscriptService.modifySubscription(ctx.request.body);
                 ctx.body = new response_model_1.ResponseModel();
                 SubscriptController.events.emit('modify', ctx.request.body);
-            } catch (e) {
+            }
+            catch (e) {
                 throw e;
             }
         });
@@ -68,7 +49,8 @@ var SubscriptController;
                 subscript_service_1.SubscriptService.addMonitoredItems(ctx.request.body);
                 ctx.body = new response_model_1.ResponseModel();
                 SubscriptController.events.emit('add_many', ctx.request.body);
-            } catch (e) {
+            }
+            catch (e) {
                 throw e;
             }
         });
@@ -79,7 +61,8 @@ var SubscriptController;
             try {
                 subscript_service_1.SubscriptService.addMonitoredItem(ctx.request.body);
                 ctx.body = new response_model_1.ResponseModel();
-            } catch (e) {
+            }
+            catch (e) {
                 throw e;
             }
         });
@@ -90,7 +73,8 @@ var SubscriptController;
             try {
                 let items = yield subscript_service_1.SubscriptService.getMonitoredItems();
                 ctx.body = new response_model_1.ResponseModel(items);
-            } catch (e) {
+            }
+            catch (e) {
                 throw e;
             }
         });
@@ -101,7 +85,8 @@ var SubscriptController;
             try {
                 yield subscript_service_1.SubscriptService.deleteMonitoredItems(ctx.request.body);
                 ctx.body = new response_model_1.ResponseModel();
-            } catch (e) {
+            }
+            catch (e) {
                 throw e;
             }
         });
@@ -112,7 +97,8 @@ var SubscriptController;
             try {
                 yield subscript_service_1.SubscriptService.terminateSubscription();
                 ctx.body = new response_model_1.ResponseModel();
-            } catch (e) {
+            }
+            catch (e) {
                 throw e;
             }
         });

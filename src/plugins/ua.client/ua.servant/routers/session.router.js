@@ -1,12 +1,12 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.SessionRouter = void 0;
 const Router = require("koa-router");
 const session_controller_1 = require("../controllers/session.controller");
 const agent_middleware_1 = require("../middlewares/agent.middleware");
 var SessionRouter;
 (function (SessionRouter) {
-    SessionRouter.router = new Router({prefix: '/session'});
+    SessionRouter.router = new Router({ prefix: '/session' });
     SessionRouter.router.use(agent_middleware_1.AgentMiddleware.sessionValidator);
     SessionRouter.router.post('/init', session_controller_1.SessionController.init);
     SessionRouter.router.post('/change_identity', session_controller_1.SessionController.changeIdentity);

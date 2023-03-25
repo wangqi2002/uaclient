@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.ResponseModel = void 0;
 const ua_enums_1 = require("../../common/ua.enums");
 /**
