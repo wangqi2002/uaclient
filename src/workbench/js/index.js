@@ -13,6 +13,8 @@ function dragVertical(box, left, mid, right, resize, resize2) {
             var rightW = right[0].offsetWidth;
             var moveLen = resize[0].left + (endX - startX);
             var maxT = box[0].clientWidth - resize[0].offsetWidth;
+            if (moveLen < 50) moveLen = 50;
+            if (moveLen > maxT - rightW - 50) moveLen = maxT - rightW - 50;
 
             resize[0].style.left = moveLen;
 
@@ -38,6 +40,8 @@ function dragVertical(box, left, mid, right, resize, resize2) {
             var leftW = left[0].offsetWidth;
             var moveLen = resize2[0].left + (endX - startX) - leftW;
             var maxT = box[0].clientWidth - resize2[0].offsetWidth - 5;
+            if (moveLen < 50) moveLen = 50;
+            if (moveLen > maxT - leftW - 50) moveLen = maxT - leftW - 50;
 
             resize2[0].style.left = moveLen;
             for (let j = 0; j < right.length; j++) {

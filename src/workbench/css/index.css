@@ -15,8 +15,10 @@
     height: 36px !important;
     background-color: #eaeaeb;
     color: #333;
-    text-align: center;
     padding: 0px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
 }
 
 .mian-box {
@@ -37,6 +39,7 @@
 
 .exhibition-box {
     height: 100% !important;
+    /* width: 100% !important; */
 }
 
 .subview {
@@ -72,6 +75,7 @@
 }
 
 .logview {
+    max-height: 90% !important;
     min-height: 90px;
     background-color: #fafafa;
     color: #333;

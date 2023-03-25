@@ -3,16 +3,56 @@
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="element-ui/index.css">
+    <link rel="stylesheet" href="element-ui/css/index.css">
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/topbar.css">
 </head>
 
 <body>
     <div id="app">
         <el-container class="home-container">
             <el-header class="main-top">
-                top-bar
+                <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" background-color="#eaeaeb"
+                    text-color="#4F4F50" active-text-color="#535457" menu-trigger="click">
+                    <el-submenu index="1">
+                        <template slot="title">File</template>
+                        <el-menu-item index="1-1">New</el-menu-item>
+                        <el-menu-item index="1-2">Open</el-menu-item>
+                        <el-menu-item index="1-3">Save</el-menu-item>
+                        <el-menu-item index="1-4">Save As</el-menu-item>
+                        <el-menu-item index="1-5">Recent Projects</el-menu-item>
+                        <el-menu-item index="1-6">Quit</el-menu-item>
+                    </el-submenu>
+                    <el-submenu index="2">
+                        <template slot="title">View</template>
+                        <el-menu-item index="2-1">Project</el-menu-item>
+                        <el-menu-item index="2-2">Address Space</el-menu-item>
+                        <el-menu-item index="2-3">Log</el-menu-item>
+                        <el-menu-item index="2-4">Attributes</el-menu-item>
+                        <el-menu-item index="2-5">References</el-menu-item>
+                        <el-menu-item index="2-6">File Toolbar</el-menu-item>
+                        <el-menu-item index="2-7">Server Toolbar</el-menu-item>
+                        <el-menu-item index="2-8">Document Toolbar</el-menu-item>
+                    </el-submenu>
+                    <el-submenu index="3">
+                        <template slot="title">Server</template>
+                        <el-menu-item index="3-1">Add</el-menu-item>
+                        <el-menu-item index="3-2">Remove</el-menu-item>
+                        <el-menu-item index="3-3">Connect</el-menu-item>
+                        <el-menu-item index="3-4">Disconnect</el-menu-item>
+                        <el-menu-item index="3-5">PRoperties</el-menu-item>
+                        <el-menu-item index="3-6">Change user</el-menu-item>
+                    </el-submenu>
+                </el-menu>
+                <el-input class="searchBox" prefix-icon="el-icon-search" v-model="search"
+                    @keyup.enter.native="searchHandler" placeholder="输入内容">
+                </el-input>
+                <div class="operationBox">
+                    <i class="el-icon-minus"></i>
+                    <i class="el-icon-copy-document"></i>
+                    <i class="el-icon-close"></i>
+                </div>
             </el-header>
             <el-container class="mian-box">
                 <el-aside class="sidebar sidebarLeft" width="36px">
@@ -78,9 +118,19 @@
         el: '#app',
         data: function () {
             return {
+                activeIndex: '1',
+                search: "", //当前输入框的值
+            }
+        },
+        computed: {
+            isSearch() {
+                return this.isFocus;
             }
         },
         methods: {
+            searchHandler() {
+                console.log('+++: searchHandler')
+            }
         },
         mounted() {
             dragLevel('content-box', 'mianviewTop', 'mianviewBottom', 'resize3')
