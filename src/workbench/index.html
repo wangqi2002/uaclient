@@ -15,11 +15,11 @@
                 top-bar
             </el-header>
             <el-container class="mian-box">
-                <el-aside class="sidebar sidebarRight" width="36px">
+                <el-aside class="sidebar sidebarLeft" width="36px">
                     left-sidebar
                 </el-aside>
                 <el-container class="exhibition-box">
-                    <el-aside class="subview" width="240px">
+                    <el-aside class="subview subviewLeft" style="width: 240px;">
                         <el-row>
                             <el-col :span="24">
                                 <div class="grid-content bg-purple">
@@ -35,15 +35,18 @@
                             </el-col>
                         </el-row>
                     </el-aside>
+                    <div class="dragBar-v resize"></div>
                     <el-container class="content-box">
-                        <el-main>
+                        <el-main class="mianviewTop">
                             data-view
                         </el-main>
-                        <el-footer class="logview">
+                        <div class="dragBar-l resize3"></div>
+                        <el-footer class="logview mianviewBottom" style="height: 150px;">
                             log-view
                         </el-footer>
                     </el-container>
-                    <el-aside class="subview" width="240px">
+                    <div class="dragBar-v resize2"></div>
+                    <el-aside class="subview subviewRight" style="width: 240px;">
                         <el-row>
                             <el-col :span="24">
                                 <div class="grid-content bg-purple">
@@ -60,7 +63,7 @@
                         </el-row>
                     </el-aside>
                 </el-container>
-                <el-aside class="sidebar sidebarLeft" width="36px">
+                <el-aside class="sidebar sidebarRight" width="36px">
                     right-sidebar
                 </el-aside>
             </el-container>
@@ -69,13 +72,20 @@
 </body>
 <script src="vue/vue.js"></script>
 <script src="element-ui/index.js"></script>
+<script src="js/index.js"></script>
 <script>
     new Vue({
         el: '#app',
         data: function () {
             return {
             }
-        }
+        },
+        methods: {
+        },
+        mounted() {
+            dragLevel('content-box', 'mianviewTop', 'mianviewBottom', 'resize3')
+            dragVertical('exhibition-box', 'subviewLeft', 'content-box', 'subviewRight', 'resize', 'resize2')
+        },
     })
 </script>
 
