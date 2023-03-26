@@ -95,9 +95,9 @@ export module DbService {
             }
             await DbService.createTable()
 
-            Broker.createPipe(Config.defaultPipeName)
-            let events = Broker.getPipeEvents(Config.defaultPipeName)
-            events?.on("full", (data) => {
+            let pipe = Broker.createPipe(Config.defaultPipeName)
+            // let events = Broker.getPipeEvents(Config.defaultPipeName)
+            pipe.on("full", (data) => {
                 DbService.insertMany(data)
             })
             DbService.events.on("init", () => {
