@@ -6,7 +6,6 @@
     <link rel="stylesheet" href="element-ui/css/index.css">
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/common.css">
-    <link rel="stylesheet" href="css/topbar.css">
 </head>
 
 <body>
@@ -56,48 +55,36 @@
             </el-header>
             <el-container class="mian-box">
                 <el-aside class="sidebar sidebarLeft" width="36px">
-                    left-sidebar
+                    <i class="el-icon-folder" @click="handLeftViewShow"></i>
+                    <i class="el-icon-set-up" @click="handLogShow"></i>
+                    <i class="el-icon-chat-square" @click="handRightViewShow"></i>
                 </el-aside>
                 <el-container class="exhibition-box">
-                    <el-aside class="subview subviewLeft" style="width: 240px;">
-                        <el-row>
-                            <el-col :span="24">
-                                <div class="grid-content bg-purple">
-                                    project-view
-                                </div>
-                            </el-col>
-                        </el-row>
-                        <el-row>
-                            <el-col :span="24">
-                                <div class="grid-content bg-purple">
-                                    address-view
-                                </div>
-                            </el-col>
-                        </el-row>
+                    <el-aside class="subview subviewLeft" v-show="leftViewShow" style="width: 240px;">
+                        <div class="grid-content left-top">
+                            project-view
+                        </div>
+                        <div class="dragBar-l resize-leftView-inside" v-show="leftViewShow"></div>
+                        <div class="grid-content left-bottom">
+                            address-view
+                        </div>
                     </el-aside>
-                    <div class="dragBar-v resize"></div>
+                    <div class="dragBar-v resize-leftView" v-show="leftViewShow"></div>
                     <el-container class="content-box">
                         <el-main class="mianviewTop">
                             data-view
                         </el-main>
-                        <div class="dragBar-l resize3"></div>
-                        <el-footer class="logview mianviewBottom" style="height: 150px;">
+                        <div class="dragBar-l resize-logView" v-show="logShow"></div>
+                        <el-footer class="logview mianviewBottom" v-show="logShow" style="height: 150px;">
                             log-view
                         </el-footer>
                     </el-container>
-                    <div class="dragBar-v resize2"></div>
-                    <el-aside class="subview subviewRight" style="width: 240px;">
+                    <div class="dragBar-v resize-rightView" v-show="rightViewShow"></div>
+                    <el-aside class="subview subviewRight" v-show="rightViewShow" style="width: 240px;">
                         <el-row>
                             <el-col :span="24">
                                 <div class="grid-content bg-purple">
                                     attributes-view
-                                </div>
-                            </el-col>
-                        </el-row>
-                        <el-row>
-                            <el-col :span="24">
-                                <div class="grid-content bg-purple">
-                                    references-view
                                 </div>
                             </el-col>
                         </el-row>
@@ -120,6 +107,9 @@
             return {
                 activeIndex: '1',
                 search: "", //当前输入框的值
+                leftViewShow: true,
+                logShow: true,
+                rightViewShow: true,
             }
         },
         computed: {
@@ -137,11 +127,20 @@
             handlerClose() {
                 mainClose()
             },
-            dragLevel() {
-                var box = document.getElementsByClassName("content-box");
-                var top = document.getElementsByClassName("mianviewTop");
-                var bottom = document.getElementsByClassName("mianviewBottom");
-                var resize = document.getElementsByClassName("resize3");
+            handLeftViewShow() {
+                this.leftViewShow = !this.leftViewShow
+            },
+            handLogShow() {
+                this.logShow = !this.logShow
+            },
+            handRightViewShow() {
+                this.rightViewShow = !this.rightViewShow
+            },
+            dragLevel(box, top, bottom, resize) {
+                var box = document.getElementsByClassName(box);
+                var top = document.getElementsByClassName(top);
+                var bottom = document.getElementsByClassName(bottom);
+                var resize = document.getElementsByClassName(resize);
 
                 resize[0].onmousedown = function (e) {
                     var startY = e.clientY;
@@ -171,8 +170,8 @@
                 var left = document.getElementsByClassName("subviewLeft");
                 var mid = document.getElementsByClassName("content-box");
                 var right = document.getElementsByClassName("subviewRight");
-                var resize = document.getElementsByClassName("resize");
-                var resize2 = document.getElementsByClassName("resize2");
+                var resize = document.getElementsByClassName("resize-leftView");
+                var resize2 = document.getElementsByClassName("resize-rightView");
                 resize[0].onmousedown = function (e) {
                     var startX = e.clientX;
                     resize[0].left = resize[0].offsetLeft;
@@ -229,9 +228,10 @@
             }
         },
         mounted() {
-            this.dragLevel()
+            this.dragLevel('subviewLeft', 'left-top', 'left-bottom', 'resize-leftView-inside')
+            this.dragLevel('content-box', 'mianviewTop', 'mianviewBottom', 'resize-logView')
             this.dragVertical()
-            // dragLevel('content-box', 'mianviewTop', 'mianviewBottom', 'resize3')
+            // dragLevel('content-box', 'mianviewTop', 'mianviewBottom', 'resize-logView')
             // dragVertical('exhibition-box', 'subviewLeft', 'content-box', 'subviewRight', 'resize', 'resize2')
         },
     })
