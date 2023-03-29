@@ -1,12 +1,13 @@
-import {TableCreateModes, UaErrors, UaSources} from '../../common/ua.enums'
-import {Config} from '../../config/config.default'
-import {DbUtils} from '../utils/util'
-import {IDbData, IFieldNames} from '../models/params.model'
-import {ClientError} from '../../../../platform/base/log'
-import {Persistence} from '../../../../platform/base/persistence'
-import {DataTypes} from 'sequelize'
-import EventEmitter from 'events'
-import {Broker} from '../../../../platform/base/broker'
+import { TableCreateModes, UaErrors, UaSources } from "../../common/ua.enums"
+import { Config } from "../../config/config.default"
+import { DbUtils } from "../utils/util"
+import { IDbData, IFieldNames } from "../models/params.model"
+import { ClientError } from "../../../../platform/base/log"
+import { Persistence } from "../../../../platform/base/persistence"
+import { DataTypes } from "sequelize"
+import EventEmitter from "events"
+import { Broker } from "../../../../platform/base/broker"
+import path from "path"
 //todo 全面测试数据库模块
 export module DbService {
     export let defaultTableName: string = Config.defaultTable
@@ -94,13 +95,13 @@ export module DbService {
             }
             await DbService.createTable()
 
-            Broker.createPipe(Config.defaultPipeName)
-            let events = Broker.getPipeEvents(Config.defaultPipeName)
-            events?.on('full', (data) => {
+            let pipe = Broker.createPipe(Config.defaultPipeName)
+            // let events = Broker.getPipeEvents(Config.defaultPipeName)
+            pipe.on("full", (data) => {
                 DbService.insertMany(data)
             })
-            DbService.events.on('init', () => {
-                console.log('yes')
+            DbService.events.on("init", () => {
+                console.log("yes")
             })
         } catch (e: any) {
             throw new ClientError(UaSources.dbService, UaErrors.errorCreateClient, e.message, e.stack)
@@ -140,7 +141,7 @@ export module DbService {
         try {
             let table = tableName ? tableName : defaultTableName
             let attribute = attributes ? attributes : defaultAttributes
-            await Persistence.init(table, attribute)
+            await Persistence.configureDb(table, attribute)
         } catch (e: any) {
             throw new ClientError(UaSources.dbService, UaErrors.errorCreatTable, e.message, e.stack)
         }

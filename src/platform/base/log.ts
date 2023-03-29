@@ -1,11 +1,12 @@
-import {Configuration, configure, getLogger, Logger} from 'log4js'
-import {JsonUtils} from '../../plugins/ua.client/ua.servant/utils/util'
-import Path from 'path'
+import { app, ipcMain } from "electron"
+import { Configuration, configure, getLogger, Logger } from "log4js"
+import { ClientConfig, ConfigNames } from "./config"
 
-export type Source = string | undefined
-export type Warn = string
-export type Error = string
-export type Info = string
+type Source = string | undefined
+type Warn = string
+type Error = string
+type Info = string
+type loggerName = string
 
 export class InfoModel {
     timeStamp: string
@@ -42,74 +43,146 @@ export class ClientError extends InfoModel {
 }
 
 export class ClientInfo extends InfoModel {
-
     constructor(source: string, information: Info, message?: object) {
         super(source, information, message)
     }
 }
 
-/**
- * @description 使用log4js库作为日志
- * 参照教程https://zhuanlan.zhihu.com/p/22110802,
- * 前端只需订阅info/error/warn事件即可
- * 如果需要配置log,使用Log.configureLog()方法,具体参考log4js配置方法
- * @example
- * const Log = require('log')
- * Log.info('nice')
- *
- * Log.logEvents.on('info',(info,params)=>{
- * })
- */
-export module Log {
-    let con = {
-        appenders: {
-            client: {
-                type: 'file',
-                filename: Path.join(__dirname, "..", "..", '/logs/client.log'),
-                maxLogSize: 50000,//文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
-            }
-        },
-        categories: {default: {appenders: ['client'], level: 'info'}}
-    }
-    configure(con)
-    let log: Logger = getLogger('client')
+export class Log {
+    private static clientLogger: Logger = getLogger("client")
+    private static events = ipcMain
 
-    export function info(info: ClientInfo) {
-        log.info(info.information, {source: info.source, ...info.message})
+    constructor(loggerName: loggerName = "client", config?: Configuration) {
+        this.configureLog(config)
     }
 
-    export function error(info: ClientError) {
-        log.error(info.information,
-            {source: info.source, error: info.error, stack: info.trace, ...info.message})
+    static info(info: ClientInfo) {
+        try {
+            Log.clientLogger.info(info.information, { source: info.source, ...info.message })
+            Log.events.emit("log:onInfo", info)
+        } catch (e: any) {
+            throw e
+        }
     }
 
-    export function warn(info: ClientWarn) {
-        log.warn(info.information,
-            {source: info.source, warn: info.warn, ...info.message})
+    static error(info: ClientError) {
+        try {
+            Log.clientLogger.error(info.information, {
+                source: info.source,
+                error: info.error,
+                stack: info.trace,
+                ...info.message,
+            })
+            Log.events.emit("log:onError", info)
+        } catch (e: any) {
+            throw e
+        }
     }
 
-    /**
-     * @description 加载json文件中的log设置
-     * @param fileName
-     * @param nodeToLoad
-     * @private
-     */
-    export function loadLogConfig(fileName: string, nodeToLoad: string[]) {
-        let node = JsonUtils.getJsonNode(fileName, nodeToLoad)
-        configure(node)
+    static warn(info: ClientWarn) {
+        try {
+            Log.clientLogger.warn(info.information, { source: info.source, warn: info.warn, ...info.message })
+            Log.events.emit("log:onWarn", info)
+        } catch (e: any) {
+            throw e
+        }
     }
 
     /**
      * @description 具体参考log4js配置方法
      * @param conf
-     * @param filePath
-     * @param nodeToModify
      */
-    export function configureLog(conf: Configuration, filePath: string, nodeToModify: string[]) {
-        const content = JSON.stringify({
-            LogConfig: {...conf},
-        })
-        JsonUtils.modifyJsonNode(filePath, nodeToModify, content)
-        configure(conf)
+    configureLog(conf?: Configuration) {
+        try {
+            if (conf) {
+                ClientConfig.set(ConfigNames.log, conf)
+            } else {
+                conf = {
+                    appenders: {
+                        client: {
+                            type: "file",
+                            filename: app.getPath("appData") + "/logs/client.log",
+                            maxLogSize: 50000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
+                        },
+                    },
+                    categories: { default: { appenders: ["client"], level: "info" } },
+                }
+                if (!ClientConfig.has(ConfigNames.log)) ClientConfig.set(ConfigNames.log, conf)
+                configure(conf)
+            }
+        } catch (e: any) {
+            throw e
+        }
     }
 }
+
+// export module Log {
+//     type loggerName = string
+//     let clientLogger: Logger = getLogger("client")
+//     let events = ipcMain
+
+//     export function init(loggerName: loggerName = "client", config?: Configuration) {
+//         configureLog(config)
+//     }
+
+//     export function info(info: ClientInfo) {
+//         try {
+//             clientLogger.info(info.information, { source: info.source, ...info.message })
+//             events.emit("log:onInfo", info)
+//         } catch (e: any) {
+//             throw e
+//         }
+//     }
+
+//     export function error(info: ClientError) {
+//         try {
+//             clientLogger.error(info.information, {
+//                 source: info.source,
+//                 error: info.error,
+//                 stack: info.trace,
+//                 ...info.message,
+//             })
+//             events.emit("log:onError", info)
+//         } catch (e: any) {
+//             throw e
+//         }
+//     }
+
+//     export function warn(info: ClientWarn) {
+//         try {
+//             clientLogger.warn(info.information, { source: info.source, warn: info.warn, ...info.message })
+//             events.emit("log:onWarn", info)
+//         } catch (e: any) {
+//             throw e
+//         }
+//     }
+
+//     /**
+//      * @description 具体参考log4js配置方法
+//      * @param conf
+//      */
+//     export function configureLog(conf?: Configuration) {
+//         try {
+//             if (conf) {
+//                 ClientConfig.set(ConfigNames.log, conf)
+//             } else {
+//                 conf = {
+//                     appenders: {
+//                         client: {
+//                             type: "file",
+//                             filename: app.getPath("appData") + "/logs/client.log",
+//                             maxLogSize: 50000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
+//                         },
+//                     },
+//                     categories: { default: { appenders: ["client"], level: "info" } },
+//                 }
+//                 if (!ClientConfig.has(ConfigNames.log)) ClientConfig.set(ConfigNames.log, conf)
+//                 configure(conf)
+//             }
+//         } catch (e: any) {
+//             throw e
+//         }
+//     }
+// }
+//todo 安装时,应当初始化log和database服务
+//todo 添加socket服务以供更多程序使用

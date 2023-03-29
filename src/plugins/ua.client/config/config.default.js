@@ -1,8 +1,8 @@
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : {"default": mod};
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.Config = void 0;
 const node_opcua_1 = require("node-opcua");
 const util_1 = require("../ua.servant/utils/util");
@@ -96,7 +96,7 @@ var Config;
                 maxLogSize: 50000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
             }
         },
-        categories: {default: {appenders: ['client'], level: 'info'}}
+        categories: { default: { appenders: ['client'], level: 'info' } }
     };
     Config.defaultPipeName = 'ua';
 })(Config = exports.Config || (exports.Config = {}));

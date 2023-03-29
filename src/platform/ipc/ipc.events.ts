@@ -1,4 +1,4 @@
-export enum RendererEvents {
+export enum mainEvents {
     //main
     mainMini = 'main:mini',
     mainMax = 'main:max',

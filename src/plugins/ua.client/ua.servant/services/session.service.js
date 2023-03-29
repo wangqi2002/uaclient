@@ -1,36 +1,14 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) {
-        return value instanceof P ? value : new P(function (resolve) {
-            resolve(value);
-        });
-    }
-
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) {
-            try {
-                step(generator.next(value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function rejected(value) {
-            try {
-                step(generator["throw"](value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-        }
-
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.SessionService = void 0;
 const node_opcua_1 = require("node-opcua");
 const ua_enums_1 = require("../../common/ua.enums");
@@ -39,8 +17,7 @@ const typia_1 = require("typia");
 const log_1 = require("../../../../platform/base/log");
 var SessionService;
 (function (SessionService) {
-    SessionService.userIdentity = {type: node_opcua_1.UserTokenType.Anonymous};
-
+    SessionService.userIdentity = { type: node_opcua_1.UserTokenType.Anonymous };
     function createSession(userInfo) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -52,54 +29,50 @@ var SessionService;
                         ? client_service_1.ClientService.client.endpoint.server.applicationName.text.toString()
                         : 'Default Server';
                 }
-            } catch (e) {
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.sessionService, ua_enums_1.UaErrors.errorCreateSession, e.message, e.stack);
             }
         });
     }
-
     SessionService.createSession = createSession;
-
     function changeIdentity(userInfo) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield SessionService.session.changeUser(userInfo);
-            } catch (e) {
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.sessionService, ua_enums_1.UaErrors.errorChangeIdentity, e.message, e.stack);
             }
         });
     }
-
     SessionService.changeIdentity = changeIdentity;
-
     function closeSession(deleteSubscription) {
         return __awaiter(this, void 0, void 0, function* () {
             if (SessionService.session) {
                 try {
                     yield SessionService.session.close(deleteSubscription);
-                } catch (e) {
+                }
+                catch (e) {
                     throw new log_1.ClientError(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaErrors.errorClosingSession, e.message, e.stack);
                 }
             }
         });
     }
-
     SessionService.closeSession = closeSession;
-
     function readByNodeId(nodeToRead, maxAge) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (maxAge)
                     return yield SessionService.session.read(nodeToRead, maxAge);
                 return yield SessionService.session.read(nodeToRead);
-            } catch (e) {
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.sessionService, ua_enums_1.UaErrors.errorReading, e.message, e.stack);
             }
         });
     }
-
     SessionService.readByNodeId = readByNodeId;
-
     function browseRootFolder() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -107,44 +80,42 @@ var SessionService;
                 let resultList = [];
                 if (browseResult.references) {
                     resultList = browseResult.references;
-                } else {
+                }
+                else {
                     throw new log_1.ClientWarn(ua_enums_1.UaSources.sessionService, ua_enums_1.UaWarns.emptyRootFolder);
                 }
                 return resultList;
-            } catch (e) {
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.sessionService, ua_enums_1.UaErrors.errorBrowsing, e.message, e.stack);
             }
         });
     }
-
     SessionService.browseRootFolder = browseRootFolder;
-
     function getNodeIdByBrowseName(relativePathBNF, rootNode = 'RootFolder') {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 relativePathBNF = '/' + relativePathBNF;
                 let browsePath = (0, node_opcua_1.makeBrowsePath)(rootNode, relativePathBNF);
                 return yield SessionService.session.translateBrowsePath(browsePath);
-            } catch (e) {
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.sessionService, ua_enums_1.UaErrors.errorGetNodeByName, e.message, e.stack);
             }
         });
     }
-
     SessionService.getNodeIdByBrowseName = getNodeIdByBrowseName;
-
     function writeToServer(nodesToWrite) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 return yield SessionService.session.write(nodesToWrite);
-            } catch (e) {
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.sessionService, ua_enums_1.UaErrors.errorWriting, e.message, e.stack);
             }
         });
     }
-
     SessionService.writeToServer = writeToServer;
-
     /**
      * @description
      * 返回browseResult,包含references和statusCode和continuation point,
@@ -169,45 +140,41 @@ var SessionService;
                     return yield SessionService.session.browseNext(result.continuationPoint, true);
                 }
                 return result;
-            } catch (e) {
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.sessionService, ua_enums_1.UaErrors.errorBrowsing, e.message, e.stack);
             }
         });
     }
-
     SessionService.browse = browse;
-
     function serverCert() {
         return SessionService.session.serverCertificate.toString();
     }
-
     SessionService.serverCert = serverCert;
-
     //todo 是否可用?
     function historyRead(request) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 return yield SessionService.session.historyRead(request);
-            } catch (e) {
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.sessionService, ua_enums_1.UaErrors.errorHistoryRead, e.message, e.stack);
             }
         });
     }
-
     SessionService.historyRead = historyRead;
-
     function readHistoryValue(param) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let {nodeToRead, start, end, options} = param;
+                let { nodeToRead, start, end, options } = param;
                 if (options)
                     return yield SessionService.session.readHistoryValue(nodeToRead, start, end, options);
                 return yield SessionService.session.readHistoryValue(nodeToRead, start, end);
-            } catch (e) {
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.sessionService, ua_enums_1.UaErrors.errorReadHistory, e.message, e.stack);
             }
         });
     }
-
     SessionService.readHistoryValue = readHistoryValue;
 })(SessionService = exports.SessionService || (exports.SessionService = {}));

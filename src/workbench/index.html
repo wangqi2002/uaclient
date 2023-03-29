@@ -1,241 +1,48 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="">
 <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="element-ui/css/index.css">
-    <link rel="stylesheet" href="css/index.css">
-    <link rel="stylesheet" href="css/common.css">
+    <meta charset="UTF-8"/>
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <title>UniClient</title>
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"/>
 </head>
-
 <body>
-    <div id="app">
-        <el-container class="home-container">
-            <el-header class="main-top">
-                <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" background-color="#eaeaeb"
-                    text-color="#4F4F50" active-text-color="#535457" menu-trigger="click">
-                    <el-submenu index="1">
-                        <template slot="title">File</template>
-                        <el-menu-item index="1-1">New</el-menu-item>
-                        <el-menu-item index="1-2">Open</el-menu-item>
-                        <el-menu-item index="1-3">Save</el-menu-item>
-                        <el-menu-item index="1-4">Save As</el-menu-item>
-                        <el-menu-item index="1-5">Recent Projects</el-menu-item>
-                        <el-menu-item index="1-6">Quit</el-menu-item>
-                    </el-submenu>
-                    <el-submenu index="2">
-                        <template slot="title">View</template>
-                        <el-menu-item index="2-1">Project</el-menu-item>
-                        <el-menu-item index="2-2">Address Space</el-menu-item>
-                        <el-menu-item index="2-3">Log</el-menu-item>
-                        <el-menu-item index="2-4">Attributes</el-menu-item>
-                        <el-menu-item index="2-5">References</el-menu-item>
-                        <el-menu-item index="2-6">File Toolbar</el-menu-item>
-                        <el-menu-item index="2-7">Server Toolbar</el-menu-item>
-                        <el-menu-item index="2-8">Document Toolbar</el-menu-item>
-                    </el-submenu>
-                    <el-submenu index="3">
-                        <template slot="title">Server</template>
-                        <el-menu-item index="3-1">Add</el-menu-item>
-                        <el-menu-item index="3-2">Remove</el-menu-item>
-                        <el-menu-item index="3-3">Connect</el-menu-item>
-                        <el-menu-item index="3-4">Disconnect</el-menu-item>
-                        <el-menu-item index="3-5">PRoperties</el-menu-item>
-                        <el-menu-item index="3-6">Change user</el-menu-item>
-                    </el-submenu>
-                </el-menu>
-                <el-input class="searchBox" prefix-icon="el-icon-search" v-model="search"
-                    @keyup.enter.native="searchHandler" placeholder="输入内容">
-                </el-input>
-                <div class="operationBox">
-                    <i class="el-icon-minus minimize-btn" @click="handlerMin"></i>
-                    <i class="el-icon-copy-document max-unmax-btn" @click="handlerMax"></i>
-                    <i class="el-icon-close close-btn" @click="handlerClose"></i>
-                </div>
-            </el-header>
-            <el-container class="mian-box">
-                <el-aside class="sidebar sidebarLeft" width="36px">
-                    <i class="el-icon-folder" @click="handLeftViewShow"></i>
-                    <i class="el-icon-set-up" @click="handLogShow"></i>
-                    <i class="el-icon-chat-square" @click="handRightViewShow"></i>
-                </el-aside>
-                <el-container class="exhibition-box">
-                    <el-aside class="subview subviewLeft" v-show="leftViewShow" style="width: 240px;">
-                        <div class="grid-content left-top">
-                            project-view
-                        </div>
-                        <div class="dragBar-l resize-leftView-inside" v-show="leftViewShow"></div>
-                        <div class="grid-content left-bottom">
-                            address-view
-                        </div>
-                    </el-aside>
-                    <div class="dragBar-v resize-leftView" v-show="leftViewShow"></div>
-                    <el-container class="content-box">
-                        <el-main class="mianviewTop">
-                            data-view
-                        </el-main>
-                        <div class="dragBar-l resize-logView" v-show="logShow"></div>
-                        <el-footer class="logview mianviewBottom" v-show="logShow" style="height: 150px;">
-                            log-view
-                        </el-footer>
-                    </el-container>
-                    <div class="dragBar-v resize-rightView" v-show="rightViewShow"></div>
-                    <el-aside class="subview subviewRight" v-show="rightViewShow" style="width: 240px;">
-                        <el-row>
-                            <el-col :span="24">
-                                <div class="grid-content bg-purple">
-                                    attributes-view
-                                </div>
-                            </el-col>
-                        </el-row>
-                    </el-aside>
-                </el-container>
-                <el-aside class="sidebar sidebarRight" width="36px">
-                    right-sidebar
-                </el-aside>
-            </el-container>
-        </el-container>
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarTogglerDemo01"
+                aria-controls="navbarTogglerDemo01"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <a href="#">Hidden brand</a>-->
+            <!-- <ul class="navbar-nav me-auto mb-2 mb-lg-0"> -->
+            <!--                <li class="nav-item">-->
+            <!--                    <a class="nav-link active" aria-current="page" href="#">Home</a>-->
+            <!--                </li>-->
+            <!--                <li class="nav-item">-->
+            <!--                    <a class="nav-link" href="#">Link</a>-->
+            <!--                </li>-->
+            <!--                <li class="nav-item">-->
+            <!--                    <a class="nav-link disabled">Disabled</a>-->
+            <!--                </li>-->
+            <!--            </ul>
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
     </div>
+</nav>
+
+<script src="bootstrap/js/popper.min.js"></script>
+<script src="bootstrap/js/bootstrap.min.js"></script>
+<script src="index.js"></script>
 </body>
-<script src="vue/vue.js"></script>
-<script src="element-ui/index.js"></script>
-<script src="js/index.js"></script>
-<script>
-    new Vue({
-        el: '#app',
-        data: function () {
-            return {
-                activeIndex: '1',
-                search: "", //当前输入框的值
-                leftViewShow: true,
-                logShow: true,
-                rightViewShow: true,
-            }
-        },
-        computed: {
-        },
-        methods: {
-            searchHandler() {
-                console.log('+++: searchHandler')
-            },
-            handlerMin() {
-                mainMini()
-            },
-            handlerMax() {
-                mainMax()
-            },
-            handlerClose() {
-                mainClose()
-            },
-            handLeftViewShow() {
-                this.leftViewShow = !this.leftViewShow
-            },
-            handLogShow() {
-                this.logShow = !this.logShow
-            },
-            handRightViewShow() {
-                this.rightViewShow = !this.rightViewShow
-            },
-            dragLevel(box, top, bottom, resize) {
-                var box = document.getElementsByClassName(box);
-                var top = document.getElementsByClassName(top);
-                var bottom = document.getElementsByClassName(bottom);
-                var resize = document.getElementsByClassName(resize);
-
-                resize[0].onmousedown = function (e) {
-                    var startY = e.clientY;
-                    resize[0].top = resize[0].offsetTop;
-                    document.onmousemove = function (e) {
-                        var endY = e.clientY;
-                        var topH = top[0].offsetHeight;
-                        var moveLen = resize[0].top + (endY - startY);
-                        var maxT = box[0].clientHeight - resize[0].offsetHeight;
-
-                        resize[0].style.top = moveLen;
-
-                        top[0].style.height = moveLen + 'px';
-                        bottom[0].style.height = (box[0].clientHeight - moveLen - 5) + 'px';
-                    }
-                    document.onmouseup = function (evt) {
-                        document.onmousemove = null;
-                        document.onmouseup = null;
-                        resize[0].releaseCapture && resize[0].releaseCapture();
-                    }
-                    resize[0].setCapture && resize[0].setCapture();
-                    return false;
-                }
-            },
-            dragVertical() {
-                var box = document.getElementsByClassName("exhibition-box");
-                var left = document.getElementsByClassName("subviewLeft");
-                var mid = document.getElementsByClassName("content-box");
-                var right = document.getElementsByClassName("subviewRight");
-                var resize = document.getElementsByClassName("resize-leftView");
-                var resize2 = document.getElementsByClassName("resize-rightView");
-                resize[0].onmousedown = function (e) {
-                    var startX = e.clientX;
-                    resize[0].left = resize[0].offsetLeft;
-                    document.onmousemove = function (e) {
-                        var endX = e.clientX;
-                        var rightW = right[0].offsetWidth;
-                        var moveLen = resize[0].left + (endX - startX);
-                        var maxT = box[0].clientWidth - resize[0].offsetWidth;
-                        if (moveLen < 50) moveLen = 50;
-                        if (moveLen > maxT - rightW - 50) moveLen = maxT - rightW - 50;
-
-                        resize[0].style.left = moveLen;
-
-                        for (let j = 0; j < left.length; j++) {
-                            left[j].style.width = moveLen + 'px';
-                            mid[j].style.width = (box[0].clientWidth - moveLen - rightW - 10) +
-                                'px';
-                        }
-                    }
-                    document.onmouseup = function (evt) {
-                        document.onmousemove = null;
-                        document.onmouseup = null;
-                        resize[0].releaseCapture && resize[0].releaseCapture();
-                    }
-                    resize[0].setCapture && resize[0].setCapture();
-                    return false;
-                }
-                resize2[0].onmousedown = function (e) {
-                    var startX = e.clientX;
-                    resize2[0].left = resize2[0].offsetLeft;
-                    document.onmousemove = function (e) {
-                        var endX = e.clientX;
-                        var leftW = left[0].offsetWidth;
-                        var moveLen = resize2[0].left + (endX - startX) - leftW;
-                        var maxT = box[0].clientWidth - resize2[0].offsetWidth - 5;
-                        if (moveLen < 50) moveLen = 50;
-                        if (moveLen > maxT - leftW - 50) moveLen = maxT - leftW - 50;
-
-                        resize2[0].style.left = moveLen;
-                        for (let j = 0; j < right.length; j++) {
-                            mid[j].style.width = moveLen + 'px';
-                            right[j].style.width = (box[0].clientWidth - moveLen - leftW - 10) +
-                                'px';
-                        }
-                    }
-                    document.onmouseup = function (evt) {
-                        document.onmousemove = null;
-                        document.onmouseup = null;
-                        resize2[0].releaseCapture && resize2[0].releaseCapture();
-                    }
-                    resize2[0].setCapture && resize2[0].setCapture();
-                    return false;
-                }
-            }
-        },
-        mounted() {
-            this.dragLevel('subviewLeft', 'left-top', 'left-bottom', 'resize-leftView-inside')
-            this.dragLevel('content-box', 'mianviewTop', 'mianviewBottom', 'resize-logView')
-            this.dragVertical()
-            // dragLevel('content-box', 'mianviewTop', 'mianviewBottom', 'resize-logView')
-            // dragVertical('exhibition-box', 'subviewLeft', 'content-box', 'subviewRight', 'resize', 'resize2')
-        },
-    })
-    // const ipcRender = require('electron').ipcRenderer
-</script>
-
 </html>
