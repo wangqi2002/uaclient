@@ -1,39 +1,17 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) {
-        return value instanceof P ? value : new P(function (resolve) {
-            resolve(value);
-        });
-    }
-
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) {
-            try {
-                step(generator.next(value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function rejected(value) {
-            try {
-                step(generator["throw"](value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-        }
-
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
 var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : {"default": mod};
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.DbService = void 0;
 const ua_enums_1 = require("../../common/ua.enums");
 const config_default_1 = require("../../config/config.default");
@@ -49,7 +27,6 @@ var DbService;
     DbService.defaultTableName = config_default_1.Config.defaultTable;
     DbService.defaultAttributes = config_default_1.Config.defaultAttributes;
     DbService.events = new events_1.default();
-
     /**
      * @description 用于初始化database,如果表名不存在则创建一个新表
      * @param createMode
@@ -132,22 +109,21 @@ var DbService;
                         throw new log_1.ClientError(ua_enums_1.UaSources.dbService, ua_enums_1.UaErrors.errorTableMode);
                 }
                 yield DbService.createTable();
-                broker_1.Broker.createPipe(config_default_1.Config.defaultPipeName);
-                let events = broker_1.Broker.getPipeEvents(config_default_1.Config.defaultPipeName);
-                events === null || events === void 0 ? void 0 : events.on('full', (data) => {
+                let pipe = broker_1.Broker.createPipe(config_default_1.Config.defaultPipeName);
+                // let events = Broker.getPipeEvents(Config.defaultPipeName)
+                pipe.on("full", (data) => {
                     DbService.insertMany(data);
                 });
-                DbService.events.on('init', () => {
-                    console.log('yes');
+                DbService.events.on("init", () => {
+                    console.log("yes");
                 });
-            } catch (e) {
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.dbService, ua_enums_1.UaErrors.errorCreateClient, e.message, e.stack);
             }
         });
     }
-
     DbService.init = init;
-
     /**
      * @description 传入参数来插入数据,可以指定表名和字段名称
      * @param data
@@ -156,14 +132,13 @@ var DbService;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield persistence_1.Persistence.insert(data);
-            } catch (e) {
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.dbService, ua_enums_1.UaErrors.errorInsert, e.message, e.stack);
             }
         });
     }
-
     DbService.insert = insert;
-
     /**
      * @description 连续写入多条数据
      * @param dataList
@@ -172,14 +147,13 @@ var DbService;
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield persistence_1.Persistence.insertMany(dataList);
-            } catch (e) {
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.dbService, ua_enums_1.UaErrors.errorInsert, e.message, e.stack);
             }
         });
     }
-
     DbService.insertMany = insertMany;
-
     /**
      * @description 用于创建一个表,可以定制表名和字段名,输入即可,但注意sqlite3表命名规范
      * @param tableName
@@ -190,12 +164,12 @@ var DbService;
             try {
                 let table = tableName ? tableName : DbService.defaultTableName;
                 let attribute = attributes ? attributes : DbService.defaultAttributes;
-                yield persistence_1.Persistence.init(table, attribute);
-            } catch (e) {
+                yield persistence_1.Persistence.configureDb(table, attribute);
+            }
+            catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.dbService, ua_enums_1.UaErrors.errorCreatTable, e.message, e.stack);
             }
         });
     }
-
     DbService.createTable = createTable;
 })(DbService = exports.DbService || (exports.DbService = {}));

@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.SubscriptRouter = void 0;
 const Router = require("koa-router");
 const subscript_controller_1 = require("../controllers/subscript.controller");

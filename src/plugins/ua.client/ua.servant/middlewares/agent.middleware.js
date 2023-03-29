@@ -1,36 +1,14 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) {
-        return value instanceof P ? value : new P(function (resolve) {
-            resolve(value);
-        });
-    }
-
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) {
-            try {
-                step(generator.next(value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function rejected(value) {
-            try {
-                step(generator["throw"](value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-        }
-
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", {value: true});
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.AgentMiddleware = void 0;
 require("koa-body/lib/index");
 const typia_1 = require("typia");
@@ -52,7 +30,8 @@ var AgentMiddleware;
                     })(ctx.request.body)) {
                         log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.clientService, ua_enums_1.UaInfos.clientCreated, Object.assign({}, ctx.request.body)));
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('OPCUAClientOptions | undefined');
                     }
                     break;
@@ -64,7 +43,8 @@ var AgentMiddleware;
                     })(ctx.request.body)) {
                         log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.clientService, ua_enums_1.UaInfos.connectionCreated, Object.assign({}, ctx.request.body)));
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('{ endpointUrl: string }');
                     }
                     break;
@@ -76,7 +56,8 @@ var AgentMiddleware;
                     })(ctx.request.body)) {
                         log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.clientService, ua_enums_1.UaInfos.connectionCreated, Object.assign({}, ctx.request.body)));
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('{ endpointUrl: string }');
                     }
                     break;
@@ -89,7 +70,8 @@ var AgentMiddleware;
                         log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.clientService, ua_enums_1.UaInfos.sessionClosed));
                         log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.clientService, ua_enums_1.UaInfos.clientDisconnect));
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('{ deleteSubscription: boolean } | {}');
                     }
                     break;
@@ -107,9 +89,7 @@ var AgentMiddleware;
             }
         });
     }
-
     AgentMiddleware.clientValidator = clientValidator;
-
     function sessionValidator(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (ctx.request.body) {
@@ -131,7 +111,8 @@ var AgentMiddleware;
                     })(ctx.request.body)) {
                         log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.sessionService, ua_enums_1.UaInfos.sessionCreated));
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('UserIdentityInfo | undefined');
                     }
                     break;
@@ -153,7 +134,8 @@ var AgentMiddleware;
                         return "object" === typeof input && null !== input && $iu0(input);
                     })(ctx.request.body)) {
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('UserIdentityInfo');
                     }
                     break;
@@ -164,7 +146,8 @@ var AgentMiddleware;
                         return undefined === input || "object" === typeof input && null !== input && $io0(input);
                     })(ctx.request.body)) {
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('{ deleteSubscription: boolean } | undefined');
                     }
                     break;
@@ -192,7 +175,8 @@ var AgentMiddleware;
                         return "object" === typeof input && null !== input && false === Array.isArray(input) && $io0(input);
                     })(ctx.request.body)) {
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('ReadValueIdOptions');
                     }
                     break;
@@ -204,7 +188,8 @@ var AgentMiddleware;
                     })(ctx.query)) {
                         log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.sessionService, ua_enums_1.UaInfos.getIdByName, Object.assign({}, ctx.request.body)));
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('{ path: string }');
                     }
                     break;
@@ -244,7 +229,8 @@ var AgentMiddleware;
                         return "object" === typeof input && null !== input && false === Array.isArray(input) && $io0(input);
                     })(ctx.request.body)) {
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('WriteValueOptions');
                     }
                     break;
@@ -257,7 +243,8 @@ var AgentMiddleware;
                         return "object" === typeof input && null !== input && $io0(input);
                     })(ctx.request.body)) {
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('{ nodes: BrowseDescriptionLike, browseNext: boolean }');
                     }
                     break;
@@ -289,7 +276,8 @@ var AgentMiddleware;
                         return "object" === typeof input && null !== input && $io0(input);
                     })(ctx.request.body)) {
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('HistoryReadRequest');
                     }
                     break;
@@ -327,7 +315,8 @@ var AgentMiddleware;
                         return "object" === typeof input && null !== input && $io0(input);
                     })(ctx.request.body)) {
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('HistoryValueParam');
                     }
                     break;
@@ -337,9 +326,7 @@ var AgentMiddleware;
             }
         });
     }
-
     AgentMiddleware.sessionValidator = sessionValidator;
-
     function subscriptValidator(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (ctx.request.path) {
@@ -350,7 +337,8 @@ var AgentMiddleware;
                     })(ctx.request.body)) {
                         log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaInfos.installedSub));
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('ClientSubscriptionOptions');
                     }
                     break;
@@ -362,7 +350,8 @@ var AgentMiddleware;
                     })(ctx.request.body)) {
                         log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaInfos.modifySubscription, Object.assign({}, ctx.request.body)));
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('ModifySubscriptionOptions');
                     }
                     break;
@@ -394,7 +383,8 @@ var AgentMiddleware;
                     })(ctx.request.body)) {
                         log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaInfos.monitoredItemInit, Object.assign({}, ctx.request.body)));
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('SubscriptGroupParam');
                     }
                     break;
@@ -426,7 +416,8 @@ var AgentMiddleware;
                     })(ctx.request.body)) {
                         log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaInfos.monitoredItemInit, Object.assign({}, ctx.request.body)));
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('SubscriptSingleParam');
                     }
                     break;
@@ -437,7 +428,8 @@ var AgentMiddleware;
                     })(ctx.request.body)) {
                         log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaInfos.monitoredItemTerminate, Object.assign({}, ctx.request.body)));
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('NodeID[]');
                     }
                     break;
@@ -452,9 +444,7 @@ var AgentMiddleware;
             }
         });
     }
-
     AgentMiddleware.subscriptValidator = subscriptValidator;
-
     function certValidator(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (ctx.request.body) {
@@ -467,10 +457,12 @@ var AgentMiddleware;
                         if (util_1.CertUtils.validateCertOptions(ctx.request.body)) {
                             log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.paramValidator, ua_enums_1.UaInfos.certCreated));
                             yield next();
-                        } else {
+                        }
+                        else {
                             throw new log_1.ClientError(ua_enums_1.UaSources.paramValidator, ua_enums_1.UaErrors.errorCertOptions, 'country too long');
                         }
-                    } else {
+                    }
+                    else {
                         throw validateError('CreateSelfSignCertificateParam1');
                     }
                     break;
@@ -480,7 +472,8 @@ var AgentMiddleware;
                         return input instanceof Buffer;
                     })(ctx.request.body)) {
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('Buffer');
                     }
                     break;
@@ -490,9 +483,7 @@ var AgentMiddleware;
             }
         });
     }
-
     AgentMiddleware.certValidator = certValidator;
-
     function dbValidator(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (ctx.request.body) {
@@ -507,7 +498,8 @@ var AgentMiddleware;
                     })(ctx.request.body)) {
                         util_1.DbUtils.validateDbName(ctx.request.body['tableName']);
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('{createMode:TableCreateModes, tableName?:string, fields:IFieldNames}');
                     }
                     break;
@@ -518,7 +510,8 @@ var AgentMiddleware;
                         return "object" === typeof input && null !== input && $io0(input);
                     })(ctx.request.body)) {
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('IDbData');
                     }
                     break;
@@ -529,7 +522,8 @@ var AgentMiddleware;
                         return Array.isArray(input) && input.every(elem => "object" === typeof elem && null !== elem && $io0(elem));
                     })(ctx.request.body)) {
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('IDbData[]');
                     }
                     break;
@@ -558,7 +552,8 @@ var AgentMiddleware;
                             }
                         }
                         yield next();
-                    } else {
+                    }
+                    else {
                         throw validateError('{ tableName?: string, fieldNames?: IFieldNames } | undefined');
                     }
                     break;
@@ -568,9 +563,7 @@ var AgentMiddleware;
             }
         });
     }
-
     AgentMiddleware.dbValidator = dbValidator;
-
     function validateError(paramType) {
         return new log_1.ClientError(ua_enums_1.UaSources.paramValidator, ua_enums_1.UaErrors.errorValidateParam, `Supposed to be ${paramType}`);
     }

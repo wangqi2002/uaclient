@@ -7,7 +7,7 @@ import {
 } from 'node-opcua'
 import {SessionService} from './session.service'
 import {UaErrors, UaSources, UaWarns} from '../../common/ua.enums'
-import {Broker, MessageQueue} from '../../../../platform/base/broker'
+import {Broker} from '../../../../platform/base/broker'
 import {UaMessage} from '../models/message.model'
 import {ItemAndName, NodeID, SubscriptGroupParam, SubscriptSingleParam} from '../models/params.model'
 import {Config} from '../../config/config.default'
@@ -25,9 +25,9 @@ export module SubscriptService {
                 .on('changed', (data) => {
                     let item = monitoredItems.get(itemId)
                     if (item) {
-                        MessageQueue.enqueue(
-                            new UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName),
-                        )
+                        // MessageQueue.enqueue(
+                        //     new UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName),
+                        // )
                         Broker.receive(
                             Config.defaultPipeName,
                             monitoredItem.itemToMonitor.nodeId.toString(),

@@ -1,40 +1,121 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) {
-        return value instanceof P ? value : new P(function (resolve) {
-            resolve(value);
-        });
-    }
-
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) {
-            try {
-                step(generator.next(value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function rejected(value) {
-            try {
-                step(generator["throw"](value));
-            } catch (e) {
-                reject(e);
-            }
-        }
-
-        function step(result) {
-            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
-        }
-
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", {value: true});
-exports.Broker = exports.MessagePipe = exports.MessageQueue = void 0;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Broker = exports.MessagePipe = void 0;
 const events_1 = require("events");
-const config_default_1 = require("../../plugins/ua.client/config/config.default");
-//todo 重写messageQueue模块以适应所有形式的消息
+/**
+ * @description 一个MessagePipe,本质上是一个map其中存储了形如<nodeId,[data1,data2]>的数据,并且定义了events用于订阅使用
+ */
+class MessagePipe extends events_1.EventEmitter {
+    constructor(maxLength) {
+        super();
+        this.content = new Map();
+        this.maxLength = maxLength ? maxLength : 200;
+    }
+    changeMaxLength(length) {
+        if (length > 0) {
+            this.maxLength = length;
+            return true;
+        }
+        return false;
+    }
+    inPipe(id, message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let data = this.content.get(id);
+            if (data) {
+                data.push(message);
+                if (data.length >= this.maxLength) {
+                    this.emit("full", data);
+                    data.length = 0;
+                }
+            }
+            else {
+                this.content.set(message.nodeId, [message]);
+            }
+            this.emit("pushed", message);
+        });
+    }
+    terminate() {
+        let copy = new Map(this.content);
+        this.emit("close", copy);
+        this.content.clear();
+        return copy;
+    }
+}
+exports.MessagePipe = MessagePipe;
+/**
+ * @description 一个中间消息转发者,通过自主新建的MessagePipe来实现不同管道的订阅与通信
+ */
+class Broker {
+    constructor() {
+        Broker.pipes = new Map();
+    }
+    /**
+     * @description 接收消息并且推入pipe中,如果pipe不存在,那么新建一个pipe
+     * @param pipeId
+     * @param messageId
+     * @param message
+     * @example
+     * Broker.receive(
+     *   Config.defaultPipeName,
+     *   messageId,
+     *   new UaMessage(data, nodeId, item.displayName),
+     *)
+     */
+    static receive(pipeId, messageId, message) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let data = Broker.pipes.get(pipeId);
+            if (!data) {
+                let pipe = new MessagePipe();
+                Broker.pipes.set(pipeId, pipe);
+                data = pipe;
+            }
+            data.inPipe(messageId, message);
+            return true;
+        });
+    }
+    /**
+     * @description 创建一个MessagePipe
+     * @param pipeId
+     * @example
+     * Broker.createPipe(Config.defaultPipeName)
+     */
+    static createPipe(pipeId) {
+        let pipe = new MessagePipe();
+        Broker.pipes.set(pipeId, pipe);
+        return pipe;
+    }
+    /**
+     * @description 可以改变你所指定的MessagePipe中消息队列的长度,默认值为200
+     * @param pipeId
+     * @param length
+     */
+    static changePipeLength(pipeId, length) {
+        let pipe = Broker.pipes.get(pipeId);
+        if (pipe) {
+            pipe.changeMaxLength(length);
+        }
+    }
+    /**
+     * @description 终结所有当前存在的messagePipe,注意:这会导致pipe中的数据丢失,但是会在消失之前通过close事件发送出去
+     */
+    terminateAllPipe() {
+        return __awaiter(this, void 0, void 0, function* () {
+            Broker.pipes.forEach((pipe) => {
+                pipe.terminate();
+            });
+        });
+    }
+}
+exports.Broker = Broker;
 /**
  * @description Ua后台发过来的消息的队列,前端只需订阅pushed,
  * 数据库订阅full/close事件即可
@@ -51,131 +132,39 @@ const config_default_1 = require("../../plugins/ua.client/config/config.default"
  *     eventHandle(data)
  * })
  */
-var MessageQueue;
-(function (MessageQueue) {
-    let queue = new Map();
-    let maxLength = config_default_1.Config.mqLength;
-    let currentLength = 0;
-    MessageQueue.queueEvents = new events_1.EventEmitter();
-
-    function changeMaxLength(length) {
-        if (length > 0)
-            maxLength = length;
-    }
-
-    MessageQueue.changeMaxLength = changeMaxLength;
-
-    /**
-     * @description 将信息节点推入消息队列之中
-     * @param message
-     */
-    function enqueue(message) {
-        let data = queue.get(message.nodeId);
-        if (data) {
-            data.push(message);
-            if (data.length >= maxLength) {
-                MessageQueue.queueEvents.emit('full', data);
-                data.length = 0;
-            }
-        } else {
-            queue.set(message.nodeId, [message]);
-        }
-        MessageQueue.queueEvents.emit('pushed', message);
-        currentLength++;
-    }
-
-    MessageQueue.enqueue = enqueue;
-
-    function closeMq() {
-        let lastQ = new Map(queue);
-        MessageQueue.queueEvents.emit('close', lastQ);
-        queue.clear();
-        return lastQ;
-    }
-
-    MessageQueue.closeMq = closeMq;
-})(MessageQueue = exports.MessageQueue || (exports.MessageQueue = {}));
-
-class MessagePipe {
-    constructor(maxLength) {
-        this.content = new Map();
-        this.events = new events_1.EventEmitter();
-        this.maxLength = maxLength ? maxLength : 20;
-    }
-
-    changeMaxLength(length) {
-        this.maxLength = length;
-    }
-
-    inPipe(id, message) {
-        let data = this.content.get(id);
-        if (data) {
-            data.push(message);
-            if (data.length >= this.maxLength) {
-                this.events.emit('full', data);
-                data.length = 0;
-            }
-        } else {
-            this.content.set(message.nodeId, [message]);
-        }
-        this.events.emit('pushed', message);
-    }
-
-    terminate() {
-        let copy = new Map(this.content);
-        this.events.emit('close', copy);
-        this.content.clear();
-        return copy;
-    }
-}
-
-exports.MessagePipe = MessagePipe;
-var Broker;
-(function (Broker) {
-    let pipes = new Map();
-
-    function receive(pipeId, messageId, message) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let data = pipes.get(pipeId);
-            if (!data) {
-                pipes.set(pipeId, new MessagePipe());
-                data = pipes.get(pipeId);
-            }
-            data.inPipe(messageId, message);
-        });
-    }
-
-    Broker.receive = receive;
-
-    function createPipe(pipeId) {
-        pipes.set(pipeId, new MessagePipe());
-    }
-
-    Broker.createPipe = createPipe;
-
-    function getPipeEvents(pipeId) {
-        let pipe = pipes.get(pipeId);
-        return pipe ? pipe.events : undefined;
-    }
-
-    Broker.getPipeEvents = getPipeEvents;
-
-    function changePipeLength(pipeId, length) {
-        let pipe = pipes.get(pipeId);
-        if (pipe) {
-            pipe.changeMaxLength(length);
-        }
-    }
-
-    Broker.changePipeLength = changePipeLength;
-
-    function terminateAll() {
-        return __awaiter(this, void 0, void 0, function* () {
-            pipes.forEach((pipe) => {
-                pipe.terminate();
-            });
-        });
-    }
-
-    Broker.terminateAll = terminateAll;
-})(Broker = exports.Broker || (exports.Broker = {}));
+// export module MessageQueue {
+//     let queue: Map<string, UaMessage[]> = new Map()
+//     let maxLength: number = Config.mqLength as number
+//     let currentLength = 0
+//     export let queueEvents: EventEmitter = new EventEmitter()
+//
+//     export function changeMaxLength(length: number) {
+//         if (length > 0) maxLength = length
+//     }
+//
+//     /**
+//      * @description 将信息节点推入消息队列之中
+//      * @param message
+//      */
+//     export function enqueue(message: UaMessage) {
+//         let data = queue.get(message.nodeId)
+//         if (data) {
+//             data.push(message)
+//             if (data.length >= maxLength) {
+//                 queueEvents.emit('full', data)
+//                 data.length = 0
+//             }
+//         } else {
+//             queue.set(message.nodeId, [message])
+//         }
+//         queueEvents.emit('pushed', message)
+//         currentLength++
+//     }
+//
+//     export function closeMq() {
+//         let lastQ = new Map(queue)
+//         queueEvents.emit('close', lastQ)
+//         queue.clear()
+//         return lastQ
+//     }
+// }

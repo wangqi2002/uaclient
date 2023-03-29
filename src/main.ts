@@ -1,33 +1,46 @@
-import {MainHandler} from "./platform/ipc/mainHandler"
+import { app, Menu } from "electron"
+import path from "path"
+//todo 项目实现,手动输入命令实现,electron-squirrel-startup处理安装问题,处理全局路径问题,主进程中实现html页面的加载,插件加载问题
+//todo 全局监听报错
+export module ClientMain {
+    require("v8-compile-cache")
+    const product = require("./platform/product.json")
+    export const userDataPath = getUserDataPath()
 
-const {app, BrowserWindow, Menu, ipcMain, nativeTheme} = require("electron")
-const path = require("path")
-const {menu} = require("./workbench/menu")
+    export const workspacePath = app.setPath("userData", userDataPath)
+    Menu.setApplicationMenu(null)
+    const codeCachePath = getCodeCachePath()
 
-//todo 配置文件使用electron-store模块数据保存在JSON文件中app.getPath(‘userData’)
+    // let clientLanguage = undefined
+    // if ("getPerferredSystemLanguages" in app) {
+    //     clientLanguage = app.getPerferredSystemLanguages()?.[0] ??'cn'
+    // }
 
-async function createWindow() {
-    const mainWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
-        frame: false,
-        webPreferences: {
-            preload: path.resolve(__dirname, "./preload.js"),
-        },
+    app.whenReady().then(() => {
+        onReady()
     })
-    mainWindow.webContents.openDevTools()
-    await mainWindow.loadFile(path.join(__dirname, "./workbench/index.html"))
-    MainHandler.mainBind(mainWindow)
-}
 
-app.on("ready", createWindow)
-app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") {
-        app.quit()
+    app.on("window-all-closed", () => {
+        if (process.platform !== "darwin") {
+            app.quit()
+        }
+    })
+
+    function getUserDataPath() {
+        return product["rootDir"]
     }
-})
-// app.on('activate', () => {
-//     if (BrowserWindow.getAllWindows().length === 0) {
-//         createWindow()
-//     }
-// })
+
+    function getCodeCachePath() {
+        const commit = product.commit
+        if (!commit) {
+            return undefined
+        }
+        return path.join(userDataPath, "CacheData", commit)
+    }
+    function startUp(cachePath?: string, config?: any) {
+        require("./client/client")
+    }
+    async function onReady() {
+        startUp()
+    }
+}
