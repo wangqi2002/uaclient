@@ -21,7 +21,6 @@ const persistence_1 = require("../../../../platform/base/persistence");
 const sequelize_1 = require("sequelize");
 const events_1 = __importDefault(require("events"));
 const broker_1 = require("../../../../platform/base/broker");
-const path_1 = __importDefault(require("path"));
 //todo 全面测试数据库模块
 var DbService;
 (function (DbService) {
@@ -110,9 +109,9 @@ var DbService;
                         throw new log_1.ClientError(ua_enums_1.UaSources.dbService, ua_enums_1.UaErrors.errorTableMode);
                 }
                 yield DbService.createTable();
-                broker_1.Broker.createPipe(config_default_1.Config.defaultPipeName);
-                let events = broker_1.Broker.getPipeEvents(config_default_1.Config.defaultPipeName);
-                events === null || events === void 0 ? void 0 : events.on("full", (data) => {
+                let pipe = broker_1.Broker.createPipe(config_default_1.Config.defaultPipeName);
+                // let events = Broker.getPipeEvents(Config.defaultPipeName)
+                pipe.on("full", (data) => {
                     DbService.insertMany(data);
                 });
                 DbService.events.on("init", () => {
@@ -165,7 +164,7 @@ var DbService;
             try {
                 let table = tableName ? tableName : DbService.defaultTableName;
                 let attribute = attributes ? attributes : DbService.defaultAttributes;
-                yield persistence_1.Persistence.init(path_1.default.join(__dirname, "..", "..", "/databases/data.db"), table, attribute);
+                yield persistence_1.Persistence.configureDb(table, attribute);
             }
             catch (e) {
                 throw new log_1.ClientError(ua_enums_1.UaSources.dbService, ua_enums_1.UaErrors.errorCreatTable, e.message, e.stack);

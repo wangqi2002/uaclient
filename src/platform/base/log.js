@@ -1,12 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Log = exports.ClientInfo = exports.ClientError = exports.ClientWarn = exports.InfoModel = void 0;
 const electron_1 = require("electron");
 const log4js_1 = require("log4js");
-const path_1 = __importDefault(require("path"));
 const config_1 = require("./config");
 class InfoModel {
     constructor(source, information, message) {
@@ -41,55 +37,42 @@ class ClientInfo extends InfoModel {
     }
 }
 exports.ClientInfo = ClientInfo;
-var Log;
-(function (Log) {
-    let log;
-    let events = electron_1.ipcMain;
-    function init(loggerName, config) {
-        configureLog(config);
-        if (loggerName) {
-            log = (0, log4js_1.getLogger)(loggerName);
-        }
-        else {
-            log = (0, log4js_1.getLogger)("client");
-        }
+class Log {
+    constructor(loggerName = "client", config) {
+        this.configureLog(config);
     }
-    Log.init = init;
-    function info(info) {
+    static info(info) {
         try {
-            log.info(info.information, Object.assign({ source: info.source }, info.message));
-            events.emit("log:onInfo", info);
+            Log.clientLogger.info(info.information, Object.assign({ source: info.source }, info.message));
+            Log.events.emit("log:onInfo", info);
         }
         catch (e) {
             throw e;
         }
     }
-    Log.info = info;
-    function error(info) {
+    static error(info) {
         try {
-            log.error(info.information, Object.assign({ source: info.source, error: info.error, stack: info.trace }, info.message));
-            events.emit("log:onError", info);
+            Log.clientLogger.error(info.information, Object.assign({ source: info.source, error: info.error, stack: info.trace }, info.message));
+            Log.events.emit("log:onError", info);
         }
         catch (e) {
             throw e;
         }
     }
-    Log.error = error;
-    function warn(info) {
+    static warn(info) {
         try {
-            log.warn(info.information, Object.assign({ source: info.source, warn: info.warn }, info.message));
-            events.emit("log:onWarn", info);
+            Log.clientLogger.warn(info.information, Object.assign({ source: info.source, warn: info.warn }, info.message));
+            Log.events.emit("log:onWarn", info);
         }
         catch (e) {
             throw e;
         }
     }
-    Log.warn = warn;
     /**
      * @description 具体参考log4js配置方法
      * @param conf
      */
-    function configureLog(conf) {
+    configureLog(conf) {
         try {
             if (conf) {
                 config_1.ClientConfig.set(config_1.ConfigNames.log, conf);
@@ -99,7 +82,7 @@ var Log;
                     appenders: {
                         client: {
                             type: "file",
-                            filename: path_1.default.join(__dirname, "..", "..", "/logs/client.log"),
+                            filename: electron_1.app.getPath("appData") + "/logs/client.log",
                             maxLogSize: 50000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
                         },
                     },
@@ -114,6 +97,72 @@ var Log;
             throw e;
         }
     }
-    Log.configureLog = configureLog;
-})(Log = exports.Log || (exports.Log = {}));
+}
+exports.Log = Log;
+Log.clientLogger = (0, log4js_1.getLogger)("client");
+Log.events = electron_1.ipcMain;
+// export module Log {
+//     type loggerName = string
+//     let clientLogger: Logger = getLogger("client")
+//     let events = ipcMain
+//     export function init(loggerName: loggerName = "client", config?: Configuration) {
+//         configureLog(config)
+//     }
+//     export function info(info: ClientInfo) {
+//         try {
+//             clientLogger.info(info.information, { source: info.source, ...info.message })
+//             events.emit("log:onInfo", info)
+//         } catch (e: any) {
+//             throw e
+//         }
+//     }
+//     export function error(info: ClientError) {
+//         try {
+//             clientLogger.error(info.information, {
+//                 source: info.source,
+//                 error: info.error,
+//                 stack: info.trace,
+//                 ...info.message,
+//             })
+//             events.emit("log:onError", info)
+//         } catch (e: any) {
+//             throw e
+//         }
+//     }
+//     export function warn(info: ClientWarn) {
+//         try {
+//             clientLogger.warn(info.information, { source: info.source, warn: info.warn, ...info.message })
+//             events.emit("log:onWarn", info)
+//         } catch (e: any) {
+//             throw e
+//         }
+//     }
+//     /**
+//      * @description 具体参考log4js配置方法
+//      * @param conf
+//      */
+//     export function configureLog(conf?: Configuration) {
+//         try {
+//             if (conf) {
+//                 ClientConfig.set(ConfigNames.log, conf)
+//             } else {
+//                 conf = {
+//                     appenders: {
+//                         client: {
+//                             type: "file",
+//                             filename: app.getPath("appData") + "/logs/client.log",
+//                             maxLogSize: 50000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
+//                         },
+//                     },
+//                     categories: { default: { appenders: ["client"], level: "info" } },
+//                 }
+//                 if (!ClientConfig.has(ConfigNames.log)) ClientConfig.set(ConfigNames.log, conf)
+//                 configure(conf)
+//             }
+//         } catch (e: any) {
+//             throw e
+//         }
+//     }
+// }
 //todo 安装时,应当初始化log和database服务
+//todo 添加socket服务以供更多程序使用

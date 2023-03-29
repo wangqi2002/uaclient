@@ -10,7 +10,7 @@ export module ClientConfig {
     export let configStore = new Store({
         name: "client.config",
         fileExtension: "json",
-        cwd: app.getPath("exe") + "1.json",
+        cwd: app.getPath("userData"),
         clearInvalidConfig: true,
     })
 

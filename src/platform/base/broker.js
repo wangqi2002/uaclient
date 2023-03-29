@@ -14,32 +14,38 @@ const events_1 = require("events");
 /**
  * @description 一个MessagePipe,本质上是一个map其中存储了形如<nodeId,[data1,data2]>的数据,并且定义了events用于订阅使用
  */
-class MessagePipe {
+class MessagePipe extends events_1.EventEmitter {
     constructor(maxLength) {
+        super();
         this.content = new Map();
-        this.events = new events_1.EventEmitter();
-        this.maxLength = maxLength ? maxLength : 20;
+        this.maxLength = maxLength ? maxLength : 200;
     }
     changeMaxLength(length) {
-        this.maxLength = length;
+        if (length > 0) {
+            this.maxLength = length;
+            return true;
+        }
+        return false;
     }
     inPipe(id, message) {
-        let data = this.content.get(id);
-        if (data) {
-            data.push(message);
-            if (data.length >= this.maxLength) {
-                this.events.emit("full", data);
-                data.length = 0;
+        return __awaiter(this, void 0, void 0, function* () {
+            let data = this.content.get(id);
+            if (data) {
+                data.push(message);
+                if (data.length >= this.maxLength) {
+                    this.emit("full", data);
+                    data.length = 0;
+                }
             }
-        }
-        else {
-            this.content.set(message.nodeId, [message]);
-        }
-        this.events.emit("pushed", message);
+            else {
+                this.content.set(message.nodeId, [message]);
+            }
+            this.emit("pushed", message);
+        });
     }
     terminate() {
         let copy = new Map(this.content);
-        this.events.emit("close", copy);
+        this.emit("close", copy);
         this.content.clear();
         return copy;
     }
@@ -48,9 +54,10 @@ exports.MessagePipe = MessagePipe;
 /**
  * @description 一个中间消息转发者,通过自主新建的MessagePipe来实现不同管道的订阅与通信
  */
-var Broker;
-(function (Broker) {
-    let pipes = new Map();
+class Broker {
+    constructor() {
+        Broker.pipes = new Map();
+    }
     /**
      * @description 接收消息并且推入pipe中,如果pipe不存在,那么新建一个pipe
      * @param pipeId
@@ -63,65 +70,52 @@ var Broker;
      *   new UaMessage(data, nodeId, item.displayName),
      *)
      */
-    function receive(pipeId, messageId, message) {
+    static receive(pipeId, messageId, message) {
         return __awaiter(this, void 0, void 0, function* () {
-            let data = pipes.get(pipeId);
+            let data = Broker.pipes.get(pipeId);
             if (!data) {
-                pipes.set(pipeId, new MessagePipe());
-                data = pipes.get(pipeId);
+                let pipe = new MessagePipe();
+                Broker.pipes.set(pipeId, pipe);
+                data = pipe;
             }
             data.inPipe(messageId, message);
+            return true;
         });
     }
-    Broker.receive = receive;
     /**
      * @description 创建一个MessagePipe
      * @param pipeId
      * @example
      * Broker.createPipe(Config.defaultPipeName)
      */
-    function createPipe(pipeId) {
-        pipes.set(pipeId, new MessagePipe());
+    static createPipe(pipeId) {
+        let pipe = new MessagePipe();
+        Broker.pipes.set(pipeId, pipe);
+        return pipe;
     }
-    Broker.createPipe = createPipe;
-    /**
-     * @description 得到你订阅的管道的event,并且利用它进行功能开发
-     * @param pipeId
-     * @example
-     * let events = Broker.getPipeEvents(Config.defaultPipeName)
-     * events?.on('full', (data) => {
-     *    DbService.insertMany(data)
-     * })
-     */
-    function getPipeEvents(pipeId) {
-        let pipe = pipes.get(pipeId);
-        return pipe ? pipe.events : undefined;
-    }
-    Broker.getPipeEvents = getPipeEvents;
     /**
      * @description 可以改变你所指定的MessagePipe中消息队列的长度,默认值为200
      * @param pipeId
      * @param length
      */
-    function changePipeLength(pipeId, length) {
-        let pipe = pipes.get(pipeId);
+    static changePipeLength(pipeId, length) {
+        let pipe = Broker.pipes.get(pipeId);
         if (pipe) {
             pipe.changeMaxLength(length);
         }
     }
-    Broker.changePipeLength = changePipeLength;
     /**
      * @description 终结所有当前存在的messagePipe,注意:这会导致pipe中的数据丢失,但是会在消失之前通过close事件发送出去
      */
-    function terminateAll() {
+    terminateAllPipe() {
         return __awaiter(this, void 0, void 0, function* () {
-            pipes.forEach((pipe) => {
+            Broker.pipes.forEach((pipe) => {
                 pipe.terminate();
             });
         });
     }
-    Broker.terminateAll = terminateAll;
-})(Broker = exports.Broker || (exports.Broker = {}));
+}
+exports.Broker = Broker;
 /**
  * @description Ua后台发过来的消息的队列,前端只需订阅pushed,
  * 数据库订阅full/close事件即可

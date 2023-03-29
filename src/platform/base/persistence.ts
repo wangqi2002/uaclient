@@ -1,54 +1,66 @@
 import { FindOptions, ModelAttributes, ModelCtor, Options, Sequelize } from "sequelize"
-import path from "path"
 import { ClientConfig, ConfigNames } from "./config"
-export module Persistence {
-    export let sequelize: Sequelize
-    export let currentModel: ModelCtor<any>
+export class Persistence {
+    private static sequelize: Sequelize
+    private static currentModel: ModelCtor<any>
 
-    export async function init(storage: string, tableName: string, attributes: ModelAttributes) {
+    constructor(storage: string, tableName: string, attributes: ModelAttributes, options?: Options) {
         try {
-            let options = ClientConfig.get(ConfigNames.persistence)
+            // let options = ClientConfig.get(ConfigNames.persistence)
             if (options) {
-                sequelize = new Sequelize(options as Options)
+                Persistence.sequelize = new Sequelize(options)
             } else {
-                sequelize = new Sequelize({
+                Persistence.sequelize = new Sequelize({
                     dialect: "sqlite",
-                    storage: path.join(__dirname, "..", "..", "/databases/data.db"),
+                    storage: storage,
                     logging: false,
                 })
             }
-            await sequelize.authenticate()
-            currentModel = await sequelize.define(tableName, attributes, { timestamps: false })
+            Persistence.initDataModel(tableName, attributes)
+        } catch (e: any) {
+            throw e
+        }
+    }
+
+    static async insert(record: any) {
+        try {
+            await Persistence.currentModel.create({ ...record })
+        } catch (e: any) {
+            throw e
+        }
+    }
+
+    static async insertMany(records: any[]) {
+        try {
+            await Persistence.currentModel.bulkCreate(records)
+        } catch (e: any) {
+            throw e
+        }
+    }
+
+    static async read(options: FindOptions) {
+        return Persistence.currentModel.findAll(options)
+    }
+
+    static async configureDb(tableName?: string, attributes?: ModelAttributes, conf?: Options) {
+        try {
+            if (conf) {
+                Persistence.sequelize = new Sequelize(conf)
+                ClientConfig.set(ConfigNames.persistence, conf)
+            }
+            if (tableName && attributes) {
+                Persistence.initDataModel(tableName, attributes)
+            }
+        } catch (e: any) {
+            throw e
+        }
+    }
+
+    static async initDataModel(tableName: string, attributes: ModelAttributes) {
+        try {
+            await Persistence.sequelize.authenticate()
+            Persistence.currentModel = await Persistence.sequelize.define(tableName, attributes, { timestamps: false })
             await Persistence.currentModel.sync()
-        } catch (e: any) {
-            throw e
-        }
-    }
-
-    export async function insert(record: any) {
-        try {
-            await currentModel.create({ ...record })
-        } catch (e: any) {
-            throw e
-        }
-    }
-
-    export async function insertMany(records: any[]) {
-        try {
-            await currentModel.bulkCreate(records)
-        } catch (e: any) {
-            throw e
-        }
-    }
-
-    export async function read(options: FindOptions) {
-        return currentModel.findAll(options)
-    }
-
-    export function configureDb(conf: Options) {
-        try {
-            sequelize = new Sequelize(conf)
-            ClientConfig.set(ConfigNames.persistence, conf)
         } catch (e: any) {
             throw e
         }

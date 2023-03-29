@@ -16,7 +16,7 @@ var ClientConfig;
     ClientConfig.configStore = new electron_store_1.default({
         name: "client.config",
         fileExtension: "json",
-        cwd: electron_1.app.getPath("exe") + "1.json",
+        cwd: electron_1.app.getPath("userData"),
         clearInvalidConfig: true,
     });
     function set(key, content) {

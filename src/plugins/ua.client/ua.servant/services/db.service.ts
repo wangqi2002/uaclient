@@ -141,7 +141,7 @@ export module DbService {
         try {
             let table = tableName ? tableName : defaultTableName
             let attribute = attributes ? attributes : defaultAttributes
-            await Persistence.init(path.join(__dirname, "..", "..", "/databases/data.db"), table, attribute)
+            await Persistence.configureDb(table, attribute)
         } catch (e: any) {
             throw new ClientError(UaSources.dbService, UaErrors.errorCreatTable, e.message, e.stack)
         }

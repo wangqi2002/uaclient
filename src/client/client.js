@@ -12,25 +12,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.client = void 0;
-const async_1 = __importDefault(require("async"));
+exports.client = exports.Client = void 0;
+const workbench_1 = require("./../workbench/workbench");
+const path_1 = __importDefault(require("path"));
+const broker_1 = require("./../platform/base/broker");
 const electron_1 = require("electron");
 const error_1 = require("../platform/base/error");
 const log_1 = require("../platform/base/log");
+const async_1 = __importDefault(require("async"));
+const persistence_1 = require("../platform/base/persistence");
+const config_1 = require("../platform/base/config");
 class Client {
     constructor() {
         try {
             this.requestSingleInstance();
             this.startup();
+            electron_1.ipcMain.on("client:quit", () => {
+                this.quit();
+            });
         }
         catch (e) {
             console.error(e.message);
             electron_1.app.exit(1);
         }
     }
+    requestSingleInstance() {
+        if (!electron_1.app.requestSingleInstanceLock()) {
+            electron_1.app.quit();
+        }
+    }
     startup() {
         return __awaiter(this, void 0, void 0, function* () {
-            error_1.ErrorHandler.setUnexpectedErrorHandler(function (error) {
+            error_1.ErrorHandler.setUnexpectedErrorHandler((error) => {
                 if ("source" in error) {
                     log_1.Log.error(error);
                 }
@@ -43,25 +56,46 @@ class Client {
                 yield this.initServices();
             }
             catch (e) {
+                console.log("nice");
                 throw e;
             }
         });
     }
-    quit() { }
     initServices() {
-        async_1.default.series([]);
+        async_1.default.parallel([
+            //初始化Broker中间转发者服务
+            () => __awaiter(this, void 0, void 0, function* () {
+                Client.broker = new broker_1.Broker();
+            }),
+            //初始化Log日志服务
+            () => __awaiter(this, void 0, void 0, function* () {
+                Client.logger = new log_1.Log();
+            }),
+            //初始化持久化ORM服务
+            () => __awaiter(this, void 0, void 0, function* () {
+                let defaultAttributes = config_1.ClientConfig.get("modelAttribute");
+                Client.persistor = new persistence_1.Persistence(path_1.default.join(__dirname, "..", "..", "/databases/data.db"), "2023", //TODO 处理数据库自动命名的问题
+                defaultAttributes);
+            }),
+            //初始化插件服务
+            () => __awaiter(this, void 0, void 0, function* () { }),
+        ]);
     }
-    createService() { }
     createWorkbench() {
-        require("../workbench/workbench");
+        Client.workbench = new workbench_1.Workbench();
+        Client.mainWindow = Client.workbench.getMainWindow();
     }
     setErrorHandler(errorHandler) {
         error_1.ErrorHandler.setUnexpectedErrorHandler(errorHandler);
     }
-    requestSingleInstance() {
-        if (!electron_1.app.requestSingleInstanceLock()) {
-            electron_1.app.quit();
-        }
+    quit() {
+        async_1.default.series([
+            //终结broker转发者服务
+            () => __awaiter(this, void 0, void 0, function* () {
+                Client.broker.terminateAllPipe();
+            }),
+        ]);
     }
 }
+exports.Client = Client;
 exports.client = new Client();

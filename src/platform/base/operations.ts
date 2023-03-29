@@ -13,9 +13,9 @@ export module Operations {
 
     export async function initByConfig() {}
 
-    export async function configureLog(conf: Configuration, filepath: string, nodeToModify: string[]) {
-        Log.configureLog(conf)
-    }
+    // export async function configureLog(conf: Configuration, filepath: string, nodeToModify: string[]) {
+    //     Log.configureLog(conf)
+    // }
 
     // export function configureMQ(pipeName:string,length: number) {
     //     Broker.changeMaxLength(pipeName,length)

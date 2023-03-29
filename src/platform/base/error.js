@@ -3,17 +3,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ErrorHandler = void 0;
 var ErrorHandler;
 (function (ErrorHandler) {
-    let errorHandler;
-    let listeners = [];
+    ErrorHandler.listeners = [];
     function addListener(listener) {
-        listeners.push(listener);
+        ErrorHandler.listeners.push(listener);
     }
     ErrorHandler.addListener = addListener;
     function setUnexpectedErrorHandler(newHandler) {
-        errorHandler = newHandler;
+        ErrorHandler.errorHandler = newHandler;
+        process.on("uncaughtException", (error) => {
+            ErrorHandler.errorHandler(error);
+        });
     }
     ErrorHandler.setUnexpectedErrorHandler = setUnexpectedErrorHandler;
-    process.on("uncaughtException", (error) => {
-        errorHandler(error);
-    });
 })(ErrorHandler = exports.ErrorHandler || (exports.ErrorHandler = {}));

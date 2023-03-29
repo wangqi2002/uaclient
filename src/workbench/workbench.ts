@@ -4,11 +4,11 @@ import path from "path"
 import { EventEmitter } from "stream"
 import { MainHandler } from "../platform/ipc/ipc.handler"
 
-type ViewId = string
+type viewId = string
 
 export class Workbench extends EventEmitter {
     public winState: WinState<unknown>
-    private exsitViews: Map<ViewId, BrowserView>
+    private exsitViews: Map<viewId, BrowserView>
     private mainWindow!: BrowserWindow
 
     constructor(preload?: string, homeView?: string, dev: boolean = false) {
@@ -31,17 +31,13 @@ export class Workbench extends EventEmitter {
             frame: false,
             center: true,
             webPreferences: {
-                // preload: path.join(__dirname, preloadPath),
+                preload: path.join(__dirname, preloadPath),
                 devTools: true,
             },
         })
         if (dev) {
             this.mainWindow.webContents.openDevTools()
         }
-        // this.mainWindow.webContents.openDevTools({
-        //     mode: "right",
-        //     activate: true,
-        // })
         // await this.mainWindow.loadFile(indexHtmlPath)
         await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
         this.mainWindow.once("ready-to-show", () => {
@@ -62,8 +58,8 @@ export class Workbench extends EventEmitter {
     public async createView(
         viewId: string,
         viewUrl: string,
-        isWebView: boolean = false,
-        rectangle: Rectangle = { x: 0, y: 0, width: 300, height: 300 }
+        rectangle: Rectangle = { x: 0, y: 0, width: 300, height: 300 },
+        isWebView: boolean = false
     ) {
         if (this.exsitViews.has(viewId)) {
             return false
@@ -75,8 +71,14 @@ export class Workbench extends EventEmitter {
                 enablePreferredSizeMode: true,
             },
         })
-        this.mainWindow.addBrowserView(browserView)
-        isWebView ? await browserView.webContents.loadURL(viewUrl) : await browserView.webContents.loadFile(viewUrl)
+
+        isWebView
+            ? await browserView.webContents.loadURL(viewUrl).then(() => {
+                  this.mainWindow.addBrowserView(browserView)
+              })
+            : await browserView.webContents.loadFile(viewUrl).then(() => {
+                  this.mainWindow.addBrowserView(browserView)
+              })
         browserView.setBounds(rectangle)
         browserView.setAutoResize({
             horizontal: true,
@@ -84,10 +86,11 @@ export class Workbench extends EventEmitter {
             vertical: false,
             height: false,
         })
-        browserView.webContents.openDevTools()
+        // browserView.webContents.openDevTools()
         this.bindCloseEvent(viewId, browserView)
         this.exsitViews.set(viewId, browserView)
-        this.emit("view:created")
+        this.emit("created:view." + viewId)
+        return true
     }
 
     public getMainWindow(): BrowserWindow {
@@ -95,11 +98,12 @@ export class Workbench extends EventEmitter {
     }
 
     private bindCloseEvent(viewId: string, view: BrowserView) {
-        ipcMain.once("close:" + viewId, () => {
+        ipcMain.once("close:view." + viewId, () => {
             view.webContents.close()
         })
     }
 }
-export const workbench = new Workbench()
-export const mainWindow = workbench.getMainWindow()
+// export const workbench = new Workbench()
+// export const mainWindow = workbench.getMainWindow()
 //todo 命令inline名称获取
+//todo 调试ua.servant

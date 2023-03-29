@@ -8,41 +8,31 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Persistence = void 0;
 const sequelize_1 = require("sequelize");
-const path_1 = __importDefault(require("path"));
 const config_1 = require("./config");
-var Persistence;
-(function (Persistence) {
-    function init(storage, tableName, attributes) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                let options = config_1.ClientConfig.get(config_1.ConfigNames.persistence);
-                if (options) {
-                    Persistence.sequelize = new sequelize_1.Sequelize(options);
-                }
-                else {
-                    Persistence.sequelize = new sequelize_1.Sequelize({
-                        dialect: "sqlite",
-                        storage: path_1.default.join(__dirname, "..", "..", "/databases/data.db"),
-                        logging: false,
-                    });
-                }
-                yield Persistence.sequelize.authenticate();
-                Persistence.currentModel = yield Persistence.sequelize.define(tableName, attributes, { timestamps: false });
-                yield Persistence.currentModel.sync();
+class Persistence {
+    constructor(storage, tableName, attributes, options) {
+        try {
+            // let options = ClientConfig.get(ConfigNames.persistence)
+            if (options) {
+                Persistence.sequelize = new sequelize_1.Sequelize(options);
             }
-            catch (e) {
-                throw e;
+            else {
+                Persistence.sequelize = new sequelize_1.Sequelize({
+                    dialect: "sqlite",
+                    storage: storage,
+                    logging: false,
+                });
             }
-        });
+            Persistence.initDataModel(tableName, attributes);
+        }
+        catch (e) {
+            throw e;
+        }
     }
-    Persistence.init = init;
-    function insert(record) {
+    static insert(record) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield Persistence.currentModel.create(Object.assign({}, record));
@@ -52,8 +42,7 @@ var Persistence;
             }
         });
     }
-    Persistence.insert = insert;
-    function insertMany(records) {
+    static insertMany(records) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield Persistence.currentModel.bulkCreate(records);
@@ -63,22 +52,38 @@ var Persistence;
             }
         });
     }
-    Persistence.insertMany = insertMany;
-    function read(options) {
+    static read(options) {
         return __awaiter(this, void 0, void 0, function* () {
             return Persistence.currentModel.findAll(options);
         });
     }
-    Persistence.read = read;
-    function configureDb(conf) {
-        try {
-            Persistence.sequelize = new sequelize_1.Sequelize(conf);
-            config_1.ClientConfig.set(config_1.ConfigNames.persistence, conf);
-        }
-        catch (e) {
-            throw e;
-        }
+    static configureDb(tableName, attributes, conf) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (conf) {
+                    Persistence.sequelize = new sequelize_1.Sequelize(conf);
+                    config_1.ClientConfig.set(config_1.ConfigNames.persistence, conf);
+                }
+                if (tableName && attributes) {
+                    Persistence.initDataModel(tableName, attributes);
+                }
+            }
+            catch (e) {
+                throw e;
+            }
+        });
     }
-    Persistence.configureDb = configureDb;
-    //todo crud,备份/配置
-})(Persistence = exports.Persistence || (exports.Persistence = {}));
+    static initDataModel(tableName, attributes) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield Persistence.sequelize.authenticate();
+                Persistence.currentModel = yield Persistence.sequelize.define(tableName, attributes, { timestamps: false });
+                yield Persistence.currentModel.sync();
+            }
+            catch (e) {
+                throw e;
+            }
+        });
+    }
+}
+exports.Persistence = Persistence;

@@ -4,7 +4,6 @@ exports.MainHandler = void 0;
 const electron_1 = require("electron");
 const ipc_events_1 = require("./ipc.events");
 const log_1 = require("../base/log");
-const persistence_1 = require("../base/persistence");
 var MainHandler;
 (function (MainHandler) {
     function initBind(mainWindow) {
@@ -44,9 +43,9 @@ var MainHandler;
     }
     MainHandler.logBind = logBind;
     function persistBind() {
-        electron_1.ipcMain.on("persist:init", (event, storage, tableName, attributes) => {
-            persistence_1.Persistence.init(storage, tableName, attributes);
-        });
+        // ipcMain.on("persist:init", (event, storage, tableName, attributes) => {
+        //     Persistence.init(storage, tableName, attributes)
+        // })
     }
     MainHandler.persistBind = persistBind;
     function extendBind(event, func) {

@@ -42,9 +42,9 @@ export module MainHandler {
     }
 
     export function persistBind() {
-        ipcMain.on("persist:init", (event, storage, tableName, attributes) => {
-            Persistence.init(storage, tableName, attributes)
-        })
+        // ipcMain.on("persist:init", (event, storage, tableName, attributes) => {
+        //     Persistence.init(storage, tableName, attributes)
+        // })
     }
 
     export function extendBind(event: string, func: Function) {
