@@ -1,7 +1,7 @@
 import { IpcMain, ipcMain, IpcMainEvent } from "electron"
-import { mainEvents } from "./ipc.events"
-import { ClientError, ClientInfo, Log } from "../base/log"
-import { Persistence } from "../base/persistence"
+import { mainEvents } from "../events/ipc.events"
+import { ClientError, ClientInfo, Log } from "../../base/log/log"
+import { Persistence } from "../../base/persist/persistence"
 
 export module MainHandler {
     import BrowserWindow = Electron.BrowserWindow

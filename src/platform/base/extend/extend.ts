@@ -1,5 +1,5 @@
-import { ClientWarn } from "./log"
-import { MainHandler } from "../ipc/ipc.handler"
+import { ClientWarn } from "../log/log"
+import { MainHandler } from "../../ipc/handlers/ipc.handler"
 import child_process from "child_process"
 //todo 修改以使用child_process执行插件
 export module Extend {

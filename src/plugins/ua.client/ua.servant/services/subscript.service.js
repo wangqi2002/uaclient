@@ -13,10 +13,10 @@ exports.SubscriptService = void 0;
 const node_opcua_1 = require("node-opcua");
 const session_service_1 = require("./session.service");
 const ua_enums_1 = require("../../common/ua.enums");
-const broker_1 = require("../../../../platform/base/broker");
+const broker_1 = require("../../../../platform/base/broker/broker");
 const message_model_1 = require("../models/message.model");
 const config_default_1 = require("../../config/config.default");
-const log_1 = require("../../../../platform/base/log");
+const log_1 = require("../../../../platform/base/log/log");
 var SubscriptService;
 (function (SubscriptService) {
     let monitoredItems = new Map();

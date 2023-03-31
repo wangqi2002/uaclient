@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CertUtils = exports.DbUtils = exports.JsonUtils = void 0;
 const fs_1 = require("fs");
-const Log = require('../../../../platform/base/log');
+const Log = require('../../../../platform/base/log/log');
 var JsonUtils;
 (function (JsonUtils) {
     /**

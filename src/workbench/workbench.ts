@@ -2,7 +2,7 @@ import { BrowserView, BrowserWindow, ipcMain, Rectangle, screen } from "electron
 import WinState from "electron-win-state"
 import path from "path"
 import { EventEmitter } from "stream"
-import { MainHandler } from "../platform/ipc/ipc.handler"
+import { MainHandler } from "../platform/ipc/handlers/ipc.handler"
 
 type viewId = string
 
@@ -11,13 +11,13 @@ export class Workbench extends EventEmitter {
     private exsitViews: Map<viewId, BrowserView>
     private mainWindow!: BrowserWindow
 
-    constructor(preload?: string, homeView?: string, dev: boolean = false) {
+    constructor(preload?: string, homeViewPath?: string, dev: boolean = false) {
         super()
         this.winState = new WinState({
             defaultWidth: (screen.getPrimaryDisplay().workAreaSize.width * 3) / 4,
             defaultHeight: (screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
         })
-        this.createMainWindow(preload, homeView, dev)
+        this.createMainWindow(preload, homeViewPath, dev)
         this.exsitViews = new Map()
     }
 
@@ -38,8 +38,8 @@ export class Workbench extends EventEmitter {
         if (dev) {
             this.mainWindow.webContents.openDevTools()
         }
-        // await this.mainWindow.loadFile(indexHtmlPath)
-        await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
+        await this.mainWindow.loadFile(indexHtmlPath)
+        // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
         this.mainWindow.once("ready-to-show", () => {
             this.mainWindow.show()
         })

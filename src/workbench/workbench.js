@@ -17,15 +17,15 @@ const electron_1 = require("electron");
 const electron_win_state_1 = __importDefault(require("electron-win-state"));
 const path_1 = __importDefault(require("path"));
 const stream_1 = require("stream");
-const ipc_handler_1 = require("../platform/ipc/ipc.handler");
+const ipc_handler_1 = require("../platform/ipc/handlers/ipc.handler");
 class Workbench extends stream_1.EventEmitter {
-    constructor(preload, homeView, dev = false) {
+    constructor(preload, homeViewPath, dev = false) {
         super();
         this.winState = new electron_win_state_1.default({
             defaultWidth: (electron_1.screen.getPrimaryDisplay().workAreaSize.width * 3) / 4,
             defaultHeight: (electron_1.screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
         });
-        this.createMainWindow(preload, homeView, dev);
+        this.createMainWindow(preload, homeViewPath, dev);
         this.exsitViews = new Map();
     }
     createMainWindow(preloadPath = path_1.default.join(__dirname, "../preload.js"), indexHtmlPath = path_1.default.join(__dirname, "./index.html"), dev = false) {
@@ -37,8 +37,8 @@ class Workbench extends stream_1.EventEmitter {
             if (dev) {
                 this.mainWindow.webContents.openDevTools();
             }
-            // await this.mainWindow.loadFile(indexHtmlPath)
-            yield this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app");
+            yield this.mainWindow.loadFile(indexHtmlPath);
+            // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
             this.mainWindow.once("ready-to-show", () => {
                 this.mainWindow.show();
             });
@@ -98,3 +98,4 @@ exports.Workbench = Workbench;
 // export const workbench = new Workbench()
 // export const mainWindow = workbench.getMainWindow()
 //todo 命令inline名称获取
+//todo 调试ua.servant

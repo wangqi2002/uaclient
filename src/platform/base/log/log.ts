@@ -1,6 +1,6 @@
 import { app, ipcMain } from "electron"
 import { Configuration, configure, getLogger, Logger } from "log4js"
-import { ClientConfig, ConfigNames } from "./config"
+import { ClientConfig, ConfigNames } from "../../../client/config"
 
 type Source = string | undefined
 type Warn = string

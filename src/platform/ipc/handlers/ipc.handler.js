@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MainHandler = void 0;
 const electron_1 = require("electron");
-const ipc_events_1 = require("./ipc.events");
-const log_1 = require("../base/log");
+const ipc_events_1 = require("../events/ipc.events");
+const log_1 = require("../../base/log/log");
 var MainHandler;
 (function (MainHandler) {
     function initBind(mainWindow) {

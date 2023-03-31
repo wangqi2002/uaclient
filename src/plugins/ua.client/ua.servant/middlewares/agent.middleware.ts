@@ -24,7 +24,7 @@ import {
 } from '../models/params.model'
 import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
 import {Certificate} from 'node-opcua-crypto'
-import {ClientError, ClientInfo, Log} from '../../../../platform/base/log'
+import {ClientError, ClientInfo, Log} from '../../../../platform/base/log/log'
 import {CertUtils, DbUtils} from '../utils/util'
 
 export module AgentMiddleware {

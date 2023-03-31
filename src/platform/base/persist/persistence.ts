@@ -1,5 +1,5 @@
 import { FindOptions, ModelAttributes, ModelCtor, Options, Sequelize } from "sequelize"
-import { ClientConfig, ConfigNames } from "./config"
+import { ClientConfig, ConfigNames } from "../../../client/config"
 export class Persistence {
     private static sequelize: Sequelize
     private static currentModel: ModelCtor<any>

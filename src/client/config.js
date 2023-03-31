@@ -14,7 +14,7 @@ var ConfigNames;
 var ClientConfig;
 (function (ClientConfig) {
     ClientConfig.configStore = new electron_store_1.default({
-        name: "client.config",
+        name: "config",
         fileExtension: "json",
         cwd: electron_1.app.getPath("userData"),
         clearInvalidConfig: true,

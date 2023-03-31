@@ -13,7 +13,7 @@ exports.CertificateService = void 0;
 const node_opcua_1 = require("node-opcua");
 const ua_enums_1 = require("../../common/ua.enums");
 const config_default_1 = require("../../config/config.default");
-const log_1 = require("../../../../platform/base/log");
+const log_1 = require("../../../../platform/base/log/log");
 // const cry = require("node-opcua-pki")
 var CertificateService;
 (function (CertificateService) {

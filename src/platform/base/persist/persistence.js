@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Persistence = void 0;
 const sequelize_1 = require("sequelize");
-const config_1 = require("./config");
+const config_1 = require("../../../client/config");
 class Persistence {
     constructor(storage, tableName, attributes, options) {
         try {

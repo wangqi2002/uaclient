@@ -8,7 +8,7 @@ export enum ConfigNames {
 
 export module ClientConfig {
     export let configStore = new Store({
-        name: "client.config",
+        name: "config",
         fileExtension: "json",
         cwd: app.getPath("userData"),
         clearInvalidConfig: true,

@@ -16,11 +16,11 @@ exports.DbService = void 0;
 const ua_enums_1 = require("../../common/ua.enums");
 const config_default_1 = require("../../config/config.default");
 const util_1 = require("../utils/util");
-const log_1 = require("../../../../platform/base/log");
-const persistence_1 = require("../../../../platform/base/persistence");
+const log_1 = require("../../../../platform/base/log/log");
+const persistence_1 = require("../../../../platform/base/persist/persistence");
 const sequelize_1 = require("sequelize");
 const events_1 = __importDefault(require("events"));
-const broker_1 = require("../../../../platform/base/broker");
+const broker_1 = require("../../../../platform/base/broker/broker");
 //todo 全面测试数据库模块
 var DbService;
 (function (DbService) {
