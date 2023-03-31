@@ -15,13 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.client = exports.Client = void 0;
 const workbench_1 = require("./../workbench/workbench");
 const path_1 = __importDefault(require("path"));
-const broker_1 = require("./../platform/base/broker");
+const broker_1 = require("../platform/base/broker/broker");
 const electron_1 = require("electron");
-const error_1 = require("../platform/base/error");
-const log_1 = require("../platform/base/log");
+const error_1 = require("../platform/base/error/error");
+const log_1 = require("../platform/base/log/log");
 const async_1 = __importDefault(require("async"));
-const persistence_1 = require("../platform/base/persistence");
-const config_1 = require("../platform/base/config");
+const persistence_1 = require("../platform/base/persist/persistence");
+const config_1 = require("./config");
 class Client {
     constructor() {
         try {
@@ -78,6 +78,8 @@ class Client {
                 defaultAttributes);
             }),
             //初始化插件服务
+            () => __awaiter(this, void 0, void 0, function* () { }),
+            //初始化postbox服务
             () => __awaiter(this, void 0, void 0, function* () { }),
         ]);
     }

@@ -13,7 +13,7 @@ exports.AgentMiddleware = void 0;
 require("koa-body/lib/index");
 const typia_1 = require("typia");
 const ua_enums_1 = require("../../common/ua.enums");
-const log_1 = require("../../../../platform/base/log");
+const log_1 = require("../../../../platform/base/log/log");
 const util_1 = require("../utils/util");
 var AgentMiddleware;
 (function (AgentMiddleware) {

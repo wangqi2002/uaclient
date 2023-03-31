@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Log = exports.ClientInfo = exports.ClientError = exports.ClientWarn = exports.InfoModel = void 0;
 const electron_1 = require("electron");
 const log4js_1 = require("log4js");
-const config_1 = require("./config");
+const config_1 = require("../../../client/config");
 class InfoModel {
     constructor(source, information, message) {
         this.timeStamp = new Date().toLocaleString();

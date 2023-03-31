@@ -14,7 +14,7 @@ const node_opcua_1 = require("node-opcua");
 const ua_enums_1 = require("../../common/ua.enums");
 const client_service_1 = require("./client.service");
 const typia_1 = require("typia");
-const log_1 = require("../../../../platform/base/log");
+const log_1 = require("../../../../platform/base/log/log");
 var SessionService;
 (function (SessionService) {
     SessionService.userIdentity = { type: node_opcua_1.UserTokenType.Anonymous };

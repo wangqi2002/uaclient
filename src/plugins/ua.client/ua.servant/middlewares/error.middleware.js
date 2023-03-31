@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ErrorMiddleware = void 0;
 const ua_enums_1 = require("../../common/ua.enums");
 const response_model_1 = require("../models/response.model");
-const log_1 = require("../../../../platform/base/log");
+const log_1 = require("../../../../platform/base/log/log");
 var ErrorMiddleware;
 (function (ErrorMiddleware) {
     function handleError(ctx, next) {

@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Extend = void 0;
-const log_1 = require("./log");
-const ipc_handler_1 = require("../ipc/ipc.handler");
+const log_1 = require("../log/log");
+const ipc_handler_1 = require("../../ipc/handlers/ipc.handler");
 //todo 修改以使用child_process执行插件
 var Extend;
 (function (Extend) {

@@ -1,14 +1,14 @@
 import { ModelAttributes } from "sequelize"
 import { Workbench } from "./../workbench/workbench"
 import path from "path"
-import { Broker } from "./../platform/base/broker"
+import { Broker } from "../platform/base/broker/broker"
 import { app, BrowserWindow, ipcMain } from "electron"
-import { ErrorHandler } from "../platform/base/error"
-import { ClientError, Log } from "../platform/base/log"
-import { MainHandler } from "../platform/ipc/ipc.handler"
+import { ErrorHandler } from "../platform/base/error/error"
+import { ClientError, Log } from "../platform/base/log/log"
+import { MainHandler } from "../platform/ipc/handlers/ipc.handler"
 import async from "async"
-import { Persistence } from "../platform/base/persistence"
-import { ClientConfig } from "../platform/base/config"
+import { Persistence } from "../platform/base/persist/persistence"
+import { ClientConfig } from "./config"
 export class Client {
     static workbench: Workbench
     static broker: Broker
@@ -79,6 +79,8 @@ export class Client {
                 )
             },
             //初始化插件服务
+            async () => {},
+            //初始化postbox服务
             async () => {},
         ])
     }
