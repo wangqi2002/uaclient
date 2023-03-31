@@ -38,8 +38,9 @@ export class Workbench extends EventEmitter {
         if (dev) {
             this.mainWindow.webContents.openDevTools()
         }
-        await this.mainWindow.loadFile(indexHtmlPath)
-        // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
+        this.mainWindow.webContents
+        // await this.mainWindow.loadFile(indexHtmlPath)
+        await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
         this.mainWindow.once("ready-to-show", () => {
             this.mainWindow.show()
         })

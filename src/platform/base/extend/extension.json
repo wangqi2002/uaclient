@@ -1,0 +1,52 @@
+{
+    "path": "nice",
+    "enabledExtensions": [
+        {
+            "version": "1",
+            "storage": "system",
+            "engine": "兼容客户端版本",
+            "name": "插件名称",
+            "workspace": "nice",
+            "isJsExtension": true,
+            "identifier": {
+                "id": "",
+                "uuid": null
+            },
+            "main": "main.js",
+            "renderer": null,
+            "onEvents": ["激活事件"]
+        },
+        {
+            "version": "1",
+            "storage": "system",
+            "engine": "兼容客户端版本",
+            "name": "插件名称",
+            "workspace": "nice",
+            "isJsExtension": true,
+            "identifier": {
+                "id": "",
+                "uuid": null
+            },
+            "main": null,
+            "renderer": "renderer.js",
+            "onEvents": ["激活事件"]
+        }
+    ],
+    "disabledExtensions": [
+        {
+            "version": "1",
+            "storage": "system",
+            "engine": "兼容客户端版本",
+            "name": "插件名称",
+            "workspace": "nice",
+            "isJsExtension": true,
+            "identifier": {
+                "id": "",
+                "uuid": null
+            },
+            "main": null,
+            "renderer": "renderer.js",
+            "onEvents": ["激活事件"]
+        }
+    ]
+}

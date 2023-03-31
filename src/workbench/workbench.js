@@ -37,8 +37,8 @@ class Workbench extends stream_1.EventEmitter {
             if (dev) {
                 this.mainWindow.webContents.openDevTools();
             }
-            yield this.mainWindow.loadFile(indexHtmlPath);
-            // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
+            // await this.mainWindow.loadFile(indexHtmlPath)
+            yield this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app");
             this.mainWindow.once("ready-to-show", () => {
                 this.mainWindow.show();
             });

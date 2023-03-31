@@ -1,15 +1,15 @@
 import { ModelAttributes } from "sequelize"
 import { Workbench } from "./../workbench/workbench"
-import path from "path"
 import { Broker } from "../platform/base/broker/broker"
-import { app, BrowserWindow, ipcMain } from "electron"
+import { app, BrowserWindow, ipcMain, webFrame } from "electron"
 import { ErrorHandler } from "../platform/base/error/error"
 import { ClientError, Log } from "../platform/base/log/log"
 import { MainHandler } from "../platform/ipc/handlers/ipc.handler"
 import async from "async"
 import { Persistence } from "../platform/base/persist/persistence"
 import { ClientConfig } from "./config"
-export class Client {
+const path = require("path")
+class Client {
     static workbench: Workbench
     static broker: Broker
     static logger: Log
@@ -86,7 +86,11 @@ export class Client {
     }
 
     private createWorkbench() {
-        Client.workbench = new Workbench()
+        Client.workbench = new Workbench(
+            path.join(__dirname, "../workbench/preload.js"),
+            path.join(__dirname, "../workbench/index.html"),
+            true
+        )
         Client.mainWindow = Client.workbench.getMainWindow()
     }
 
@@ -103,4 +107,4 @@ export class Client {
         ])
     }
 }
-export const client = new Client()
+const client = new Client()

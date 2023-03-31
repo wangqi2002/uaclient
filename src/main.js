@@ -23,7 +23,6 @@ app.on("window-all-closed", () => {
         app.quit()
     }
 })
-
 function getUserDataPath() {
     return product["rootDir"]
 }
