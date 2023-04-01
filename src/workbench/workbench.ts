@@ -33,11 +33,14 @@ export class Workbench extends EventEmitter {
             webPreferences: {
                 preload: path.join(__dirname, preloadPath),
                 devTools: true,
+                nodeIntegration:true,
+                contextIsolation:false,
             },
         })
         if (dev) {
             this.mainWindow.webContents.openDevTools()
         }
+        this.mainWindow.webContents.openDevTools()
         await this.mainWindow.loadFile(indexHtmlPath)
         // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
         this.mainWindow.once("ready-to-show", () => {
