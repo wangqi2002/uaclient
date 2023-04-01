@@ -60,7 +60,7 @@
                     <i class="el-icon-chat-square" @click="handRightViewShow"></i>
                 </el-aside>
                 <el-container class="exhibition-box">
-                    <el-aside class="subview subviewLeft" v-show="leftViewShow" style="width: 240px;">
+                    <el-aside class="subview subviewLeft" v-show="leftViewShow" style="width: var(--left-view-width);">
                         <div class="grid-content left-top">
                             project-view
                         </div>
@@ -72,26 +72,35 @@
                     <div class="dragBar-v resize-leftView" v-show="leftViewShow"></div>
                     <el-container class="content-box">
                         <el-main class="mianviewTop">
-                            data-view
+                            <el-tabs v-model="editableTabsValue" type="border-card" closable @tab-remove="removeTab">
+                                <el-tab-pane v-for="(item, index) in editableTabs" :key="item.name" :label="item.title"
+                                    :name="item.name">
+                                    <el-empty description="iframe"></el-empty>
+                                </el-tab-pane>
+                            </el-tabs>
                         </el-main>
                         <div class="dragBar-l resize-logView" v-show="logShow"></div>
-                        <el-footer class="logview mianviewBottom" v-show="logShow" style="height: 150px;">
+                        <el-footer class="logview mianviewBottom" v-show="logShow"
+                            style="height: var(--log-view-height);">
                             log-view
                         </el-footer>
                     </el-container>
                     <div class="dragBar-v resize-rightView" v-show="rightViewShow"></div>
-                    <el-aside class="subview subviewRight" v-show="rightViewShow" style="width: 240px;">
-                        <el-row>
-                            <el-col :span="24">
-                                <div class="grid-content bg-purple">
-                                    attributes-view
-                                </div>
-                            </el-col>
-                        </el-row>
+                    <el-aside class="subview subviewRight" v-show="rightViewShow"
+                        style="width: var(--right-view-width);">
+                        <div class="grid-content right-top">
+                            project-view
+                        </div>
+                        <div class="dragBar-l resize-rightView-inside" v-show="leftViewShow"></div>
+                        <div class="grid-content right-bottom">
+                            address-view
+                        </div>
                     </el-aside>
                 </el-container>
                 <el-aside class="sidebar sidebarRight" width="36px">
-                    right-sidebar
+                    <i class="el-icon-folder" @click="handLeftViewShow"></i>
+                    <i class="el-icon-set-up" @click="handLogShow"></i>
+                    <i class="el-icon-chat-square" @click="handRightViewShow"></i>
                 </el-aside>
             </el-container>
         </el-container>
@@ -105,15 +114,61 @@
         el: '#app',
         data: function () {
             return {
+                global_data: {
+                    left_view_width: 0,
+                    right_view_width: 0,
+                    log_view_width: 0,
+                },
                 activeIndex: '1',
                 search: "", //当前输入框的值
                 leftViewShow: true,
                 logShow: true,
                 rightViewShow: true,
+                editableTabsValue: '2',
+                editableTabs: [{
+                    title: 'Tab 1',
+                    name: '1',
+                    content: 'Tab 1 content'
+                }, {
+                    title: 'Tab 2',
+                    name: '2',
+                    content: 'Tab 2 content'
+                }, {
+                    title: 'Tab 3',
+                    name: '3',
+                    content: 'Tab 3 content'
+                }],
+                tabIndex: 2,
             }
         },
         computed: {},
         methods: {
+            addTab(targetName) {
+                let newTabName = ++this.tabIndex + '';
+                this.editableTabs.push({
+                    title: 'New Tab',
+                    name: newTabName,
+                    content: 'New Tab content'
+                });
+                this.editableTabsValue = newTabName;
+            },
+            removeTab(targetName) {
+                let tabs = this.editableTabs;
+                let activeName = this.editableTabsValue;
+                if (activeName === targetName) {
+                    tabs.forEach((tab, index) => {
+                        if (tab.name === targetName) {
+                            let nextTab = tabs[index + 1] || tabs[index - 1];
+                            if (nextTab) {
+                                activeName = nextTab.name;
+                            }
+                        }
+                    });
+                }
+
+                this.editableTabsValue = activeName;
+                this.editableTabs = tabs.filter(tab => tab.name !== targetName);
+            },
             searchHandler() {
                 console.log('+++: searchHandler')
             },
@@ -136,10 +191,12 @@
                 this.rightViewShow = !this.rightViewShow
             },
             dragLevel(box, top, bottom, resize) {
+                var that = this;
                 var box = document.getElementsByClassName(box);
                 var top = document.getElementsByClassName(top);
                 var bottom = document.getElementsByClassName(bottom);
                 var resize = document.getElementsByClassName(resize);
+                console.log(bottom[0].getAttribute("min-height"))
 
                 resize[0].onmousedown = function (e) {
                     var startY = e.clientY;
@@ -150,9 +207,7 @@
                         var moveLen = resize[0].top + (endY - startY);
                         var maxT = box[0].clientHeight - resize[0].offsetHeight;
 
-                        resize[0].style.top = moveLen;
-
-                        top[0].style.height = moveLen + 'px';
+                        // top[0].style.height = moveLen + 'px';
                         bottom[0].style.height = (box[0].clientHeight - moveLen - 5) + 'px';
                     }
                     document.onmouseup = function (evt) {
@@ -165,6 +220,7 @@
                 }
             },
             dragVertical() {
+
                 var box = document.getElementsByClassName("exhibition-box");
                 var left = document.getElementsByClassName("subviewLeft");
                 var mid = document.getElementsByClassName("content-box");
@@ -182,12 +238,9 @@
                         if (moveLen < 50) moveLen = 50;
                         if (moveLen > maxT - rightW - 50) moveLen = maxT - rightW - 50;
 
-                        resize[0].style.left = moveLen;
-
                         for (let j = 0; j < left.length; j++) {
                             left[j].style.width = moveLen + 'px';
-                            mid[j].style.width = (box[0].clientWidth - moveLen - rightW - 10) +
-                                'px';
+                            // mid[j].style.width = (box[0].clientWidth - moveLen - rightW - 10) +'px';
                         }
                     }
                     document.onmouseup = function (evt) {
@@ -209,9 +262,8 @@
                         if (moveLen < 50) moveLen = 50;
                         if (moveLen > maxT - leftW - 50) moveLen = maxT - leftW - 50;
 
-                        resize2[0].style.left = moveLen;
                         for (let j = 0; j < right.length; j++) {
-                            mid[j].style.width = moveLen + 'px';
+                            // mid[j].style.width = moveLen + 'px';
                             right[j].style.width = (box[0].clientWidth - moveLen - leftW - 10) +
                                 'px';
                         }
@@ -227,14 +279,12 @@
             }
         },
         mounted() {
-            this.dragLevel('subviewLeft', 'left-top', 'left-bottom', 'resize-leftView-inside')
             this.dragLevel('content-box', 'mianviewTop', 'mianviewBottom', 'resize-logView')
+            this.dragLevel('subviewLeft', 'left-top', 'left-bottom', 'resize-leftView-inside')
+            this.dragLevel('subviewRight', 'right-top', 'right-bottom', 'resize-rightView-inside')
             this.dragVertical()
-            // dragLevel('content-box', 'mianviewTop', 'mianviewBottom', 'resize-logView')
-            // dragVertical('exhibition-box', 'subviewLeft', 'content-box', 'subviewRight', 'resize', 'resize2')
         },
     })
-		// const ipcRender = require('electron').ipcRenderer
 </script>
 
 </html>

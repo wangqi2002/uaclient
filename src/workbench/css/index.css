@@ -1,3 +1,14 @@
+/* 自定义变量 */
+:root {
+    --left-view-width: 240px;
+    --left-view-minwidth: 150px;
+    --right-view-width: 240px;
+    --right-view-minwidth: 150px;
+    --log-view-height: 150px;
+    --log-view-minheight: 90px;
+    --sub-view-minheight: 50px;
+}
+
 /* 框架 */
 * {
     margin: 0px;
@@ -50,7 +61,7 @@
     height: 100%;
     cursor: w-resize;
     float: left;
-    background-color: #fafafa;
+    background-color: #eaeaeb;
 }
 .dragBar-l {
     width: 100%;
@@ -64,7 +75,7 @@
 }
 .logview {
     max-height: 90% !important;
-    min-height: 90px;
+    min-height: var(--log-view-minheight);
     background-color: #fafafa;
     color: #333;
     text-align: center;
@@ -75,7 +86,7 @@
     background-color: #fafafa;
     color: #333;
     text-align: center;
-    padding: 5px 8px;
+    padding: 0px;
 }
 
 /* topBar */
@@ -137,10 +148,38 @@ i {
     padding: 3px;
 }
 .left-top {
-    height: 200px;
-    min-height: 50px;
+    min-height: var(--sub-view-minheight);
+    flex: 1;
 }
 .left-bottom {
-    min-height: 50px;
+    height: 200px;
+    min-height: var(--sub-view-minheight);
+}
+.right-top {
+    min-height: var(--sub-view-minheight);
     flex: 1;
+}
+.right-bottom {
+    height: 200px;
+    min-height: var(--sub-view-minheight);
+}
+
+/* mainView */
+.el-tabs--border-card {
+    height: 100%;
+    background: #fafafa;
+    border: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+.el-tabs__item {
+    height: 36px;
+    line-height: 36px;
+}
+.el-tabs__nav-scroll {
+    background-color: #eaeaeb !important;
+}
+.el-tabs--border-card > .el-tabs__content {
+    height: calc(100% - 45px);
+    padding: 5px;
 }
