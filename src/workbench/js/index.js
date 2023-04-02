@@ -1,8 +1,4 @@
 const { ipcRenderer } = require('electron')
-// function los() {
-//     ipcRenderer.send('main:max')
-//     console.log('222')
-// }
 
 function mainMini(){
     ipcRenderer.send('main:min')
