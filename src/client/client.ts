@@ -7,7 +7,7 @@ import { ClientError, Log } from "../platform/base/log/log"
 import { MainHandler } from "../platform/ipc/handlers/ipc.handler"
 import async from "async"
 import { Persistence } from "../platform/base/persist/persistence"
-import { ClientConfig } from "./config"
+import { ClientStore } from "./store"
 const path = require("path")
 class Client {
     static workbench: Workbench
@@ -71,7 +71,7 @@ class Client {
             },
             //初始化持久化ORM服务
             async () => {
-                let defaultAttributes = ClientConfig.get("modelAttribute") as ModelAttributes
+                let defaultAttributes = ClientStore.get("config", "modelAttribute") as ModelAttributes
                 Client.persistor = new Persistence(
                     path.join(__dirname, "..", "..", "/databases/data.db"),
                     "2023", //TODO 处理数据库自动命名的问题

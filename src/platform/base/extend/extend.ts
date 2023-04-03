@@ -1,3 +1,5 @@
+import { ClientStore } from "./../../../client/store"
+import { existsSync } from "fs"
 import { ClientWarn } from "../log/log"
 import { MainHandler } from "../../ipc/handlers/ipc.handler"
 import child_process from "child_process"
@@ -17,7 +19,6 @@ type workspace = string | "global"
 //     cwd: app.getPath("userData"),
 //     clearInvalidConfig: true,
 // })
-
 export interface IExtensionIdentifier {
     id: string
     uuid: string | null
@@ -34,7 +35,7 @@ export interface IMainExtension {
 export interface IExtensionManager {
     attributes: {
         workSpace: workspace
-        storagePaht: string
+        storagePath: string
     }
     enabledExtensions: IMainExtension[]
     disabledExtensions: IMainExtension[]
@@ -42,38 +43,72 @@ export interface IExtensionManager {
 export interface IExtensionMannagers {
     extensionManagers: IExtensionManager[]
 }
+
+export class ExtensionMannagers implements IExtensionMannagers {
+    extensionManagers: IExtensionManager[]
+    constructor() {
+        this.extensionManagers = []
+    }
+}
 export class ExtensionManager {
     workspace: workspace
-    enabledExtensions: Map<extensionId, IMainExtension>
+    // enabledExtensions: Map<extensionId, IMainExtension>
     extensionManagers: Map<workspace, IExtensionManager>
+    extensionStore = "extensions"
 
     constructor() {
         this.workspace = "global"
-        this.enabledExtensions = new Map()
+        // this.enabledExtensions = new Map()
         this.extensionManagers = new Map()
+        ClientStore.create({
+            name: this.extensionStore,
+            fileExtension: "json",
+            cwd: app.getPath("appData"),
+            clearInvalidConfig: true,
+        })
         this.loadMannagers()
+        this.loadExtensions()
     }
 
     loadMannagers() {
-        let mannagers:IExtensionMannagers = require("./extension.json")
+        let mannagers: IExtensionMannagers = ClientStore.get(this.extensionStore, "extensionMannagers")
+        // let mannagers: IExtensionMannagers = require("./extension.json")
         mannagers.extensionManagers.forEach((extensionManager) => {
             this.extensionManagers.set(extensionManager.attributes.workSpace, extensionManager)
         })
     }
 
-    loadExtensions() {
+    async loadExtensions() {
         let mannager = this.extensionManagers.get(this.workspace)
         if (mannager) {
-            mannager.enabledExtensions.forEach((extension: IMainExtension) => {
-                this.enabledExtensions.set(extension.identifier.id, extension)
-                extension.onEvents.forEach((event) => {
-                    ipcMain.once(event, () => {
-                        this.activateExtension(extension)
+            let path = mannager.attributes.storagePath
+            let change = false
+            mannager.enabledExtensions.forEach((extension: IMainExtension, index: number) => {
+                if (this.verifyStoragePath(path + extension.storage)) {
+                    // this.enabledExtensions.set(extension.identifier.id, extension)
+                    extension.onEvents.forEach((event) => {
+                        ipcMain.once(event, () => {
+                            this.activateExtension(extension)
+                        })
                     })
-                })
+                } else {
+                    delete mannager?.enabledExtensions[index]
+                    change = true
+                }
             })
+            if (change) {
+                ClientStore.set(this.extensionStore, "enabledExtensions", mannager.enabledExtensions)
+            }
         } else {
-            console.log('不存在这个workspace')
+            console.log("不存在这个workspace")
+        }
+    }
+
+    verifyStoragePath(path: string) {
+        if (existsSync(path)) {
+            return true
+        } else {
+            return false
         }
     }
 
@@ -81,14 +116,25 @@ export class ExtensionManager {
         child_process.fork(extension.storage)
     }
 
-    enableExtention() {}
+    enableExtention(workspace: workspace, extensionId: IExtensionIdentifier) {
+        let mannager = this.extensionManagers.get(workspace)
+        if (mannager) {
+            mannager.disabledExtensions.forEach((extension: IMainExtension, index: number) => {
+                if (extension.identifier == extensionId) {
+                    mannager?.enabledExtensions.push(extension)
+                    delete mannager?.disabledExtensions[index]
+                }
+            })
+            // ClientStore.set(this.extensionStore, "extensionMannagers",)
+        }
+    }
 
-    installExtension(extension: IMainExtension,workspace:workspace) {
+    installExtension(extension: IMainExtension, workspace: workspace) {
         let mannager = this.extensionManagers.get(workspace)
         if (mannager) {
             mannager.enabledExtensions.push(extension)
         } else {
-            console.log('不存在这个workspace')
+            console.log("不存在这个workspace")
         }
     }
 
@@ -103,44 +149,17 @@ export class ExtensionManager {
 
     modifyExtensionManager(extensionManagerId: workspace) {
         let mannager = this.extensionManagers.get(extensionManagerId)
-        if () {
-            
-        }
-    }
-    // bindActivateEvent(event:string, extension:IMainExtension) {
-    //     ipcMain.once(event, () => {
-    //         this.activateExtension(extension)
-    //     })
-    // }
-}
-
-export class GlobalExtensionEnablement {
-    constructor() {}
-
-    async enableExtention(extension: IExtensionIdentifier, source: string) {
-        return false
-    }
-
-    async disableExtention(extension: IExtensionIdentifier) {
-        return false
     }
 }
-
 class ExtensionActivator {
-    constructor() {}
-
-    async loadMainExtension(extend: IMainExtension) {
-        child_process.fork(extend.storage, {})
-    }
-
-    async loadRendererExtension() {
-        // load页面/html或者js文件?通过iframe/webview,
-    }
-
-    extensionExsit() {
-        return false
+    static async activateExtension(workSpace: string, extension: IMainExtension) {
+        if (existsSync(workSpace + extension.storage)) {
+        }
+        child_process.fork(extension.storage)
     }
 }
 
 class IpcServer {}
-let a = new ExtensionManager().loadExtensions()
+let a = new ExtensionManager()
+a.loadExtensions()
+//todo 劫持require并且注入api

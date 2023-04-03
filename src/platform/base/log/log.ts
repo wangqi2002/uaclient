@@ -1,6 +1,6 @@
 import { app, ipcMain, ipcRenderer } from "electron"
 import { Configuration, configure, getLogger, Logger } from "log4js"
-import { ClientConfig, ConfigNames } from "../../../client/config"
+import { ClientStore, ConfigNames } from "../../../client/store"
 
 type Source = string | undefined
 type Warn = string
@@ -95,7 +95,7 @@ export class Log {
     configureLog(conf?: Configuration) {
         try {
             if (conf) {
-                ClientConfig.set(ConfigNames.log, conf)
+                ClientStore.set("config", ConfigNames.log, conf)
             } else {
                 conf = {
                     appenders: {
@@ -107,7 +107,7 @@ export class Log {
                     },
                     categories: { default: { appenders: ["client"], level: "info" } },
                 }
-                if (!ClientConfig.has(ConfigNames.log)) ClientConfig.set(ConfigNames.log, conf)
+                if (!ClientStore.has("config", ConfigNames.log)) ClientStore.set("config", ConfigNames.log, conf)
                 configure(conf)
             }
         } catch (e: any) {

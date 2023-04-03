@@ -8,7 +8,7 @@
             "enabledExtensions": [
                 {
                     "version": "1",
-                    "storage": "system",
+                    "storage": "/相对路径",
                     "engine": "兼容客户端版本",
                     "isJsExtension": true,
                     "identifier": {
