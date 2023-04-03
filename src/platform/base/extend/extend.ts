@@ -3,23 +3,24 @@ import { MainHandler } from "../../ipc/handlers/ipc.handler"
 import child_process from "child_process"
 //todo 修改以使用child_process执行插件
 import Store from "electron-store"
-import { app } from "electron"
+import { app, ipcMain } from "electron"
+import { type } from "os"
 
 type extensionStorage = string
 type extensionActivateEvent = string
-type extensionName = string
+type extensionId = string
 type workspace = string | "global"
 
-const extensionStore = new Store({
-    name: "config",
-    fileExtension: "json",
-    cwd: app.getPath("userData"),
-    clearInvalidConfig: true,
-})
+// const extensionStore = new Store({
+//     name: "config",
+//     fileExtension: "json",
+//     cwd: app.getPath("userData"),
+//     clearInvalidConfig: true,
+// })
 
 export interface IExtensionIdentifier {
     id: string
-    uuid?: string
+    uuid: string | null
 }
 export interface IMainExtension {
     identifier: IExtensionIdentifier
@@ -28,25 +29,89 @@ export interface IMainExtension {
     storage: extensionStorage
     version: string
     engine: string
-    name: string
-    workspace: workspace
 }
 
-export class ExtensionManager {
-    extensions: Map<extensionName, IMainExtension>
-    constructor() {
-        this.extensions = new Map()
+export interface IExtensionManager {
+    attributes: {
+        workSpace: workspace
+        storagePaht: string
     }
-    loadExtensions() {
-        //从json文件中加载
-        let extension = require("./extension.json")
+    enabledExtensions: IMainExtension[]
+    disabledExtensions: IMainExtension[]
+}
+export interface IExtensionMannagers {
+    extensionManagers: IExtensionManager[]
+}
+export class ExtensionManager {
+    workspace: workspace
+    enabledExtensions: Map<extensionId, IMainExtension>
+    extensionManagers: Map<workspace, IExtensionManager>
+
+    constructor() {
+        this.workspace = "global"
+        this.enabledExtensions = new Map()
+        this.extensionManagers = new Map()
+        this.loadMannagers()
     }
 
-    async activateExtension() {}
+    loadMannagers() {
+        let mannagers:IExtensionMannagers = require("./extension.json")
+        mannagers.extensionManagers.forEach((extensionManager) => {
+            this.extensionManagers.set(extensionManager.attributes.workSpace, extensionManager)
+        })
+    }
+
+    loadExtensions() {
+        let mannager = this.extensionManagers.get(this.workspace)
+        if (mannager) {
+            mannager.enabledExtensions.forEach((extension: IMainExtension) => {
+                this.enabledExtensions.set(extension.identifier.id, extension)
+                extension.onEvents.forEach((event) => {
+                    ipcMain.once(event, () => {
+                        this.activateExtension(extension)
+                    })
+                })
+            })
+        } else {
+            console.log('不存在这个workspace')
+        }
+    }
+
+    async activateExtension(extension: IMainExtension) {
+        child_process.fork(extension.storage)
+    }
 
     enableExtention() {}
 
-    installExtension() {}
+    installExtension(extension: IMainExtension,workspace:workspace) {
+        let mannager = this.extensionManagers.get(workspace)
+        if (mannager) {
+            mannager.enabledExtensions.push(extension)
+        } else {
+            console.log('不存在这个workspace')
+        }
+    }
+
+    createExtensionManager(mannager: IExtensionManager) {
+        if (this.extensionManagers.has(mannager.attributes.workSpace)) {
+            return false
+        } else {
+            this.extensionManagers.set(mannager.attributes.workSpace, mannager)
+            return true
+        }
+    }
+
+    modifyExtensionManager(extensionManagerId: workspace) {
+        let mannager = this.extensionManagers.get(extensionManagerId)
+        if () {
+            
+        }
+    }
+    // bindActivateEvent(event:string, extension:IMainExtension) {
+    //     ipcMain.once(event, () => {
+    //         this.activateExtension(extension)
+    //     })
+    // }
 }
 
 export class GlobalExtensionEnablement {
@@ -78,3 +143,4 @@ class ExtensionActivator {
 }
 
 class IpcServer {}
+let a = new ExtensionManager().loadExtensions()

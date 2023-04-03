@@ -33,6 +33,8 @@ export class Workbench extends EventEmitter {
             webPreferences: {
                 preload: path.join(__dirname, preloadPath),
                 devTools: true,
+                contextIsolation: false,
+                nodeIntegration: true,
             },
         })
         if (dev) {

@@ -1,4 +1,4 @@
-import { app, ipcMain } from "electron"
+import { app, ipcMain, ipcRenderer } from "electron"
 import { Configuration, configure, getLogger, Logger } from "log4js"
 import { ClientConfig, ConfigNames } from "../../../client/config"
 
