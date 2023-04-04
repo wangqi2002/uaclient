@@ -36,7 +36,7 @@
     justify-content: center;
     -webkit-app-region: drag;
 }
-.mian-box {
+.main-box {
     width: 100%;
     height: calc(100% - var(--top-bar-height));
     flex: 1;
@@ -101,40 +101,40 @@
 }
 
 /* topBar */
-.el-menu-demo {
+.main-top .el-menu-demo {
     width: auto;
     height: var(--top-bar-height);
     position: fixed;
     left: 0;
     -webkit-app-region: no-drag;
 }
-.el-menu--horizontal > .el-submenu .el-submenu__title {
+.main-top .el-menu--horizontal > .el-submenu .el-submenu__title {
     position: relative;
     height: var(--top-bar-height);
     line-height: var(--top-bar-height);
     color: #909399;
 }
-.el-submenu__title i {
+.main-top .el-submenu__title i {
     display: none;
 }
-.el-menu--popup-bottom-start {
+.main-top .el-menu--popup-bottom-start {
     margin-top: 0px;
 }
 .searchBox {
     width: 300px;
-    line-height: var(--top-bar-height);
+    line-height: calc(var(--top-bar-height) - 4px);
     margin-top: 2px;
     text-align: center;
     -webkit-app-region: no-drag;
 }
-.el-input__inner {
-    height: var(--top-bar-height) !important;
+.searchBox .el-input__inner {
+    height: calc(var(--top-bar-height) - 6px) !important;
     border-radius: 15px;
 }
-input::-ms-input-placeholder {
+.searchBox input::-ms-input-placeholder {
     text-align: center;
 }
-input::-webkit-input-placeholder {
+.searchBox input::-webkit-input-placeholder {
     text-align: center;
 }
 .operationBox {
@@ -147,7 +147,7 @@ input::-webkit-input-placeholder {
     top: 0;
     -webkit-app-region: no-drag;
 }
-i {
+.operationBox > i {
     margin: auto 10px;
     font-size: 16px;
 }
@@ -165,62 +165,60 @@ i {
 }
 
 /* subView */
-.grid-content {
+.subview .grid-content {
     width: calc(100%-6px);
     padding: 3px;
 }
-.left-top {
+.subview .left-top {
     min-height: var(--sub-view-minheight);
     flex: 1;
 }
-.left-bottom {
+.subview .left-bottom {
     height: 200px;
     min-height: var(--sub-view-minheight);
 }
-.right-top {
+.subview .right-top {
     min-height: var(--sub-view-minheight);
     flex: 1;
 }
-.right-bottom {
+.subview .right-bottom {
     height: 200px;
     min-height: var(--sub-view-minheight);
 }
 
-/* mainView */
-.el-tabs--border-card {
+/* mainView top*/
+.mianviewTop .el-tabs--border-card {
     height: 100%;
     background: #fafafa;
     border: none;
     -webkit-box-shadow: none;
     box-shadow: none;
 }
-.el-tabs__item {
+.mianviewTop .el-tabs__item {
     height: 36px;
     line-height: 36px;
 }
-.el-tabs__nav-scroll {
+.mianviewTop .el-tabs__nav-scroll {
     background-color: #eaeaeb !important;
 }
-.el-tabs__content {
+.mianviewTop .el-tabs__content {
     padding: 0;
 }
-.el-tabs--border-card > .el-tabs__content {
+.mianviewTop .el-tabs--border-card > .el-tabs__content {
     height: calc(100% - 35px);
     padding: 0px;
 }
-.el-tabs__nav-prev {
+.mianviewTop .el-tabs__nav-prev {
     width: 15px;
     height: 36px;
     line-height: 36px;
 }
-.el-tabs__nav-next {
+.mianviewTop .el-tabs__nav-next {
     width: 15px;
     height: 36px;
     line-height: 36px;
 }
-
-/* mainView */
-.el-tab-pane {
+.mianviewTop .el-tab-pane {
     width: 100%;
     height: 100%;
 }
@@ -228,4 +226,42 @@ iframe {
     width: 100%;
     height: 100%;
     border: none;
+}
+
+/* logView */
+
+/* logView */
+.logview > .el-tabs{
+    height: 100%;
+}
+.logview .el-tabs__header{
+    margin-bottom: 5px;
+}
+.logview .el-tabs__active-bar{
+    height: 1px;
+    background-color: #424242;
+}
+.logview .el-tabs__nav-wrap::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #FAFAFA;
+    z-index: 1;
+}
+.logview .el-tabs--bottom .el-tabs__item.is-bottom:nth-child(2), .el-tabs--bottom .el-tabs__item.is-top:nth-child(2), .el-tabs--top .el-tabs__item.is-bottom:nth-child(2), .el-tabs--top .el-tabs__item.is-top:nth-child(2) {
+    padding-left: 20px;
+}
+.logview .el-tabs__item{
+    height: 30px;
+    line-height: 30px;
+    color: #909399;
+}
+.logview .el-tabs__item:hover{
+    color: #383A42;
+}
+.logview .el-tabs__item.is-active{
+    color: #383A42;
 }

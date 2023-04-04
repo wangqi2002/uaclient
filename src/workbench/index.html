@@ -52,7 +52,7 @@
                     <i class="el-icon-close close-btn" @click="handlerClose"></i>
                 </div>
             </el-header>
-            <el-container class="mian-box">
+            <el-container class="main-box">
                 <el-aside class="sidebar sidebarLeft">
                     <i class="el-icon-folder" @click="handLeftViewShow"></i>
                     <i class="el-icon-set-up" @click="handLogShow"></i>
@@ -74,7 +74,7 @@
                             <el-tabs v-model="mainTabsValue" type="border-card" closable>
                                 <el-tab-pane v-for="(item, index) in mainTabs" :key="item.name" :label="item.title"
                                     :name="item.name">
-                                    <iframe :src="item.src" :style="{'pointer-events':resize_pointer}"></iframe>
+                                    <!-- <iframe :src="item.src" :style="{'pointer-events':resize_pointer}"></iframe> -->
                                     <!-- <iframe src="./components/mainView.html"></iframe> -->
                                 </el-tab-pane>
                             </el-tabs>
@@ -82,10 +82,10 @@
                         <div class="dragBar-l resize-logView" v-show="logShow"></div>
                         <el-footer class="logview mianviewBottom" v-show="logShow"
                             style="height: var(--log-view-height);">
-                            <el-tabs v-model="logTabsValue" type="border-card" closable>
+                            <el-tabs v-model="logTabsValue">
                                 <el-tab-pane v-for="(item, index) in logTabs" :key="item.name" :label="item.title"
                                     :name="item.name">
-                                    <iframe src="./components/mainView.html"></iframe>
+                                    {{item.content}}
                                 </el-tab-pane>
                             </el-tabs>
                         </el-footer>
