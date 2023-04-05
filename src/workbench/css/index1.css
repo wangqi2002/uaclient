@@ -1,0 +1,336 @@
+/* 自定义变量 */
+:root {
+    --top-bar-height: 30px;
+    --left-view-width: 300px;
+    --left-view-minwidth: 150px;
+    --main-view-minwidth: 130px;
+    --main-view-minheight: 150px;
+    --right-view-width: 200px;
+    --right-view-minwidth: 120px;
+    --log-view-height: 150px;
+    --log-view-minheight: 90px;
+    --sub-view-minheight: 50px;
+    --left-bar-width: 50px;
+    --right-bar-width: 26px;
+
+    --font-color: #A69E9F;
+}
+
+/* 框架 */
+* {
+    margin: 0px;
+    padding: 0px;
+}
+.home-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+.main-top {
+    width: 100%;
+    min-width: 500px;
+    height: var(--top-bar-height) !important;
+    background-color: #eaeaeb;
+    color: #333;
+    padding: 0px;
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    -webkit-app-region: drag;
+}
+.main-box {
+    width: 100%;
+    height: calc(100% - var(--top-bar-height));
+    flex: 1;
+    position: absolute;
+    top: 30px;
+    bottom: 0;
+}
+.subview {
+    min-width: 150px;
+    height: 100% !important;
+    background-color: #eaeaeb;
+}
+.dragBar-v {
+    width: 5px;
+    height: 100%;
+    cursor: w-resize;
+    float: left;
+    background-color: #eaeaeb;
+}
+.dragBar-l {
+    width: 100%;
+    height: 5px;
+    cursor: n-resize;
+    background-color: #fafafa;
+}
+.resize-logView {
+    width: 100%;
+    height: 4px;
+    cursor: n-resize;
+    border-top: 1px solid #d0d0d0;
+    background-color: #eaeaeb;
+}
+.content-box {
+    width: calc(100% - var(--left-view-width) - var(--right-view-width));
+    min-width: var(--main-view-minwidth);
+    height: 100% !important;
+}
+.logview {
+    max-height: 90% !important;
+    min-height: var(--log-view-minheight);
+    background-color: #fafafa;
+    color: #333;
+    text-align: center;
+    /* border-top: 1px solid #d0d0d0; */
+    padding: 0px;
+}
+.content-box > .el-main {
+    min-height: var(--main-view-minheight);
+    background-color: #fafafa;
+    color: #333;
+    text-align: center;
+    padding: 0px;
+}
+
+/* 通用样式 */
+.el-tabs__active-bar{
+    background-color: #424242 !important;
+}
+.el-tabs__item{
+    color: var(--font-color) !important;
+}
+.el-tabs__item:hover {
+    color: #383a42 !important;
+}
+.el-tabs__item.is-active {
+    color: #383a42 !important;
+}
+
+/* topBar */
+.main-top .el-menu-demo {
+    width: auto;
+    height: var(--top-bar-height);
+    position: fixed;
+    left: 0;
+    -webkit-app-region: no-drag;
+}
+.main-top .el-menu--horizontal > .el-submenu .el-submenu__title {
+    position: relative;
+    height: var(--top-bar-height);
+    line-height: var(--top-bar-height);
+    color: #909399;
+}
+.main-top .el-submenu__title i {
+    display: none;
+}
+.main-top .el-menu--popup-bottom-start {
+    margin-top: 0px;
+}
+.searchBox {
+    width: 300px;
+    line-height: calc(var(--top-bar-height) - 4px);
+    margin-top: 2px;
+    text-align: center;
+    -webkit-app-region: no-drag;
+}
+.searchBox .el-input__inner {
+    height: calc(var(--top-bar-height) - 6px) !important;
+    border-radius: 15px;
+}
+.searchBox input::-ms-input-placeholder {
+    text-align: center;
+}
+.searchBox input::-webkit-input-placeholder {
+    text-align: center;
+}
+.operationBox {
+    width: auto;
+    height: var(--top-bar-height);
+    line-height: var(--top-bar-height);
+    margin-right: 5px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    -webkit-app-region: no-drag;
+}
+.operationBox > i {
+    margin: auto 10px;
+    font-size: 16px;
+}
+
+/* subviewLeft */
+.subviewLeft .el-tabs--left .el-tabs__nav-wrap.is-left::after {
+    height: 100%;
+    width: 2px;
+    background-color: #eaeaeb;
+    bottom: auto;
+    top: 0;
+}
+.subviewLeft .el-tabs--left .el-tabs__active-bar.is-left {
+    width: 2px;
+}
+.subviewLeft .el-tabs--left {
+    height: 100%;
+}
+.subviewLeft .el-tabs__header.is-left {
+    width: var(--left-bar-width);
+    margin-right: 5px;
+    background-color: #FAFAFA;
+}
+.subviewLeft .el-tabs__item {
+    height: 50px;
+    line-height: 50px;
+    padding: 0 14px 0 10px;
+    font-size: 26px;
+}
+.subviewLeft .el-tabs__item i {
+    font-size: 26px;
+}
+.subviewLeft .el-tabs__content,
+.subviewLeft .el-tab-pane {
+    height: 100%;
+}
+.subviewLeft .grid-box {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.subviewLeft .grid-content {
+    width: calc(100% - 6px);
+    padding: 3px;
+}
+.subviewLeft .left-top {
+    min-height: var(--sub-view-minheight);
+    flex: 1;
+}
+.subviewLeft .left-bottom {
+    height: 200px;
+    min-height: var(--sub-view-minheight);
+}
+
+/* subviewRight */
+.subviewRight .el-tabs--right .el-tabs__nav-wrap.is-right::after {
+    width: 2px;
+    background-color: #eaeaeb;
+}
+.subviewRight .el-tabs--right .el-tabs__active-bar.is-right {
+    width: 2px;
+}
+.subviewRight .el-tabs--right {
+    height: 100%;
+}
+.subviewRight .el-tabs__header.is-right {
+    width: var(--right-bar-width);
+    margin-left: 5px;
+    background-color: #FAFAFA;
+}
+.subviewRight .el-tabs__item {
+    height: 50px;
+    line-height: 50px;
+    padding: 0 2px 0 6px;
+    font-size: 18px;
+}
+.subviewRight .el-tabs__item i {
+    font-size: 18px;
+}
+.subviewRight .el-tabs__content,
+.subviewRight .el-tab-pane {
+    height: 100%;
+}
+.subviewRight .grid-box {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.subviewRight .grid-content {
+    width: calc(100% - 6px);
+    padding: 3px;
+}
+.subviewRight .right-top {
+    min-height: var(--sub-view-minheight);
+    flex: 1;
+}
+.subviewRight .right-bottom {
+    height: 200px;
+    min-height: var(--sub-view-minheight);
+}
+
+/* mainView top*/
+.mainviewTop .el-tabs--border-card {
+    height: 100%;
+    background: #fafafa;
+    border: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+.mainviewTop .el-tabs__item {
+    height: 36px;
+    line-height: 36px;
+}
+.mainviewTop .el-tabs__nav-scroll {
+    background-color: #eaeaeb !important;
+}
+.mainviewTop .el-tabs__content {
+    padding: 0;
+}
+.mainviewTop .el-tabs--border-card > .el-tabs__content {
+    height: calc(100% - 35px);
+    padding: 0px;
+}
+.mainviewTop .el-tabs__nav-prev {
+    width: 15px;
+    height: 36px;
+    line-height: 36px;
+}
+.mainviewTop .el-tabs__nav-next {
+    width: 15px;
+    height: 36px;
+    line-height: 36px;
+}
+.mainviewTop .el-tab-pane {
+    width: 100%;
+    height: 100%;
+}
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* logView */
+
+/* logView */
+.logview > .el-tabs {
+    height: 100%;
+}
+.logview .el-tabs__header {
+    margin-bottom: 5px;
+}
+.logview .el-tabs__active-bar {
+    height: 1px;
+    background-color: #424242;
+}
+.logview .el-tabs__nav-wrap::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #fafafa;
+    z-index: 1;
+}
+.logview .el-tabs--bottom .el-tabs__item.is-bottom:nth-child(2),
+.el-tabs--bottom .el-tabs__item.is-top:nth-child(2),
+.el-tabs--top .el-tabs__item.is-bottom:nth-child(2),
+.el-tabs--top .el-tabs__item.is-top:nth-child(2) {
+    padding-left: 20px;
+}
+.logview .el-tabs__item {
+    height: 30px;
+    line-height: 30px;
+    color: #909399;
+}

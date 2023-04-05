@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="element-ui/css/index.css">
-    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/index1.css">
     <link rel="stylesheet" href="css/common.css">
 </head>
 
@@ -53,57 +53,105 @@
                 </div>
             </el-header>
             <el-container class="main-box">
-                <el-aside class="sidebar sidebarLeft">
-                    <i class="el-icon-folder" @click="handLeftViewShow"></i>
-                    <i class="el-icon-set-up" @click="handLogShow"></i>
-                    <i class="el-icon-chat-square" @click="handRightViewShow"></i>
+                <el-aside class="subview subviewLeft" v-show="leftViewShow" style="width: var(--left-view-width);">
+                    <el-tabs tab-position="left">
+                        <el-tab-pane label="">
+                            <span slot="label">
+                                <i class="el-icon-folder"></i>
+                            </span>
+                            <div class="grid-box grid-box-left">
+                                <div class="grid-content left-top">
+                                    project-view
+                                </div>
+                                <div class="dragBar-l resize-leftView-inside" v-show="leftViewShow"></div>
+                                <div class="grid-content left-bottom">
+                                    address-view
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="">
+                            <span slot="label">
+                                <i class="el-icon-set-up"></i>
+                            </span>
+                            <div class="grid-box grid-box-left">
+                                <div class="grid-content left-top">
+                                    address-view
+                                </div>
+                                <div class="dragBar-l resize-leftView-inside" v-show="leftViewShow"></div>
+                                <div class="grid-content left-bottom">
+                                    project-view
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="">
+                            <span slot="label">
+                                <i class="el-icon-chat-square"></i>
+                            </span>
+                            <div class="grid-box grid-box-left">
+                                <div class="grid-content left-top">
+                                    project
+                                </div>
+                                <div class="dragBar-l resize-leftView-inside" v-show="leftViewShow"></div>
+                                <div class="grid-content left-bottom">
+                                    address
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
                 </el-aside>
-                <el-container class="exhibition-box">
-                    <el-aside class="subview subviewLeft" v-show="leftViewShow" style="width: var(--left-view-width);">
-                        <div class="grid-content left-top">
-                            project-view
-                        </div>
-                        <div class="dragBar-l resize-leftView-inside" v-show="leftViewShow"></div>
-                        <div class="grid-content left-bottom">
-                            address-view
-                        </div>
-                    </el-aside>
-                    <div class="dragBar-v resize-leftView" v-show="leftViewShow"></div>
-                    <el-container class="content-box">
-                        <el-main class="mianviewTop">
-                            <el-tabs v-model="mainTabsValue" type="border-card" closable>
-                                <el-tab-pane v-for="(item, index) in mainTabs" :key="item.name" :label="item.title"
-                                    :name="item.name">
-                                    <!-- <iframe :src="item.src" :style="{'pointer-events':resize_pointer}"></iframe> -->
-                                    <!-- <iframe src="./components/mainView.html"></iframe> -->
-                                </el-tab-pane>
-                            </el-tabs>
-                        </el-main>
-                        <div class="dragBar-l resize-logView" v-show="logShow"></div>
-                        <el-footer class="logview mianviewBottom" v-show="logShow"
-                            style="height: var(--log-view-height);">
-                            <el-tabs v-model="logTabsValue">
-                                <el-tab-pane v-for="(item, index) in logTabs" :key="item.name" :label="item.title"
-                                    :name="item.name">
-                                    {{item.content}}
-                                </el-tab-pane>
-                            </el-tabs>
-                        </el-footer>
-                    </el-container>
-                    <div class="dragBar-v resize-rightView" v-show="rightViewShow"></div>
-                    <el-aside class="subview subviewRight" v-show="rightViewShow"
-                        style="width: var(--right-view-width);">
-                        <div class="grid-content right-top">
-                            project-view
-                        </div>
-                        <div class="dragBar-l resize-rightView-inside" v-show="leftViewShow"></div>
-                        <div class="grid-content right-bottom">
-                            address-view
-                        </div>
-                    </el-aside>
+                <div class="dragBar-v resize-leftView" v-show="leftViewShow"></div>
+                <el-container class="content-box">
+                    <el-main class="mainviewTop">
+                        <el-tabs v-model="mainTabsValue" type="border-card" closable>
+                            <el-tab-pane v-for="(item, index) in mainTabs" :key="item.name" :label="item.title"
+                                :name="item.name">
+                                <!-- <iframe :src="item.src" :style="{'pointer-events':resize_pointer}"></iframe> -->
+                                <!-- <iframe src="./components/mainView.html"></iframe> -->
+                            </el-tab-pane>
+                        </el-tabs>
+                    </el-main>
+                    <div class="dragBar-l resize-logView" v-show="logShow"></div>
+                    <el-footer class="logview mianviewBottom" v-show="logShow" style="height: var(--log-view-height);">
+                        <el-tabs v-model="logTabsValue">
+                            <el-tab-pane v-for="(item, index) in logTabs" :key="item.name" :label="item.title"
+                                :name="item.name">
+                                {{item.content}}
+                            </el-tab-pane>
+                        </el-tabs>
+                    </el-footer>
                 </el-container>
-                <el-aside class="sidebar sidebarRight">
-                    sidebar sidebarRight
+                <div class="dragBar-v resize-rightView" v-show="rightViewShow"></div>
+                <el-aside class="subview subviewRight" v-show="rightViewShow" style="width: var(--right-view-width);">
+                    <el-tabs tab-position="right">
+                        <el-tab-pane label="">
+                            <span slot="label">
+                                <i class="el-icon-folder"></i>
+                            </span>
+                            <div class="grid-box grid-box-right">
+                                <div class="grid-content right-top">
+                                    project-view
+                                </div>
+                                <div class="dragBar-l resize-rightView-inside"></div>
+                                <div class="grid-content right-bottom">
+                                    address-view
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                        <el-tab-pane label="">
+                            <span slot="label">
+                                <i class="el-icon-set-up"></i>
+                            </span>
+                            <div class="grid-box grid-box-right">
+                                <div class="grid-content right-top">
+                                    address-view
+                                </div>
+                                <div class="dragBar-l resize-rightView-inside"></div>
+                                <div class="grid-content right-bottom">
+                                    project-view
+                                </div>
+                            </div>
+                        </el-tab-pane>
+                    </el-tabs>
                 </el-aside>
             </el-container>
         </el-container>
@@ -117,12 +165,9 @@
         el: '#app',
         data: function () {
             return {
-                left_bar_width: null,
-                global_data: {
-                    left_view_width: 0,
-                    right_view_width: 0,
-                    log_view_width: 0,
-                },
+                left_view_minwidth: null,
+                main_view_minwidth: null,
+                right_view_minwidth: null,
                 resize_pointer: 'auto',
                 activeIndex: '1',
                 search: "", //当前输入框的值
@@ -188,12 +233,15 @@
             handRightViewShow() {
                 this.rightViewShow = !this.rightViewShow
             },
+
             dragLevel(box, top, bottom, resize) {
                 var that = this;
                 var box = document.getElementsByClassName(box);
                 var top = document.getElementsByClassName(top);
                 var bottom = document.getElementsByClassName(bottom);
                 var resize = document.getElementsByClassName(resize);
+                var bottomMinheight = parseInt(getComputedStyle(bottom[0], null)['min-height']);
+                var topMinheight = parseInt(getComputedStyle(top[0], null)['min-height']);
 
                 resize[0].onmousedown = function (e) {
                     const mask = document.createElement('div')
@@ -206,8 +254,14 @@
                     document.onmousemove = function (e) {
                         var endY = e.clientY;
                         var topH = top[0].offsetHeight;
-                        var moveLen = resize[0].top + (endY - startY);
                         var maxT = box[0].clientHeight - resize[0].offsetHeight;
+                        if (endY > maxT - bottomMinheight - 10) {
+                            endY = maxT - bottomMinheight - 10
+                        }
+                        if (endY < topMinheight + 10) {
+                            endY = topMinheight + 10
+                        }
+                        var moveLen = resize[0].top + (endY - startY);
 
                         // top[0].style.height = moveLen + 'px';
                         bottom[0].style.height = (box[0].clientHeight - moveLen - 5) + 'px';
@@ -226,7 +280,7 @@
             },
             dragVertical() {
                 var that = this;
-                var box = document.getElementsByClassName("exhibition-box");
+                var box = document.getElementsByClassName("main-box");
                 var left = document.getElementsByClassName("subviewLeft");
                 var mid = document.getElementsByClassName("content-box");
                 var right = document.getElementsByClassName("subviewRight");
@@ -239,17 +293,19 @@
                     document.body.append(mask)
 
                     var startX = e.clientX;
-                    resize[0].left = resize[0].offsetLeft - that.left_bar_width;    //减去侧边栏距离 this.left_bar_width
+                    resize[0].left = resize[0].offsetLeft;
                     document.onmousemove = function (e) {
                         var endX = e.clientX;
                         var rightW = right[0].offsetWidth;
+                        var maxT = box[0].clientWidth - resize[0].offsetWidth - 5;
+                        if (endX == that.left_view_minwidth || endX < that.left_view_minwidth)
+                            endX = that.left_view_minwidth;
+                        if (endX == maxT - rightW - that.main_view_minwidth || endX > maxT - rightW - that.main_view_minwidth)
+                            endX = maxT - rightW - that.main_view_minwidth;
                         var moveLen = resize[0].left + (endX - startX);
-                        var maxT = box[0].clientWidth - resize[0].offsetWidth;
 
-                        for (let j = 0; j < left.length; j++) {
-                            left[j].style.width = moveLen + 'px';
-                            // mid[j].style.width = (box[0].clientWidth - moveLen - rightW - 10) +'px';
-                        }
+                        left[0].style.width = moveLen + 'px';
+                        // mid[j].style.width = (box[0].clientWidth - moveLen - rightW - 10) +'px';
                     }
                     document.onmouseup = function (evt) {
                         const mask = document.getElementById('mousemoveMask')
@@ -269,20 +325,19 @@
                     document.body.append(mask)
 
                     var startX = e.clientX;
-                    resize2[0].left = resize2[0].offsetLeft - that.left_bar_width;  //减去侧边栏距离 this.left_bar_width
+                    resize2[0].left = resize2[0].offsetLeft;
                     document.onmousemove = function (e) {
                         var endX = e.clientX;
                         var leftW = left[0].offsetWidth;
-                        var moveLen = resize2[0].left + (endX - startX) - leftW;
                         var maxT = box[0].clientWidth - resize2[0].offsetWidth - 5;
-                        if (moveLen < 50) moveLen = 50;
-                        if (moveLen > maxT - leftW - 50) moveLen = maxT - leftW - 50;
+                        if (endX > maxT - that.right_view_minwidth)
+                            endX = maxT - that.right_view_minwidth
+                        if (endX < leftW + that.main_view_minwidth)
+                            endX = leftW + that.main_view_minwidth
+                        var moveLen = resize2[0].left + (endX - startX) - leftW;
 
-                        for (let j = 0; j < right.length; j++) {
-                            // mid[j].style.width = moveLen + 'px';
-                            right[j].style.width = (box[0].clientWidth - moveLen - leftW - 10) +
-                                'px';
-                        }
+                        // mid[j].style.width = moveLen + 'px';
+                        right[0].style.width = (box[0].clientWidth - moveLen - leftW - 10) + 'px';
                     }
                     document.onmouseup = function (evt) {
                         const mask = document.getElementById('mousemoveMask')
@@ -298,13 +353,15 @@
             }
         },
         mounted() {
-            this.dragLevel('content-box', 'mianviewTop', 'mianviewBottom', 'resize-logView')
-            this.dragLevel('subviewLeft', 'left-top', 'left-bottom', 'resize-leftView-inside')
-            this.dragLevel('subviewRight', 'right-top', 'right-bottom', 'resize-rightView-inside')
+            this.dragLevel('content-box', 'mainviewTop', 'mianviewBottom', 'resize-logView')
+            this.dragLevel('grid-box-left', 'left-top', 'left-bottom', 'resize-leftView-inside')
+            this.dragLevel('grid-box-right', 'right-top', 'right-bottom', 'resize-rightView-inside')
             this.dragVertical()
         },
         created() {
-            this.left_bar_width = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--left-bar-width"));
+            this.left_view_minwidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--left-view-minwidth"));
+            this.main_view_minwidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--main-view-minwidth"));
+            this.right_view_minwidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--right-view-minwidth"));
         }
     })
 </script>
