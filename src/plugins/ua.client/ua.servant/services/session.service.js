@@ -128,7 +128,11 @@ var SessionService;
     function browse(nodeToBrowse, browseNext) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                if ((0, typia_1.is)(nodeToBrowse) && 'resultMask' in nodeToBrowse) {
+                if ((input => {
+                    const $io0 = input => (null === input.nodeId || undefined === input.nodeId || "string" === typeof input.nodeId || "number" === typeof input.nodeId || "object" === typeof input.nodeId && null !== input.nodeId && $io1(input.nodeId)) && (undefined === input.browseDirection || 0 === input.browseDirection || 1 === input.browseDirection || 2 === input.browseDirection || 3 === input.browseDirection) && (null === input.referenceTypeId || undefined === input.referenceTypeId || "string" === typeof input.referenceTypeId || "number" === typeof input.referenceTypeId || "object" === typeof input.referenceTypeId && null !== input.referenceTypeId && $io1(input.referenceTypeId)) && (undefined === input.includeSubtypes || "boolean" === typeof input.includeSubtypes) && (undefined === input.nodeClassMask || "number" === typeof input.nodeClassMask) && (undefined === input.resultMask || "number" === typeof input.resultMask);
+                    const $io1 = input => (1 === input.identifierType || 2 === input.identifierType || 3 === input.identifierType || 4 === input.identifierType) && (null !== input.value && undefined !== input.value && ("string" === typeof input.value || "number" === typeof input.value || input.value instanceof Buffer)) && "number" === typeof input.namespace;
+                    return "object" === typeof input && null !== input && false === Array.isArray(input) && $io0(input);
+                })(nodeToBrowse) && 'resultMask' in nodeToBrowse) {
                     nodeToBrowse.resultMask = (0, node_opcua_1.makeResultMask)('ReferenceType | IsForward | BrowseName | NodeClass | TypeDefinition');
                 }
                 let result = yield SessionService.session.browse(nodeToBrowse);

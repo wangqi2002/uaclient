@@ -1,6 +1,6 @@
-import { config } from "dotenv"
-import { FindOptions, ModelAttributes, ModelCtor, Options, Sequelize } from "sequelize"
-import { ClientStore, ConfigNames } from "../../../client/store"
+import {FindOptions, ModelAttributes, ModelCtor, Options, Sequelize} from "sequelize"
+import {ClientStore, ConfigNames} from "../store/store"
+
 export class Persistence {
     private static sequelize: Sequelize
     private static currentModel: ModelCtor<any>
@@ -47,7 +47,7 @@ export class Persistence {
         try {
             if (conf) {
                 Persistence.sequelize = new Sequelize(conf)
-                ClientStore.set("config", config, ConfigNames.persistence, conf)
+                ClientStore.set("config", ConfigNames.persistence, conf)
             }
             if (tableName && attributes) {
                 Persistence.initDataModel(tableName, attributes)

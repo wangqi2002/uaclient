@@ -1,8 +1,8 @@
-import { BrowserView, BrowserWindow, ipcMain, Rectangle, screen } from "electron"
+import { BrowserView, BrowserWindow, Rectangle, screen } from "electron"
 import WinState from "electron-win-state"
 import path from "path"
 import { EventEmitter } from "stream"
-import { MainHandler } from "../platform/ipc/handlers/ipc.handler"
+import { EventBind } from "../platform/ipc/handlers/ipc.handler"
 
 type viewId = string
 
@@ -30,6 +30,7 @@ export class Workbench extends EventEmitter {
             ...this.winState.winOptions,
             frame: false,
             center: true,
+            show: false,
             webPreferences: {
                 preload: path.join(__dirname, preloadPath),
                 devTools: true,
@@ -43,10 +44,7 @@ export class Workbench extends EventEmitter {
         this.mainWindow.webContents
         // await this.mainWindow.loadFile(indexHtmlPath)
         await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
-        this.mainWindow.once("ready-to-show", () => {
-            this.mainWindow.show()
-        })
-        MainHandler.initBind(this.mainWindow)
+        EventBind.workbenchInitBind(this.mainWindow)
         this.winState.manage(this.mainWindow)
     }
 
@@ -90,7 +88,7 @@ export class Workbench extends EventEmitter {
             height: false,
         })
         // browserView.webContents.openDevTools()
-        this.bindCloseEvent(viewId, browserView)
+        // this.bindCloseEvent(viewId, browserView)
         this.exsitViews.set(viewId, browserView)
         this.emit("created:view." + viewId)
         return true
@@ -100,11 +98,12 @@ export class Workbench extends EventEmitter {
         return this.mainWindow
     }
 
-    private bindCloseEvent(viewId: string, view: BrowserView) {
-        ipcMain.once("close:view." + viewId, () => {
-            view.webContents.close()
-        })
-    }
+    // private bindCloseEvent(viewId: string, view: BrowserView) {
+    //     EventBind.onceBind()
+    //     ipcMain.once("close:view." + viewId, () => {
+    //         view.webContents.close()
+    //     })
+    // }
 }
 // export const workbench = new Workbench()
 // export const mainWindow = workbench.getMainWindow()

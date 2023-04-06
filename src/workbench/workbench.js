@@ -30,19 +30,19 @@ class Workbench extends stream_1.EventEmitter {
     }
     createMainWindow(preloadPath = path_1.default.join(__dirname, "../preload.js"), indexHtmlPath = path_1.default.join(__dirname, "./index.html"), dev = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.mainWindow = new electron_1.BrowserWindow(Object.assign(Object.assign({}, this.winState.winOptions), { frame: false, center: true, webPreferences: {
+            this.mainWindow = new electron_1.BrowserWindow(Object.assign(Object.assign({}, this.winState.winOptions), { frame: false, center: true, show: false, webPreferences: {
                     preload: path_1.default.join(__dirname, preloadPath),
                     devTools: true,
+                    contextIsolation: false,
+                    nodeIntegration: true,
                 } }));
             if (dev) {
                 this.mainWindow.webContents.openDevTools();
             }
+            this.mainWindow.webContents;
             // await this.mainWindow.loadFile(indexHtmlPath)
             yield this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app");
-            this.mainWindow.once("ready-to-show", () => {
-                this.mainWindow.show();
-            });
-            ipc_handler_1.MainHandler.initBind(this.mainWindow);
+            ipc_handler_1.EventBind.workbenchInitBind(this.mainWindow);
             this.winState.manage(this.mainWindow);
         });
     }
@@ -79,7 +79,7 @@ class Workbench extends stream_1.EventEmitter {
                 height: false,
             });
             // browserView.webContents.openDevTools()
-            this.bindCloseEvent(viewId, browserView);
+            // this.bindCloseEvent(viewId, browserView)
             this.exsitViews.set(viewId, browserView);
             this.emit("created:view." + viewId);
             return true;
@@ -87,11 +87,6 @@ class Workbench extends stream_1.EventEmitter {
     }
     getMainWindow() {
         return this.mainWindow;
-    }
-    bindCloseEvent(viewId, view) {
-        electron_1.ipcMain.once("close:view." + viewId, () => {
-            view.webContents.close();
-        });
     }
 }
 exports.Workbench = Workbench;
