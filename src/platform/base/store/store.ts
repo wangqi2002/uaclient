@@ -74,6 +74,7 @@ export class ClientStore {
         } else {
             let store = new Store(options)
             ClientStore.stores.set(options.name, store)
+            store.openInEditor()
             return store
         }
     }

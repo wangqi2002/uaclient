@@ -112,7 +112,7 @@ export class Broker {
     /**
      * @description 终结所有当前存在的messagePipe,注意:这会导致pipe中的数据丢失,但是会在消失之前通过close事件发送出去
      */
-    async onClose() {
+    async beforeClose() {
         Broker.pipes.forEach((pipe) => {
             pipe.terminate()
         })

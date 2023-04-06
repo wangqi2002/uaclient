@@ -23,6 +23,7 @@ const persistence_1 = require("../platform/base/persist/persistence");
 const store_1 = require("../platform/base/store/store");
 const ipc_handler_1 = require("../platform/ipc/handlers/ipc.handler");
 const ipc_events_1 = require("../platform/ipc/events/ipc.events");
+const workspace_1 = require("./workspace/workspace");
 const path = require("path");
 class Client {
     constructor() {
@@ -65,14 +66,16 @@ class Client {
     }
     initServices() {
         new store_1.ClientStore();
+        //初始化其他服务依赖的存储服务等
+        async_1.default.series([
+            () => __awaiter(this, void 0, void 0, function* () {
+                new log_1.Log();
+            }),
+        ]);
         async_1.default.parallel([
             //初始化Broker中间转发者服务
             () => __awaiter(this, void 0, void 0, function* () {
                 this.broker = new broker_1.Broker();
-            }),
-            //初始化Log日志服务
-            () => __awaiter(this, void 0, void 0, function* () {
-                new log_1.Log();
             }),
             //初始化ORM服务
             () => __awaiter(this, void 0, void 0, function* () {
@@ -82,11 +85,12 @@ class Client {
             }),
             //初始化插件服务
             () => __awaiter(this, void 0, void 0, function* () {
-                new extend_1.GlobalExtensionManager();
+                this.extensionManager = new extend_1.GlobalExtensionManager();
             }),
-            //初始化log服务
+            //初始化workspace
             () => __awaiter(this, void 0, void 0, function* () {
-                new log_1.Log();
+                let g = new workspace_1.GlobalWorkspaceManager();
+                g.createDirAsWorkspace("F:\\idea_projects\\uaclient\\src", "space");
             }),
             //初始化postbox服务
             () => __awaiter(this, void 0, void 0, function* () { }),
@@ -106,9 +110,14 @@ class Client {
         async_1.default.series([
             //终结broker转发者服务
             () => __awaiter(this, void 0, void 0, function* () {
-                this.broker.onClose();
+                this.broker.beforeClose();
+            }),
+            //结束extensionManager服务
+            () => __awaiter(this, void 0, void 0, function* () {
+                this.extensionManager.beforeClose();
             }),
         ]);
+        electron_1.app.quit();
     }
 }
 const client = new Client();

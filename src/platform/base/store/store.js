@@ -65,6 +65,7 @@ class ClientStore {
         else {
             let store = new electron_store_1.default(options);
             ClientStore.stores.set(options.name, store);
+            store.openInEditor();
             return store;
         }
     }

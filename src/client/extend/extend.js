@@ -95,7 +95,7 @@ class ExtensionManager extends events_1.default {
     bindActivateEvents(extension) {
         extension.onEvents.forEach((event) => {
             //todo 修改
-            activator_1.ExtensionActivator.activateExtension(extension);
+            // ExtensionActivator.activateExtension(extension)
             electron_1.ipcMain.once(event, () => __awaiter(this, void 0, void 0, function* () {
                 activator_1.ExtensionActivator.activateExtension(extension);
             }));
@@ -109,7 +109,7 @@ class ExtensionManager extends events_1.default {
 }
 class GlobalExtensionManager {
     constructor(workspace = {
-        workspace: "global",
+        workspaceName: "global",
         storagePath: "F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant",
     }) {
         this.extensionStore = "extensions";
@@ -131,10 +131,10 @@ class GlobalExtensionManager {
             extensionManagers: store_1.ClientStore.get(this.extensionStore, "extensionManagers"),
         };
         managers.extensionManagers.forEach((IManager) => {
-            if (IManager.attributes.workspace == this.workspace.workspace) {
+            if (IManager.attributes.workspaceName == this.workspace.workspaceName) {
                 this.currentManager = new ExtensionManager(IManager);
             }
-            this.extensionManagers.set(IManager.attributes.workspace, IManager);
+            this.extensionManagers.set(IManager.attributes.workspaceName, IManager);
         });
         if (!this.currentManager) {
             this.createNewManagerForWS();
@@ -155,7 +155,7 @@ class GlobalExtensionManager {
         electron_1.ipcMain.on("workspace:create", (event, workspace, storage) => {
             let m = {
                 attributes: {
-                    workspace: workspace,
+                    workspaceName: workspace,
                     storagePath: storage,
                 },
                 enabledExtensions: [],
@@ -170,7 +170,7 @@ class GlobalExtensionManager {
             enabledExtensions: [],
             disabledExtensions: [],
         };
-        this.extensionManagers.set(manager.attributes.workspace, manager);
+        this.extensionManagers.set(manager.attributes.workspaceName, manager);
     }
     updateStoreOfManagers() {
         if (store_1.ClientStore.set(this.extensionStore, "extensionManagers", [...this.extensionManagers.values()])) {
@@ -181,11 +181,11 @@ class GlobalExtensionManager {
         }
     }
     createExtensionManager(manager) {
-        if (this.extensionManagers.has(manager.attributes.workspace)) {
+        if (this.extensionManagers.has(manager.attributes.workspaceName)) {
             return false;
         }
         else {
-            this.extensionManagers.set(manager.attributes.workspace, manager);
+            this.extensionManagers.set(manager.attributes.workspaceName, manager);
             this.currentManager = new ExtensionManager(manager);
             this.updateStoreOfManagers();
             return true;
@@ -194,7 +194,7 @@ class GlobalExtensionManager {
     modifyExtensionManager(managerWorkSpace) {
         let manager = this.extensionManagers.get(managerWorkSpace);
     }
-    whenClosed() {
+    beforeClose() {
         this.updateStoreOfManagers();
     }
 }

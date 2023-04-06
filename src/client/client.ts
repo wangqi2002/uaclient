@@ -1,5 +1,4 @@
 import { GlobalExtensionManager } from "./extend/extend"
-
 import { ModelAttributes } from "sequelize"
 import { Workbench } from "./../workbench/workbench"
 import { Broker } from "../platform/base/broker/broker"
@@ -11,6 +10,7 @@ import { Persistence } from "../platform/base/persist/persistence"
 import { ClientStore } from "../platform/base/store/store"
 import { EventBind } from "../platform/ipc/handlers/ipc.handler"
 import { rendererEvents } from "../platform/ipc/events/ipc.events"
+import { GlobalWorkspaceManager } from "./workspace/workspace"
 
 const path = require("path")
 
@@ -19,6 +19,7 @@ class Client {
     broker!: Broker
     persistor!: Persistence
     mainWindow!: BrowserWindow
+    extensionManager!: GlobalExtensionManager
 
     constructor() {
         try {
@@ -65,14 +66,12 @@ class Client {
 
     private initServices() {
         new ClientStore()
+        new GlobalWorkspaceManager()
+        //初始化其他服务依赖的存储服务等
         async.parallel([
             //初始化Broker中间转发者服务
             async () => {
                 this.broker = new Broker()
-            },
-            //初始化Log日志服务
-            async () => {
-                new Log()
             },
             //初始化ORM服务
             async () => {
@@ -85,7 +84,12 @@ class Client {
             },
             //初始化插件服务
             async () => {
-                new GlobalExtensionManager()
+                this.extensionManager = new GlobalExtensionManager()
+            },
+            //初始化workspace
+            async () => {
+                let g = new GlobalWorkspaceManager()
+                g.createDirAsWorkspace("F:\\idea_projects\\uaclient\\src", "space")
             },
             //初始化log服务
             async () => {
@@ -116,9 +120,17 @@ class Client {
         async.series([
             //终结broker转发者服务
             async () => {
-                this.broker.onClose()
+                this.broker.beforeClose()
+            },
+            //结束extensionManager服务
+            async () => {
+                this.extensionManager.beforeClose()
+            },
+            async () => {
+                this.workbench.beforeClose()
             },
         ])
+        app.quit()
     }
 }
 const client = new Client()

@@ -8,7 +8,7 @@ type viewId = string
 
 export class Workbench extends EventEmitter {
     public winState: WinState<unknown>
-    private exsitViews: Map<viewId, BrowserView>
+    private existViews: Map<viewId, BrowserView>
     private mainWindow!: BrowserWindow
 
     constructor(preload?: string, homeViewPath?: string, dev: boolean = false) {
@@ -18,7 +18,7 @@ export class Workbench extends EventEmitter {
             defaultHeight: (screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
         })
         this.createMainWindow(preload, homeViewPath, dev)
-        this.exsitViews = new Map()
+        this.existViews = new Map()
     }
 
     private async createMainWindow(
@@ -62,7 +62,7 @@ export class Workbench extends EventEmitter {
         rectangle: Rectangle = { x: 0, y: 0, width: 300, height: 300 },
         isWebView: boolean = false
     ) {
-        if (this.exsitViews.has(viewId)) {
+        if (this.existViews.has(viewId)) {
             return false
         }
         const browserView = new BrowserView({
@@ -89,13 +89,17 @@ export class Workbench extends EventEmitter {
         })
         // browserView.webContents.openDevTools()
         // this.bindCloseEvent(viewId, browserView)
-        this.exsitViews.set(viewId, browserView)
+        this.existViews.set(viewId, browserView)
         this.emit("created:view." + viewId)
         return true
     }
 
     public getMainWindow(): BrowserWindow {
         return this.mainWindow
+    }
+
+    beforeClose() {
+        this.emit("close")
     }
 
     // private bindCloseEvent(viewId: string, view: BrowserView) {

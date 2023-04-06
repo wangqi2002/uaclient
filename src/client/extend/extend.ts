@@ -1,3 +1,4 @@
+import { GlobalWorkspaceManager } from "./../workspace/workspace"
 import { ClientStore } from "../../platform/base/store/store"
 import { existsSync } from "fs"
 import { app, ipcMain, ipcRenderer } from "electron"
@@ -5,13 +6,10 @@ import EventEmitter from "events"
 import { ExtensionActivator } from "./activator"
 import { EventBind } from "../../platform/ipc/handlers/ipc.handler"
 import { rendererEvents } from "../../platform/ipc/events/ipc.events"
+import { workspace } from "../workspace/workspace"
 
 type extensionStorage = string
 type extensionActivateEvent = string
-type workspace = {
-    workspace: string
-    storagePath: string
-}
 
 export interface IExtensionIdentifier {
     id: string
@@ -24,6 +22,7 @@ export interface IMainExtension {
     storage: extensionStorage
     version: string
     engine: string
+    projectExtend: string[]
 }
 
 export interface IExtensionManager {
@@ -102,6 +101,7 @@ class ExtensionManager extends EventEmitter implements IExtensionManager {
     installExtension(extension: IMainExtension) {
         if (verifyStoragePath(extension.storage)) {
             this.enabledExtensions.push(extension)
+            GlobalWorkspaceManager.addProjectAllow(extension.projectExtend)
         }
     }
 
@@ -117,14 +117,14 @@ class ExtensionManager extends EventEmitter implements IExtensionManager {
     bindActivateEvents(extension: IMainExtension) {
         extension.onEvents.forEach((event) => {
             //todo 修改
-            ExtensionActivator.activateExtension(extension)
+            // ExtensionActivator.activateExtension(extension)
             ipcMain.once(event, async () => {
                 ExtensionActivator.activateExtension(extension)
             })
         })
     }
 
-    modifyManager(attributes?: { workspace: string; storagePath: string }) {
+    modifyManager(attributes?: { workspaceName: string; storagePath: string }) {
         if (attributes && verifyStoragePath(attributes.storagePath)) {
             this.attributes = attributes
         }
@@ -139,7 +139,7 @@ export class GlobalExtensionManager {
 
     constructor(
         workspace: workspace = {
-            workspace: "global",
+            workspaceName: "global",
             storagePath: "F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant",
         }
     ) {
@@ -163,10 +163,10 @@ export class GlobalExtensionManager {
         }
 
         managers.extensionManagers.forEach((IManager) => {
-            if (IManager.attributes.workspace == this.workspace.workspace) {
+            if (IManager.attributes.workspaceName == this.workspace.workspaceName) {
                 this.currentManager = new ExtensionManager(IManager)
             }
-            this.extensionManagers.set(IManager.attributes.workspace, IManager)
+            this.extensionManagers.set(IManager.attributes.workspaceName, IManager)
         })
         if (!this.currentManager) {
             this.createNewManagerForWS()
@@ -194,7 +194,7 @@ export class GlobalExtensionManager {
         ipcMain.on("workspace:create", (event, workspace: string, storage: string) => {
             let m: IExtensionManager = {
                 attributes: {
-                    workspace: workspace,
+                    workspaceName: workspace,
                     storagePath: storage,
                 },
                 enabledExtensions: [],
@@ -210,7 +210,7 @@ export class GlobalExtensionManager {
             enabledExtensions: [],
             disabledExtensions: [],
         }
-        this.extensionManagers.set(manager.attributes.workspace, manager)
+        this.extensionManagers.set(manager.attributes.workspaceName, manager)
     }
 
     updateStoreOfManagers() {
@@ -222,10 +222,10 @@ export class GlobalExtensionManager {
     }
 
     createExtensionManager(manager: IExtensionManager) {
-        if (this.extensionManagers.has(manager.attributes.workspace)) {
+        if (this.extensionManagers.has(manager.attributes.workspaceName)) {
             return false
         } else {
-            this.extensionManagers.set(manager.attributes.workspace, manager)
+            this.extensionManagers.set(manager.attributes.workspaceName, manager)
             this.currentManager = new ExtensionManager(manager)
             this.updateStoreOfManagers()
             return true
@@ -236,7 +236,7 @@ export class GlobalExtensionManager {
         let manager = this.extensionManagers.get(managerWorkSpace)
     }
 
-    whenClosed() {
+    beforeClose() {
         this.updateStoreOfManagers()
     }
 }
