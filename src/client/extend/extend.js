@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GlobalExtensionManager = void 0;
-const store_1 = require("../../platform/base/store/store");
+const store_1 = require("../store/store");
 const fs_1 = require("fs");
 const electron_1 = require("electron");
 const events_1 = __importDefault(require("events"));

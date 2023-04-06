@@ -1,12 +1,12 @@
-import { GlobalWorkspaceManager } from "./../workspace/workspace"
-import { ClientStore } from "../../platform/base/store/store"
-import { existsSync } from "fs"
-import { app, ipcMain, ipcRenderer } from "electron"
+import {GlobalWorkspaceManager} from "./../workspace/workspace"
+import {ClientStore} from "../store/store"
+import {existsSync} from "fs"
+import {app, ipcMain} from "electron"
 import EventEmitter from "events"
-import { ExtensionActivator } from "./activator"
-import { EventBind } from "../../platform/ipc/handlers/ipc.handler"
-import { rendererEvents } from "../../platform/ipc/events/ipc.events"
-import { workspace } from "../workspace/workspace"
+import {ExtensionActivator} from "./activator"
+import {eventsBind} from "../../platform/ipc/handlers/ipc.handler"
+import {rendererEvents} from "../../platform/ipc/events/ipc.events"
+import {workspace} from "../workspace/workspace"
 
 type extensionStorage = string
 type extensionActivateEvent = string
@@ -15,13 +15,15 @@ export interface IExtensionIdentifier {
     id: string
     uuid: string | null
 }
+
 export interface IMainExtension {
-    identifier: IExtensionIdentifier
-    isJsExtension: boolean
-    onEvents: extensionActivateEvent[]
-    storage: extensionStorage
     version: string
     engine: string
+    identifier: IExtensionIdentifier
+    storage: extensionStorage
+    renderPath: string | null
+    isJsExtension: boolean
+    onEvents: extensionActivateEvent[]
     projectExtend: string[]
 }
 
@@ -32,12 +34,8 @@ export interface IExtensionManager {
 }
 export interface IExtensionManagers {
     extensionManagers: IExtensionManager[]
+    globalExtensionManager: IExtensionManager
 }
-
-function verifyStoragePath(path: string) {
-    return existsSync(path)
-}
-
 class ExtensionManager extends EventEmitter implements IExtensionManager {
     attributes: workspace
     enabledExtensions: IMainExtension[]
@@ -53,7 +51,6 @@ class ExtensionManager extends EventEmitter implements IExtensionManager {
 
     async loadExtensions() {
         this.enabledExtensions.forEach((extension: IMainExtension, index: number) => {
-            //todo xiugai
             // this.bindActivateEvents(extension)
             if (verifyStoragePath(extension.storage)) {
                 this.bindActivateEvents(extension)
@@ -101,7 +98,8 @@ class ExtensionManager extends EventEmitter implements IExtensionManager {
     installExtension(extension: IMainExtension) {
         if (verifyStoragePath(extension.storage)) {
             this.enabledExtensions.push(extension)
-            GlobalWorkspaceManager.addProjectAllow(extension.projectExtend)
+            //插入project extend到全局workspace管理的空间中
+            GlobalWorkspaceManager.addProjectExtend(extension.projectExtend)
         }
     }
 
@@ -117,7 +115,6 @@ class ExtensionManager extends EventEmitter implements IExtensionManager {
     bindActivateEvents(extension: IMainExtension) {
         extension.onEvents.forEach((event) => {
             //todo 修改
-            // ExtensionActivator.activateExtension(extension)
             ipcMain.once(event, async () => {
                 ExtensionActivator.activateExtension(extension)
             })
@@ -137,12 +134,7 @@ export class GlobalExtensionManager {
     currentManager!: ExtensionManager
     extensionStore = "extensions"
 
-    constructor(
-        workspace: workspace = {
-            workspaceName: "global",
-            storagePath: "F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant",
-        }
-    ) {
+    constructor(workspace: workspace) {
         this.workspace = workspace
         this.extensionManagers = new Map()
         new ExtensionActivator()
@@ -160,6 +152,7 @@ export class GlobalExtensionManager {
     loadAllManagers() {
         let managers: IExtensionManagers = {
             extensionManagers: ClientStore.get(this.extensionStore, "extensionManagers"),
+            globalExtensionManager: ClientStore.get(this.extensionStore, "globalExtensionManager"),
         }
 
         managers.extensionManagers.forEach((IManager) => {
@@ -169,38 +162,61 @@ export class GlobalExtensionManager {
             this.extensionManagers.set(IManager.attributes.workspaceName, IManager)
         })
         if (!this.currentManager) {
-            this.createNewManagerForWS()
-            this.updateStoreOfManagers()
+            //如果managers为空列表,那么就使用全局extension
+            this.currentManager = new ExtensionManager(managers.globalExtensionManager)
+            // this.createNewManagerForWS()
+            // this.updateStoreOfManagers()
         }
+        this.extensionManagers.set("currentManager", this.currentManager)
         //监听无效扩展事件
         this.currentManager.on("extension-invalid", (extension: IMainExtension) => {
             console.log(extension.identifier)
         })
     }
 
+    /**
+     * @description 将插件相关的所有事件绑定到主进程上面,并且制定了相关listener
+     */
     bindEventsToMain() {
-        EventBind.extendBind(
+        //绑定插件安装
+        eventsBind.extendBind(
             rendererEvents.extensionEvents.install,
             (event, workspace: string, extension: IMainExtension) => {
-                this.currentManager.installExtension(extension)
+                if (this.workspace.workspaceName != "global" && workspace == "global") {
+                    let gm: IExtensionManager = ClientStore.get(this.extensionStore, "globalExtensionManager")
+                    gm.enabledExtensions.push(extension)
+                    ClientStore.set(this.extensionStore, "globalExtensionManager", gm)
+                } else {
+                    this.currentManager.installExtension(extension)
+                }
             }
         )
-        EventBind.extendBind(
+        //绑定插件卸载方法
+        eventsBind.extendBind(
             rendererEvents.extensionEvents.uninstall,
             (event, workspace: string, extension: IMainExtension) => {
-                this.currentManager.uninstallExtension(extension)
+                if (this.workspace.workspaceName != "global" && workspace == "global") {
+                    let gm: IExtensionManager = ClientStore.get(this.extensionStore, "globalExtensionManager")
+                    gm.enabledExtensions.push(extension)
+                    ClientStore.set(this.extensionStore, "globalExtensionManager", gm)
+                } else {
+                    this.currentManager.uninstallExtension(extension)
+                }
             }
         )
-        ipcMain.on("workspace:create", (event, workspace: string, storage: string) => {
-            let m: IExtensionManager = {
-                attributes: {
-                    workspaceName: workspace,
-                    storagePath: storage,
-                },
-                enabledExtensions: [],
-                disabledExtensions: [],
+        //绑定新建workspace方法,如果是全局则不会新建extensionManager
+        eventsBind.workspaceBind(rendererEvents.workspaceEvents.create, (event, workspace: string, storage: string) => {
+            if (workspace != "global") {
+                let m: IExtensionManager = {
+                    attributes: {
+                        workspaceName: workspace,
+                        storagePath: storage,
+                    },
+                    enabledExtensions: [],
+                    disabledExtensions: [],
+                }
+                this.createExtensionManager(m)
             }
-            this.createExtensionManager(m)
         })
     }
 
@@ -239,6 +255,10 @@ export class GlobalExtensionManager {
     beforeClose() {
         this.updateStoreOfManagers()
     }
+}
+
+function verifyStoragePath(path: string) {
+    return existsSync(path)
 }
 
 //todo platform中的服务都是提供给插件可以使用的,应该重构代码模块

@@ -5,7 +5,7 @@ const electron_1 = require("electron");
 const log4js_1 = require("log4js");
 const ipc_events_1 = require("../../ipc/events/ipc.events");
 const ipc_handler_1 = require("../../ipc/handlers/ipc.handler");
-const store_1 = require("../store/store");
+const store_1 = require("../../../client/store/store");
 class InfoModel {
     constructor(source, information, message) {
         this.timeStamp = new Date().toLocaleString();

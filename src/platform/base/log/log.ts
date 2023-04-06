@@ -1,8 +1,8 @@
-import { app } from "electron"
-import { Configuration, configure, getLogger, Logger } from "log4js"
-import { MainEvents } from "../../ipc/events/ipc.events"
-import { EventBind, mainEmit } from "../../ipc/handlers/ipc.handler"
-import { ClientStore, ConfigNames } from "../store/store"
+import {app} from "electron"
+import {Configuration, configure, getLogger, Logger} from "log4js"
+import {MainEvents} from "../../ipc/events/ipc.events"
+import {eventsBind, mainEmit} from "../../ipc/handlers/ipc.handler"
+import {ClientStore, ConfigNames} from "../../../client/store/store"
 
 type Source = string | undefined
 type Warn = string
@@ -55,7 +55,7 @@ export class Log {
 
     constructor(loggerName: loggerName = "client", config?: Configuration) {
         this.configureLog(config)
-        EventBind.logInitBind()
+        eventsBind.logInitBind()
     }
 
     static info(info: ClientInfo) {

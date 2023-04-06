@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GlobalWorkspaceManager = exports.WorkspaceManager = void 0;
-const store_1 = require("./../../platform/base/store/store");
+const store_1 = require("../store/store");
 const fs_1 = require("fs");
 class WorkspaceManager {
     constructor(ws) {

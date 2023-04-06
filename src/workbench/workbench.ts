@@ -1,8 +1,8 @@
-import { BrowserView, BrowserWindow, Rectangle, screen } from "electron"
+import {BrowserView, BrowserWindow, Rectangle, screen} from "electron"
 import WinState from "electron-win-state"
 import path from "path"
-import { EventEmitter } from "stream"
-import { EventBind } from "../platform/ipc/handlers/ipc.handler"
+import {EventEmitter} from "stream"
+import {eventsBind} from "../platform/ipc/handlers/ipc.handler"
 
 type viewId = string
 
@@ -44,7 +44,7 @@ export class Workbench extends EventEmitter {
         this.mainWindow.webContents
         // await this.mainWindow.loadFile(indexHtmlPath)
         await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
-        EventBind.workbenchInitBind(this.mainWindow)
+        eventsBind.workbenchInitBind(this.mainWindow)
         this.winState.manage(this.mainWindow)
     }
 

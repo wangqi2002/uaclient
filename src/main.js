@@ -2,7 +2,6 @@ const { app, Menu } = require("electron")
 const path = require("path")
 require("v8-compile-cache")
 const product = require("./client/product.json")
-
 const userDataPath = getUserDataPath()
 
 const workspacePath = app.setPath("userData", userDataPath)
@@ -13,18 +12,24 @@ const codeCachePath = getCodeCachePath()
 // if ("getPerferredSystemLanguages" in app) {
 //     clientLanguage = app.getPerferredSystemLanguages()?.[0] ??'cn'
 // }
-
 app.whenReady().then(() => {
     onReady()
 })
 
-app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") {
-        app.quit()
-    }
-})
+function startUp(cachePath, workspacePath, appDataPath, config) {
+    require("./client/client")
+}
+
+async function onReady() {
+    startUp()
+}
+
 function getUserDataPath() {
-    return product["rootDir"]
+    let path = product["userData"]
+    if (!path) {
+        path = app.getPath("userData")
+    }
+    return path
 }
 
 function getCodeCachePath() {
@@ -33,12 +38,6 @@ function getCodeCachePath() {
         return undefined
     }
     return path.join(userDataPath, "CacheData", commit)
-}
-function startUp(cachePath, workspacePath, appDataPath, config) {
-    require("./client/client")
-}
-async function onReady() {
-    startUp()
 }
 
 // export function createPKI() {

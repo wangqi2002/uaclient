@@ -1,17 +1,18 @@
-import { ClientStore } from "./../../platform/base/store/store"
-import { mkdir, mkdirSync, readdir, watch } from "fs"
-import { app, ipcMain } from "electron"
+import {ClientStore} from "../store/store"
+import {mkdir, readdir, watch} from "fs"
+import {ipcMain} from "electron"
 
 export type workspace = {
     workspaceName: string
     storagePath: string
 }
+
 export interface IWorkspace {
     workspace: workspace
     projects: string[]
 }
 
-export interface GlobalWSManager {
+export interface WsGlobalManager {
     workspaces: IWorkspace[]
     currentWS: IWorkspace
     projectExtend: string[]
@@ -56,7 +57,7 @@ export class WorkspaceManager implements IWorkspace {
 
 export class GlobalWorkspaceManager {
     workspaces: Map<string, IWorkspace>
-    currentWS!: IWorkspace
+    static currentWS: IWorkspace
     static projectExtend: string[]
 
     constructor() {
@@ -69,6 +70,7 @@ export class GlobalWorkspaceManager {
             cwd: "C:\\Users\\Administrator\\Desktop\\client.data",
             clearInvalidConfig: true,
         })
+        this.loadAllWorkspaces()
     }
 
     loadAllWorkspaces() {
@@ -81,7 +83,7 @@ export class GlobalWorkspaceManager {
             })
         }
         if (current) {
-            this.currentWS = new WorkspaceManager(current)
+            GlobalWorkspaceManager.currentWS = new WorkspaceManager(current)
         }
     }
 
@@ -98,19 +100,27 @@ export class GlobalWorkspaceManager {
                 projects: [],
             }
             this.workspaces.set(workspaceName, w)
-            this.currentWS = new WorkspaceManager(w)
+            GlobalWorkspaceManager.currentWS = new WorkspaceManager(w)
         }
     }
 
     switchWorkspace(workspaceName: string) {
         let ws = this.workspaces.get(workspaceName)
         if (ws) {
-            this.currentWS = new WorkspaceManager(ws)
+            GlobalWorkspaceManager.currentWS = new WorkspaceManager(ws)
         }
     }
 
-    static addProjectAllow(projects: string[]) {
+    static addProjectExtend(projects: string[]) {
         GlobalWorkspaceManager.projectExtend.push(...projects)
+    }
+
+    static getProjectExtend() {
+        return GlobalWorkspaceManager.projectExtend
+    }
+
+    static getCurrentWSNames() {
+        return GlobalWorkspaceManager.currentWS.workspace
     }
 
     updateStore() {

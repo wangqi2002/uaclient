@@ -1,5 +1,4 @@
 import Store from "electron-store"
-import { app } from "electron"
 
 export enum ConfigNames {
     persistence = "PersistConfig",

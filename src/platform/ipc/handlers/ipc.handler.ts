@@ -1,21 +1,20 @@
-import { BrowserWindow, ipcMain, IpcMainEvent } from "electron"
-import { rendererEvents } from "../events/ipc.events"
-import { ClientError, ClientInfo, ClientWarn, Log } from "../../base/log/log"
-import { Persistence } from "../../base/persist/persistence"
+import {BrowserWindow, ipcMain, IpcMainEvent} from "electron"
+import {rendererEvents} from "../events/ipc.events"
+import {ClientError, ClientInfo, ClientWarn, Log} from "../../base/log/log"
 
-export module EventBind {
+export module eventsBind {
     export function workbenchInitBind(mainWindow: BrowserWindow) {
-        ipcMain.on(rendererEvents.mainEvents.minimize, () => {
+        ipcMain.on(rendererEvents.benchEvents.minimize, () => {
             mainWindow.minimize()
         })
-        ipcMain.on(rendererEvents.mainEvents.maximize, () => {
+        ipcMain.on(rendererEvents.benchEvents.maximize, () => {
             if (mainWindow.isMaximized()) {
                 mainWindow.restore()
             } else {
                 mainWindow.maximize()
             }
         })
-        ipcMain.on(rendererEvents.mainEvents.close, () => {
+        ipcMain.on(rendererEvents.benchEvents.close, () => {
             mainWindow.close()
         })
     }
@@ -32,8 +31,15 @@ export module EventBind {
         })
     }
 
-    export function mainBind(
-        event: rendererEvents.mainEvents,
+    export function benchBind(
+        event: rendererEvents.benchEvents,
+        eventHandler: (event: IpcMainEvent, ...args: any[]) => void
+    ) {
+        ipcMain.on(event, eventHandler)
+    }
+
+    export function workspaceBind(
+        event: rendererEvents.workspaceEvents,
         eventHandler: (event: IpcMainEvent, ...args: any[]) => void
     ) {
         ipcMain.on(event, eventHandler)

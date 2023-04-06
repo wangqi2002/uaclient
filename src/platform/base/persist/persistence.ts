@@ -1,5 +1,5 @@
 import {FindOptions, ModelAttributes, ModelCtor, Options, Sequelize} from "sequelize"
-import {ClientStore, ConfigNames} from "../store/store"
+import {ClientStore, ConfigNames} from "../../../client/store/store"
 
 export class Persistence {
     private static sequelize: Sequelize
