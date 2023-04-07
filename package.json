@@ -12,7 +12,7 @@
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\"",
     "compile": "nodemon -e ts --exec npx ttsc",
-    "show":"electron ."
+    "show": "electron ."
   },
   "keywords": [],
   "author": {

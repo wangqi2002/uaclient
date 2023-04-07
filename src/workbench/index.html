@@ -53,7 +53,7 @@
                 </div>
             </el-header>
             <el-container class="main-box">
-                <el-aside class="subview subviewLeft" v-show="leftViewShow" style="width: var(--left-view-width);">
+                <el-aside class="subview subviewLeft" v-show="leftViewShow">
                     <el-tabs tab-position="left">
                         <el-tab-pane label="">
                             <span slot="label">
@@ -61,7 +61,7 @@
                             </span>
                             <div class="grid-box grid-box-left">
                                 <div class="grid-content left-top">
-                                    project-view
+                                    <iframe src="./components/projectView.html"></iframe>
                                 </div>
                                 <div class="dragBar-l resize-leftView-inside" v-show="leftViewShow"></div>
                                 <div class="grid-content left-bottom">
@@ -111,17 +111,38 @@
                         </el-tabs>
                     </el-main>
                     <div class="dragBar-l resize-logView" v-show="logShow"></div>
-                    <el-footer class="logview mianviewBottom" v-show="logShow" style="height: var(--log-view-height);">
-                        <el-tabs v-model="logTabsValue">
-                            <el-tab-pane v-for="(item, index) in logTabs" :key="item.name" :label="item.title"
-                                :name="item.name">
-                                {{item.content}}
+                    <el-footer class="logview mianviewBottom" v-show="logShow">
+                        <el-tabs>
+                            <el-tab-pane label="日志">
+                                <el-table class="logTable" :data="logTableData" :height="logtableHeight" stripe border
+                                    style="width: 100%">
+                                    <el-table-column prop="timestamp" label="Timestamp" width="150">
+                                    </el-table-column>
+                                    <el-table-column prop="source" label="Source" width="100">
+                                    </el-table-column>
+                                    <el-table-column prop="information" label="Information">
+                                    </el-table-column>
+                                </el-table>
+                            </el-tab-pane>
+                            <el-tab-pane label="问题">
+                                <el-table class="logTable" :data="problemTableData" :height="logtableHeight" stripe
+                                    border style="width: 100%">
+                                    <el-table-column prop="timestamp" label="Timestamp" width="150">
+                                    </el-table-column>
+                                    <el-table-column prop="source" label="Source" width="100">
+                                    </el-table-column>
+                                    <el-table-column prop="information" label="Information">
+                                    </el-table-column>
+                                </el-table>
+                            </el-tab-pane>
+                            <el-tab-pane label="输出">
+                                hhhhhhhh
                             </el-tab-pane>
                         </el-tabs>
                     </el-footer>
                 </el-container>
                 <div class="dragBar-v resize-rightView" v-show="rightViewShow"></div>
-                <el-aside class="subview subviewRight" v-show="rightViewShow" style="width: var(--right-view-width);">
+                <el-aside class="subview subviewRight" v-show="rightViewShow">
                     <el-tabs tab-position="right">
                         <el-tab-pane label="">
                             <span slot="label">
@@ -129,7 +150,6 @@
                             </span>
                             <div class="grid-box grid-box-right">
                                 <div class="grid-content right-top">
-                                    project-view
                                 </div>
                                 <div class="dragBar-l resize-rightView-inside"></div>
                                 <div class="grid-content right-bottom">
@@ -159,7 +179,9 @@
 </body>
 <script src="vue/vue.js"></script>
 <script src="element-ui/index.js"></script>
-<script src="js/index.js"></script>
+<script src="js/indexInject.js"></script>
+<script src="js/indexInside.js"></script>
+<script src="js/indexExtern.js"></script>
 <script>
     new Vue({
         el: '#app',
@@ -168,49 +190,25 @@
                 left_view_minwidth: null,
                 main_view_minwidth: null,
                 right_view_minwidth: null,
+                logviewHeight: null,
                 resize_pointer: 'auto',
                 activeIndex: '1',
                 search: "", //当前输入框的值
                 leftViewShow: true,
                 logShow: true,
                 rightViewShow: true,
-                mainTabsValue: '2',
-                mainTabs: [{
-                    title: 'Tab 1',
-                    name: '1',
-                    content: 'Tab 1 content',
-                    src: "./components/dist/index.html"
-                }, {
-                    title: 'Tab 2',
-                    name: '2',
-                    content: 'Tab 2 content',
-                    src: "./components/dist/index.html"
-                }, {
-                    title: 'Tab 3',
-                    name: '3',
-                    content: 'Tab 3 content',
-                    src: "./components/dist/index.html"
-                }],
-                logTabsValue: '2',
-                logTabs: [{
-                    title: 'Tab 1',
-                    name: '1',
-                    content: 'Tab 1 content',
-                    src: "./components/dist/index.html"
-                }, {
-                    title: 'Tab 2',
-                    name: '2',
-                    content: 'Tab 2 content',
-                    src: "./components/dist/index.html"
-                }, {
-                    title: 'Tab 3',
-                    name: '3',
-                    content: 'Tab 3 content',
-                    src: "./components/dist/index.html"
-                }]
+                mainTabsValue: '1',
+                mainTabs: [],
+                logTableData: [],
+                problemTableData: [],
+                attributeTableData: [],
             }
         },
-        computed: {},
+        computed: {
+            logtableHeight: function () {
+                return this.logviewHeight - 20;
+            }
+        },
         methods: {
             searchHandler() {
                 console.log('+++: searchHandler')
@@ -233,7 +231,18 @@
             handRightViewShow() {
                 this.rightViewShow = !this.rightViewShow
             },
-
+            /**
+             * el-table-column 自适应列宽
+             * @param prop_label: 表名
+             * @param table_data: 表格数据
+             */
+            flexColumnWidth(label, prop) {
+                // 获取该列的所有数据
+                const arr = this.tableData.map(x => x[prop])
+                arr.push(label) // 把每列的表头也加进去算
+                // 计算每列内容最大的宽度 + 表格的内间距（依据实际情况而定）
+                return (getMaxLength(arr) + 20) + 'px'
+            },
             dragLevel(box, top, bottom, resize) {
                 var that = this;
                 var box = document.getElementsByClassName(box);
@@ -242,6 +251,7 @@
                 var resize = document.getElementsByClassName(resize);
                 var bottomMinheight = parseInt(getComputedStyle(bottom[0], null)['min-height']);
                 var topMinheight = parseInt(getComputedStyle(top[0], null)['min-height']);
+                // console.log(resize)
 
                 resize[0].onmousedown = function (e) {
                     const mask = document.createElement('div')
@@ -255,16 +265,17 @@
                         var endY = e.clientY;
                         var topH = top[0].offsetHeight;
                         var maxT = box[0].clientHeight - resize[0].offsetHeight;
-                        if (endY > maxT - bottomMinheight - 10) {
-                            endY = maxT - bottomMinheight - 10
+                        if (endY > maxT - bottomMinheight) {
+                            endY = maxT - bottomMinheight
                         }
                         if (endY < topMinheight + 10) {
-                            endY = topMinheight + 10
+                            endY = topMinheight + 15
                         }
                         var moveLen = resize[0].top + (endY - startY);
 
                         // top[0].style.height = moveLen + 'px';
                         bottom[0].style.height = (box[0].clientHeight - moveLen - 5) + 'px';
+                        that.logviewHeight = box[0].clientHeight - moveLen - 5;
                     }
                     document.onmouseup = function (evt) {
                         const mask = document.getElementById('mousemoveMask')
@@ -286,6 +297,7 @@
                 var right = document.getElementsByClassName("subviewRight");
                 var resize = document.getElementsByClassName("resize-leftView");
                 var resize2 = document.getElementsByClassName("resize-rightView");
+
                 resize[0].onmousedown = function (e) {
                     const mask = document.createElement('div')
                     mask.style.cssText = 'position: absolute;top: 0;left: 0;width: 100vw;height: 100vh;z-index: 9999;'
@@ -305,7 +317,7 @@
                         var moveLen = resize[0].left + (endX - startX);
 
                         left[0].style.width = moveLen + 'px';
-                        // mid[j].style.width = (box[0].clientWidth - moveLen - rightW - 10) +'px';
+                        mid[0].style.width = (box[0].clientWidth - moveLen - rightW - 10) + 'px';
                     }
                     document.onmouseup = function (evt) {
                         const mask = document.getElementById('mousemoveMask')
@@ -336,7 +348,7 @@
                             endX = leftW + that.main_view_minwidth
                         var moveLen = resize2[0].left + (endX - startX) - leftW;
 
-                        // mid[j].style.width = moveLen + 'px';
+                        mid[0].style.width = moveLen + 'px';
                         right[0].style.width = (box[0].clientWidth - moveLen - leftW - 10) + 'px';
                     }
                     document.onmouseup = function (evt) {
@@ -353,6 +365,11 @@
             }
         },
         mounted() {
+            this.logviewHeight = parseInt(getComputedStyle(document.getElementsByClassName("logview")[0], null)['height'])
+            this.mainTabs = mainTabsF()
+            this.logTableData = logTableF()
+            this.problemTableData = problemTableF()
+            this.attributeTableData = attributeTableF()
             this.dragLevel('content-box', 'mainviewTop', 'mianviewBottom', 'resize-logView')
             this.dragLevel('grid-box-left', 'left-top', 'left-bottom', 'resize-leftView-inside')
             this.dragLevel('grid-box-right', 'right-top', 'right-bottom', 'resize-rightView-inside')
