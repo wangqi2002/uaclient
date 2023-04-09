@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GlobalExtensionManager = void 0;
+const workspace_1 = require("./../workspace/workspace");
 const store_1 = require("../store/store");
 const fs_1 = require("fs");
 const electron_1 = require("electron");
@@ -20,9 +21,6 @@ const events_1 = __importDefault(require("events"));
 const activator_1 = require("./activator");
 const ipc_handler_1 = require("../../platform/ipc/handlers/ipc.handler");
 const ipc_events_1 = require("../../platform/ipc/events/ipc.events");
-function verifyStoragePath(path) {
-    return (0, fs_1.existsSync)(path);
-}
 class ExtensionManager extends events_1.default {
     constructor(attributes) {
         super();
@@ -34,7 +32,6 @@ class ExtensionManager extends events_1.default {
     loadExtensions() {
         return __awaiter(this, void 0, void 0, function* () {
             this.enabledExtensions.forEach((extension, index) => {
-                //todo xiugai
                 // this.bindActivateEvents(extension)
                 if (verifyStoragePath(extension.storage)) {
                     this.bindActivateEvents(extension);
@@ -82,6 +79,8 @@ class ExtensionManager extends events_1.default {
     installExtension(extension) {
         if (verifyStoragePath(extension.storage)) {
             this.enabledExtensions.push(extension);
+            //插入project extend到全局workspace管理的空间中
+            workspace_1.GlobalWorkspaceManager.addProjectExtend(extension.projectExtend);
         }
     }
     uninstallExtension(extension) {
@@ -95,7 +94,6 @@ class ExtensionManager extends events_1.default {
     bindActivateEvents(extension) {
         extension.onEvents.forEach((event) => {
             //todo 修改
-            // ExtensionActivator.activateExtension(extension)
             electron_1.ipcMain.once(event, () => __awaiter(this, void 0, void 0, function* () {
                 activator_1.ExtensionActivator.activateExtension(extension);
             }));
@@ -108,10 +106,7 @@ class ExtensionManager extends events_1.default {
     }
 }
 class GlobalExtensionManager {
-    constructor(workspace = {
-        workspaceName: "global",
-        storagePath: "F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant",
-    }) {
+    constructor(workspace) {
         this.extensionStore = "extensions";
         this.workspace = workspace;
         this.extensionManagers = new Map();
@@ -129,6 +124,7 @@ class GlobalExtensionManager {
     loadAllManagers() {
         let managers = {
             extensionManagers: store_1.ClientStore.get(this.extensionStore, "extensionManagers"),
+            globalExtensionManager: store_1.ClientStore.get(this.extensionStore, "globalExtensionManager"),
         };
         managers.extensionManagers.forEach((IManager) => {
             if (IManager.attributes.workspaceName == this.workspace.workspaceName) {
@@ -137,31 +133,56 @@ class GlobalExtensionManager {
             this.extensionManagers.set(IManager.attributes.workspaceName, IManager);
         });
         if (!this.currentManager) {
-            this.createNewManagerForWS();
-            this.updateStoreOfManagers();
+            //如果managers为空列表,那么就使用全局extension
+            this.currentManager = new ExtensionManager(managers.globalExtensionManager);
+            // this.createNewManagerForWS()
+            // this.updateStoreOfManagers()
         }
+        this.extensionManagers.set("currentManager", this.currentManager);
         //监听无效扩展事件
         this.currentManager.on("extension-invalid", (extension) => {
             console.log(extension.identifier);
         });
     }
+    /**
+     * @description 将插件相关的所有事件绑定到主进程上面,并且制定了相关listener
+     */
     bindEventsToMain() {
-        ipc_handler_1.EventBind.extendBind(ipc_events_1.rendererEvents.extensionEvents.install, (event, workspace, extension) => {
-            this.currentManager.installExtension(extension);
+        //绑定插件安装
+        ipc_handler_1.eventsBind.extendBind(ipc_events_1.rendererEvents.extensionEvents.install, (event, workspace, extension) => {
+            if (this.workspace.workspaceName != "global" && workspace == "global") {
+                let gm = store_1.ClientStore.get(this.extensionStore, "globalExtensionManager");
+                gm.enabledExtensions.push(extension);
+                store_1.ClientStore.set(this.extensionStore, "globalExtensionManager", gm);
+            }
+            else {
+                this.currentManager.installExtension(extension);
+            }
         });
-        ipc_handler_1.EventBind.extendBind(ipc_events_1.rendererEvents.extensionEvents.uninstall, (event, workspace, extension) => {
-            this.currentManager.uninstallExtension(extension);
+        //绑定插件卸载方法
+        ipc_handler_1.eventsBind.extendBind(ipc_events_1.rendererEvents.extensionEvents.uninstall, (event, workspace, extension) => {
+            if (this.workspace.workspaceName != "global" && workspace == "global") {
+                let gm = store_1.ClientStore.get(this.extensionStore, "globalExtensionManager");
+                gm.enabledExtensions.push(extension);
+                store_1.ClientStore.set(this.extensionStore, "globalExtensionManager", gm);
+            }
+            else {
+                this.currentManager.uninstallExtension(extension);
+            }
         });
-        electron_1.ipcMain.on("workspace:create", (event, workspace, storage) => {
-            let m = {
-                attributes: {
-                    workspaceName: workspace,
-                    storagePath: storage,
-                },
-                enabledExtensions: [],
-                disabledExtensions: [],
-            };
-            this.createExtensionManager(m);
+        //绑定新建workspace方法,如果是全局则不会新建extensionManager
+        ipc_handler_1.eventsBind.workspaceBind(ipc_events_1.rendererEvents.workspaceEvents.create, (event, workspace, storage) => {
+            if (workspace != "global") {
+                let m = {
+                    attributes: {
+                        workspaceName: workspace,
+                        storagePath: storage,
+                    },
+                    enabledExtensions: [],
+                    disabledExtensions: [],
+                };
+                this.createExtensionManager(m);
+            }
         });
     }
     createNewManagerForWS() {
@@ -199,4 +220,7 @@ class GlobalExtensionManager {
     }
 }
 exports.GlobalExtensionManager = GlobalExtensionManager;
+function verifyStoragePath(path) {
+    return (0, fs_1.existsSync)(path);
+}
 //todo platform中的服务都是提供给插件可以使用的,应该重构代码模块

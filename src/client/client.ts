@@ -1,17 +1,17 @@
-import {GlobalExtensionManager} from "./extend/extend"
-import {ModelAttributes} from "sequelize"
-import {Workbench} from "./../workbench/workbench"
-import {Broker} from "../platform/base/broker/broker"
-import {app, BrowserWindow} from "electron"
-import {ErrorHandler} from "./error/error"
-import {ClientError, Log} from "../platform/base/log/log"
+import { GlobalExtensionManager } from "./extend/extend"
+import { ModelAttributes } from "sequelize"
+import { Workbench } from "./../workbench/workbench"
+import { Broker } from "../platform/base/broker/broker"
+import { app, BrowserWindow } from "electron"
+import { ErrorHandler } from "./error/error"
+import { ClientError, Log } from "../platform/base/log/log"
 import async from "async"
-import {Persistence} from "../platform/base/persist/persistence"
-import {ClientStore} from "./store/store"
-import {eventsBind} from "../platform/ipc/handlers/ipc.handler"
-import {rendererEvents} from "../platform/ipc/events/ipc.events"
-import {GlobalWorkspaceManager} from "./workspace/workspace"
-import {Utils} from "../platform/base/utils/utils"
+import { Persistence } from "../platform/base/persist/persistence"
+import { ClientStore } from "./store/store"
+import { eventsBind } from "../platform/ipc/handlers/ipc.handler"
+import { rendererEvents } from "../platform/ipc/events/ipc.events"
+import { GlobalWorkspaceManager } from "./workspace/workspace"
+import { Utils } from "../platform/base/utils/utils"
 
 const path = require("path")
 
@@ -82,6 +82,7 @@ class Client {
         this.mainWindow.once("ready-to-show", () => {
             this.mainWindow.show()
         })
+        // app.on()
     }
 
     private async initServices() {

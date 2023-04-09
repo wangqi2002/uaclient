@@ -26,7 +26,7 @@ class Workbench extends stream_1.EventEmitter {
             defaultHeight: (electron_1.screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
         });
         this.createMainWindow(preload, homeViewPath, dev);
-        this.exsitViews = new Map();
+        this.existViews = new Map();
     }
     createMainWindow(preloadPath = path_1.default.join(__dirname, "../preload.js"), indexHtmlPath = path_1.default.join(__dirname, "./index.html"), dev = false) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -42,7 +42,7 @@ class Workbench extends stream_1.EventEmitter {
             this.mainWindow.webContents;
             // await this.mainWindow.loadFile(indexHtmlPath)
             yield this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app");
-            ipc_handler_1.EventBind.workbenchInitBind(this.mainWindow);
+            ipc_handler_1.eventsBind.workbenchInitBind(this.mainWindow);
             this.winState.manage(this.mainWindow);
         });
     }
@@ -54,7 +54,7 @@ class Workbench extends stream_1.EventEmitter {
     }
     createView(viewId, viewUrl, rectangle = { x: 0, y: 0, width: 300, height: 300 }, isWebView = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.exsitViews.has(viewId)) {
+            if (this.existViews.has(viewId)) {
                 return false;
             }
             const browserView = new electron_1.BrowserView({
@@ -80,13 +80,16 @@ class Workbench extends stream_1.EventEmitter {
             });
             // browserView.webContents.openDevTools()
             // this.bindCloseEvent(viewId, browserView)
-            this.exsitViews.set(viewId, browserView);
+            this.existViews.set(viewId, browserView);
             this.emit("created:view." + viewId);
             return true;
         });
     }
     getMainWindow() {
         return this.mainWindow;
+    }
+    beforeClose() {
+        this.emit("close");
     }
 }
 exports.Workbench = Workbench;

@@ -24,15 +24,14 @@ const store_1 = require("./store/store");
 const ipc_handler_1 = require("../platform/ipc/handlers/ipc.handler");
 const ipc_events_1 = require("../platform/ipc/events/ipc.events");
 const workspace_1 = require("./workspace/workspace");
+const utils_1 = require("../platform/base/utils/utils");
 const path = require("path");
 class Client {
     constructor() {
         try {
             this.requestSingleInstance();
+            this.bindQuitEvents();
             this.startup();
-            ipc_handler_1.EventBind.mainBind(ipc_events_1.rendererEvents.mainEvents.quit, () => {
-                this.quit();
-            });
         }
         catch (e) {
             console.error(e.message);
@@ -64,43 +63,55 @@ class Client {
             }
         });
     }
-    initServices() {
-        new store_1.ClientStore();
-        //初始化其他服务依赖的存储服务等
-        async_1.default.series([
-            () => __awaiter(this, void 0, void 0, function* () {
-                new log_1.Log();
-            }),
-        ]);
-        async_1.default.parallel([
-            //初始化Broker中间转发者服务
-            () => __awaiter(this, void 0, void 0, function* () {
-                this.broker = new broker_1.Broker();
-            }),
-            //初始化ORM服务
-            () => __awaiter(this, void 0, void 0, function* () {
-                let defaultAttributes = store_1.ClientStore.get("config", "modelAttribute");
-                this.persistor = new persistence_1.Persistence(path.join(__dirname, "..", "..", "/databases/data.db"), "2023", //TODO 处理数据库自动命名的问题
-                defaultAttributes);
-            }),
-            //初始化插件服务
-            () => __awaiter(this, void 0, void 0, function* () {
-                this.extensionManager = new extend_1.GlobalExtensionManager();
-            }),
-            //初始化workspace
-            () => __awaiter(this, void 0, void 0, function* () {
-                let g = new workspace_1.GlobalWorkspaceManager();
-                g.createDirAsWorkspace("F:\\idea_projects\\uaclient\\src", "space");
-            }),
-            //初始化postbox服务
-            () => __awaiter(this, void 0, void 0, function* () { }),
-        ]);
+    bindQuitEvents() {
+        ipc_handler_1.eventsBind.benchBind(ipc_events_1.rendererEvents.benchEvents.quit, () => {
+            this.quit();
+        });
+        electron_1.app.on("window-all-closed", () => {
+            this.quit();
+        });
     }
     createWorkbench() {
-        this.workbench = new workbench_1.Workbench(path.join(__dirname, "../workbench/preload.js"), path.join(__dirname, "../workbench/index.html"), true);
-        this.mainWindow = this.workbench.getMainWindow();
-        this.mainWindow.once("ready-to-show", () => {
-            this.mainWindow.show();
+        return __awaiter(this, void 0, void 0, function* () {
+            this.workbench = new workbench_1.Workbench(path.join(__dirname, "../workbench/preload.js"), path.join(__dirname, "../workbench/index.html"), true);
+            this.mainWindow = this.workbench.getMainWindow();
+            this.mainWindow.once("ready-to-show", () => {
+                this.mainWindow.show();
+            });
+        });
+    }
+    initServices() {
+        return __awaiter(this, void 0, void 0, function* () {
+            new store_1.ClientStore();
+            new workspace_1.GlobalWorkspaceManager();
+            //初始化其他服务依赖的存储服务等
+            async_1.default.parallel([
+                //初始化Broker中间转发者服务
+                () => __awaiter(this, void 0, void 0, function* () {
+                    this.broker = new broker_1.Broker();
+                }),
+                //初始化ORM服务
+                () => __awaiter(this, void 0, void 0, function* () {
+                    let defaultAttributes = store_1.ClientStore.get("config", "modelAttribute");
+                    this.persist = new persistence_1.Persistence(store_1.ClientStore.get("config", "dbpath"), utils_1.Utils.formatDateYMW(new Date()), //TODO 处理数据库自动命名的问题
+                    defaultAttributes);
+                }),
+                //初始化插件服务
+                () => __awaiter(this, void 0, void 0, function* () {
+                    this.extensionManager = new extend_1.GlobalExtensionManager(workspace_1.GlobalWorkspaceManager.getCurrentWSNames());
+                }),
+                //初始化workspace
+                () => __awaiter(this, void 0, void 0, function* () {
+                    let g = new workspace_1.GlobalWorkspaceManager();
+                    // g.createDirAsWorkspace("F:\\idea_projects\\uaclient\\src", "space")
+                }),
+                //初始化log服务
+                () => __awaiter(this, void 0, void 0, function* () {
+                    new log_1.Log();
+                }),
+                //初始化postbox服务
+                () => __awaiter(this, void 0, void 0, function* () { }),
+            ]);
         });
     }
     setErrorHandler(errorHandler) {
@@ -115,6 +126,9 @@ class Client {
             //结束extensionManager服务
             () => __awaiter(this, void 0, void 0, function* () {
                 this.extensionManager.beforeClose();
+            }),
+            () => __awaiter(this, void 0, void 0, function* () {
+                this.workbench.beforeClose();
             }),
         ]);
         electron_1.app.quit();

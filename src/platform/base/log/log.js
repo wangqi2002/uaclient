@@ -42,7 +42,7 @@ exports.ClientInfo = ClientInfo;
 class Log {
     constructor(loggerName = "client", config) {
         this.configureLog(config);
-        ipc_handler_1.EventBind.logInitBind();
+        ipc_handler_1.eventsBind.logInitBind();
     }
     static info(info) {
         try {
