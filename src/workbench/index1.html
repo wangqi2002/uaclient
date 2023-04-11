@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="element-ui/css/index.css">
+    <link rel="stylesheet" href="css/index/index.css">
+    <link rel="stylesheet" href="css/index/indexTopbar.css">
+    <link rel="stylesheet" href="css/index/indexSubview.css">
+    <link rel="stylesheet" href="css/index/indexMainview.css">
+    <link rel="stylesheet" href="css/index/indexLogview.css">
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <header class="top-container">
+                <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" background-color="#eaeaeb"
+                    text-color="#4F4F50" active-text-color="#535457" menu-trigger="click">
+                    <el-submenu index="1">
+                        <template slot="title">File</template>
+                        <el-menu-item index="1-1">New</el-menu-item>
+                        <el-menu-item index="1-2">Open</el-menu-item>
+                        <el-menu-item index="1-3">Save</el-menu-item>
+                        <el-menu-item index="1-4">Save As</el-menu-item>
+                        <el-menu-item index="1-5">Recent Projects</el-menu-item>
+                        <el-menu-item index="1-6">Quit</el-menu-item>
+                    </el-submenu>
+                    <el-submenu index="2">
+                        <template slot="title">View</template>
+                        <el-menu-item index="2-1">Project</el-menu-item>
+                        <el-menu-item index="2-2">Address Space</el-menu-item>
+                        <el-menu-item index="2-3">Log</el-menu-item>
+                        <el-menu-item index="2-4">Attributes</el-menu-item>
+                        <el-menu-item index="2-5">References</el-menu-item>
+                        <el-menu-item index="2-6">File Toolbar</el-menu-item>
+                        <el-menu-item index="2-7">Server Toolbar</el-menu-item>
+                        <el-menu-item index="2-8">Document Toolbar</el-menu-item>
+                    </el-submenu>
+                    <el-submenu index="3">
+                        <template slot="title">Server</template>
+                        <el-menu-item index="3-1">Add</el-menu-item>
+                        <el-menu-item index="3-2">Remove</el-menu-item>
+                        <el-menu-item index="3-3">Connect</el-menu-item>
+                        <el-menu-item index="3-4">Disconnect</el-menu-item>
+                        <el-menu-item index="3-5">PRoperties</el-menu-item>
+                        <el-menu-item index="3-6">Change user</el-menu-item>
+                    </el-submenu>
+                </el-menu>
+                <el-input class="searchBox" v-model="search" @keyup.enter.native="searchHandler" placeholder="输入内容">
+                </el-input>
+                <div class="operationBox">
+                    <i class="el-icon-minus minimize-btn" @click="handlerMin"></i>
+                    <i class="el-icon-copy-document max-unmax-btn" @click="handlerMax"></i>
+                    <i class="el-icon-close close-btn" @click="handlerClose"></i>
+                </div>
+            </header>
+            <div class="main-container">
+                <div class="subview subviewLeft">
+                    <div class="resize horizontal"></div>
+                    <div class="line"></div>
+                    <div class="subview-content subviewLeft-content">
+                        <el-tabs value="1" tab-position="left">
+                            <el-tab-pane v-for="(item, index) in subviewLeftTabs" label="" :name="item.name">
+                                <span slot="label">
+                                    <img class="icon" :src="item.iconSrc" />
+                                </span>
+                                <div class="grid-box">
+                                    <div v-for="itemlist in item.itemList"
+                                        :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'">
+                                        <div class="subviewItembtn">
+                                            {{itemlist.title}}
+                                        </div>
+                                        <div class="subviewItemoptions"></div>
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                </div>
+                <main class="main content-box">
+                    <div class="mainviewTop">
+                        <el-tabs v-model="mainTabsValue" type="border-card" closable>
+                            <el-tab-pane v-for="(item, index) in mainTabs" :key="item.name" :label="item.title"
+                                :name="item.name">
+                                <!-- <iframe :src="item.src" :style="{'pointer-events':resize_pointer}"></iframe> -->
+                                <!-- <iframe src="./components/mainView.html"></iframe> -->
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                    <footer class="main-bottom">
+                        <div class="resize mian-vertical"></div>
+                        <div class="line"></div>
+                        <div class="logview">
+                            <el-tabs>
+                                <el-tab-pane label="日志">
+                                    <el-table class="logTable" :data="logTableData" :height="logviewHeight" stripe
+                                        border style="width: 100%">
+                                        <el-table-column prop="timestamp" label="Timestamp" width="150">
+                                        </el-table-column>
+                                        <el-table-column prop="source" label="Source" width="100">
+                                        </el-table-column>
+                                        <el-table-column prop="information" label="Information">
+                                        </el-table-column>
+                                    </el-table>
+                                </el-tab-pane>
+                                <el-tab-pane label="问题">
+                                    <el-table class="logTable" :data="problemTableData" :height="logviewHeight" stripe
+                                        border style="width: 100%">
+                                        <el-table-column prop="timestamp" label="Timestamp" width="150">
+                                        </el-table-column>
+                                        <el-table-column prop="source" label="Source" width="100">
+                                        </el-table-column>
+                                        <el-table-column prop="information" label="Information">
+                                        </el-table-column>
+                                    </el-table>
+                                </el-tab-pane>
+                                <el-tab-pane label="输出">
+                                    hhhhhhhh
+                                </el-tab-pane>
+                            </el-tabs>
+                        </div>
+                    </footer>
+                </main>
+                <div class="subview subviewRight">
+                    <div class="resize horizontal"></div>
+                    <div class="line"></div>
+                    <div class="subview-content subviewRight-content">
+                        <el-tabs tab-position="right">
+                            <el-tab-pane label="">
+                                <span slot="label">
+                                    <i class="el-icon-folder"></i>
+                                </span>
+                                <div class="grid-box grid-box-right">
+                                    <div class="grid-content right-top">
+                                        address-view
+                                    </div>
+                                    <div class="dragBar-l resize-rightView-inside"></div>
+                                    <div class="grid-content right-bottom">
+                                        project-view
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+                            <el-tab-pane label="">
+                                <span slot="label">
+                                    <i class="el-icon-set-up"></i>
+                                </span>
+                                <div class="grid-box grid-box-right">
+                                    <div class="grid-content right-top">
+                                        address-view
+                                    </div>
+                                    <div class="dragBar-l resize-rightView-inside"></div>
+                                    <div class="grid-content right-bottom">
+                                        project-view
+                                    </div>
+                                </div>
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="vue/vue.js"></script>
+<script src="element-ui/index.js"></script>
+<script src="js/indexInject.js"></script>
+<script src="js/indexInside.js"></script>
+<script src="js/indexExtern.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                left_view_minwidth: null,
+                logviewHeight: null,
+                resize_pointer: 'auto',
+                activeIndex: '1',
+                search: "", //当前输入框的值
+                leftViewShow: true,
+                logShow: true,
+                rightViewShow: true,
+                mainTabsValue: '1',
+                mainTabs: [],
+                subviewLeftTabs: [],
+                logTableData: [],
+                problemTableData: [],
+                attributeTableData: [],
+            }
+        },
+        computed: {
+        },
+        methods: {
+            searchHandler() {
+                console.log('+++: searchHandler')
+            },
+            handlerMin() {
+                mainMini()
+            },
+            handlerMax() {
+                mainMax()
+            },
+            handlerClose() {
+                mainClose()
+            },
+            handLeftViewShow() {
+                this.leftViewShow = !this.leftViewShow
+            },
+            handLogShow() {
+                this.logShow = !this.logShow
+            },
+            handRightViewShow() {
+                this.rightViewShow = !this.rightViewShow
+            },
+            /**
+             * el-table-column 自适应列宽
+             * @param prop_label: 表名
+             * @param table_data: 表格数据
+             */
+            flexColumnWidth(label, prop) {
+                // 获取该列的所有数据
+                const arr = this.tableData.map(x => x[prop])
+                arr.push(label) // 把每列的表头也加进去算
+                // 计算每列内容最大的宽度 + 表格的内间距（依据实际情况而定）
+                return (getMaxLength(arr) + 20) + 'px'
+            },
+            /**
+             * MutationObserver 实时监控元素属性
+             * @param targetNode: DOM元素
+             * @param options : 监听的变动类型
+             */
+            attributeObserver() {
+                var resizeDom = document.querySelectorAll('.container .resize')
+                resizeDom.forEach(item => {
+                    resizeObserve.observe(item, {
+                        attributes: true
+                    });
+                })
+
+                var logtableDom = document.querySelectorAll('.main-bottom .resize')
+                logtableDom.forEach(item => {
+                    tableheightObserve.observe(item, {
+                        attributes: true
+                    });
+                })
+            }
+        },
+        mounted() {
+            this.mainTabs = mainTabsF()
+            this.subviewLeftTabs = subviewLeftTabsF()
+            this.logTableData = logTableF()
+            this.problemTableData = problemTableF()
+            this.attributeTableData = attributeTableF()
+            this.attributeObserver()
+        },
+        created() {
+            this.logviewHeight = parseInt(getComputedStyle(document.getElementsByClassName("logview")[0], null)['height'])
+        }
+    })
+</script>
+
+</html>

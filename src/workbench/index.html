@@ -4,8 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="element-ui/css/index.css">
-    <link rel="stylesheet" href="css/index1.css">
     <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/index/index.css">
+    <link rel="stylesheet" href="css/index/indexTopbar.css">
+    <link rel="stylesheet" href="css/index/indexSubview.css">
+    <link rel="stylesheet" href="css/index/indexMainview.css">
+    <link rel="stylesheet" href="css/index/indexLogview.css">
 </head>
 
 <body>
@@ -54,46 +58,18 @@
             </el-header>
             <el-container class="main-box">
                 <el-aside class="subview subviewLeft" v-show="leftViewShow">
-                    <el-tabs tab-position="left">
-                        <el-tab-pane label="">
+                    <el-tabs value="1" tab-position="left">
+                        <el-tab-pane v-for="(item, index) in subviewLeftTabs" label="" :name="item.name">
                             <span slot="label">
-                                <i class="el-icon-folder"></i>
+                                <img class="icon" :src="item.iconSrc" />
                             </span>
-                            <div class="grid-box grid-box-left">
-                                <div class="grid-content left-top">
-                                    <iframe src="./components/projectView.html"></iframe>
-                                </div>
-                                <div class="dragBar-l resize-leftView-inside" v-show="leftViewShow"></div>
-                                <div class="grid-content left-bottom">
-                                    address-view
-                                </div>
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane label="">
-                            <span slot="label">
-                                <i class="el-icon-set-up"></i>
-                            </span>
-                            <div class="grid-box grid-box-left">
-                                <div class="grid-content left-top">
-                                    address-view
-                                </div>
-                                <div class="dragBar-l resize-leftView-inside" v-show="leftViewShow"></div>
-                                <div class="grid-content left-bottom">
-                                    project-view
-                                </div>
-                            </div>
-                        </el-tab-pane>
-                        <el-tab-pane label="">
-                            <span slot="label">
-                                <i class="el-icon-chat-square"></i>
-                            </span>
-                            <div class="grid-box grid-box-left">
-                                <div class="grid-content left-top">
-                                    project
-                                </div>
-                                <div class="dragBar-l resize-leftView-inside" v-show="leftViewShow"></div>
-                                <div class="grid-content left-bottom">
-                                    address
+                            <div class="grid-box">
+                                <div v-for="itemlist in item.itemList"
+                                    :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'">
+                                    <div class="subviewItembtn">
+                                        {{itemlist.title}}
+                                    </div>
+                                    <div class="subviewItemoptions"></div>
                                 </div>
                             </div>
                         </el-tab-pane>
@@ -148,14 +124,6 @@
                             <span slot="label">
                                 <i class="el-icon-folder"></i>
                             </span>
-                            <div class="grid-box grid-box-right">
-                                <div class="grid-content right-top">
-                                </div>
-                                <div class="dragBar-l resize-rightView-inside"></div>
-                                <div class="grid-content right-bottom">
-                                    address-view
-                                </div>
-                            </div>
                         </el-tab-pane>
                         <el-tab-pane label="">
                             <span slot="label">
@@ -199,6 +167,7 @@
                 rightViewShow: true,
                 mainTabsValue: '1',
                 mainTabs: [],
+                subviewLeftTabs: [],
                 logTableData: [],
                 problemTableData: [],
                 attributeTableData: [],
@@ -365,20 +334,22 @@
             }
         },
         mounted() {
-            this.logviewHeight = parseInt(getComputedStyle(document.getElementsByClassName("logview")[0], null)['height'])
             this.mainTabs = mainTabsF()
+            this.subviewLeftTabs = subviewLeftTabsF()
             this.logTableData = logTableF()
             this.problemTableData = problemTableF()
             this.attributeTableData = attributeTableF()
             this.dragLevel('content-box', 'mainviewTop', 'mianviewBottom', 'resize-logView')
-            this.dragLevel('grid-box-left', 'left-top', 'left-bottom', 'resize-leftView-inside')
-            this.dragLevel('grid-box-right', 'right-top', 'right-bottom', 'resize-rightView-inside')
+            // this.dragLevel('grid-box-left', 'left-top', 'left-bottom', 'resize-leftView-inside')
+            // this.dragLevel('grid-box-right', 'right-top', 'right-bottom', 'resize-rightView-inside')
             this.dragVertical()
+            // subviewItemInit(window, document);
         },
         created() {
             this.left_view_minwidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--left-view-minwidth"));
             this.main_view_minwidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--main-view-minwidth"));
             this.right_view_minwidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--right-view-minwidth"));
+            this.logviewHeight = parseInt(getComputedStyle(document.getElementsByClassName("logview")[0], null)['height'])
         }
     })
 </script>

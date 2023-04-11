@@ -27,3 +27,70 @@ function getMaxLength(arr) {
         return acc
     }, 0)
 }
+/* 初始化subviewItem为闭合状态 */
+async function subviewItemInit(win, doc) {
+    const optionsNode = await doc.getElementsByClassName("subviewItemoptions");
+    for (var i = 0; i < optionsNode.length; i++) {
+        console.log(win.getComputedStyle(optionsNode[i]).height)
+        optionsNode[i].setAttribute("real-height", win.getComputedStyle(optionsNode[i]).height);
+        optionsNode[i].style.height = "0px";
+        optionsNode[i].previousElementSibling.setAttribute("unfold-" + i, 1);
+        optionsNode[i].previousElementSibling.setAttribute("onclick", "subviewItemOperate(window,this)");
+        // console.log(optionsNode[i], optionsNode[i].previousElementSibling)
+    }
+}
+
+/* 打开或关闭subviewItem */
+function subviewItemOperate(win, btn) {
+    const optionsNode = btn.nextElementSibling;
+    const unfold = btn.attributes[1];
+    const realHeight = optionsNode.getAttribute("real-height");
+    console.log(/* btn,  */unfold.nodeValue, realHeight);
+    if (unfold.nodeValue && unfold.nodeValue === "1") {
+        optionsNode.style.height = realHeight;
+    } else {
+        optionsNode.style.height = "0px";
+    }
+    btn.setAttribute(unfold.nodeName, unfold.nodeValue === "0" ? "1" : "0");
+}
+/* 控制拖动到极限时不能再次拖动问题 */
+var resizeObserve = new MutationObserver(function (mutationsList, observer) {
+    var target = mutationsList[0] ? mutationsList[0].target : null
+    if (!target) {
+        return false
+    }
+
+    var parent = target.parentNode
+    var classList = target.classList
+    var isHorizontal = classList.value.indexOf('horizontal') !== -1
+
+    if (isHorizontal) {
+        var parentWidth = parent.clientWidth
+        var diffWidth = target.clientWidth - parentWidth
+        // console.log(parentWidth, target.clientWidth, diffWidth)
+        if (diffWidth > -18 || parentWidth * -1 === diffWidth) {
+            target.style.width = parentWidth + 'px'
+        }
+    } else {
+        var offsetTop = target.offsetTop + 16
+        var parentHeight = parent.clientHeight
+        var maxHeight = parentHeight - offsetTop
+        var diffHeight = target.clientHeight - maxHeight
+        // console.log(parentHeight)
+        if (diffHeight > 2) {
+            target.style.height = maxHeight + 'px'
+        }
+    }
+})
+/* 实时监控表格高度 */
+var tableheightObserve = new MutationObserver(function (mutationsList, observer) {
+    var target = mutationsList[0] ? mutationsList[0].target : null
+    if (!target) {
+        return false
+    }
+    var parent = target.parentNode
+    var tableList = parent.querySelectorAll(".logTable")
+    for (var i = 0; i < tableList.length; i++) {
+        tableList[i].style.height = parent.clientHeight + 'px'
+    }
+})

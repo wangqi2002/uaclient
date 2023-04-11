@@ -17,11 +17,91 @@ function mainTabsF() {
     }]
     return tabList;
 }
+function subviewLeftTabsF() {
+    var tabList = [{
+        title: 'Tab 1',
+        name: '1',
+        content: 'Tab 1 content',
+        iconSrc: "./assets/icon/resource-management.svg",
+        itemList: [{
+            title: 'Project',
+            name: '1',
+            content: 'Project',
+            items: [{
+                label: '一级 1',
+                children: [{
+                    label: '二级 1-1',
+                    children: [{
+                        label: '三级 1-1-1'
+                    }]
+                }]
+            }, {
+                label: '一级 2',
+                children: [{
+                    label: '二级 2-1',
+                    children: [{
+                        label: '三级 2-1-1'
+                    }]
+                }, {
+                    label: '二级 2-2',
+                    children: [{
+                        label: '三级 2-2-1'
+                    }]
+                }]
+            }]
+        }, {
+            title: 'Address',
+            name: '2',
+            content: 'Address'
+        }, {
+            title: 'Time line',
+            name: '3',
+            content: 'Time line'
+        }]
+    }, {
+        title: 'Tab 2',
+        name: '2',
+        content: 'Tab 2 content',
+        iconSrc: "./assets/icon/resource-management.svg",
+        items: [{
+            title: 'Project',
+            name: '1',
+            content: 'Project'
+        }, {
+            title: 'Address',
+            name: '2',
+            content: 'Address'
+        }]
+    }, {
+        title: 'Tab 3',
+        name: '3',
+        content: 'Tab 3 content',
+        iconSrc: "./assets/icon/resource-management.svg",
+        items: [{
+            title: 'Project',
+            name: '1',
+            content: 'Project'
+        }, {
+            title: 'Address',
+            name: '2',
+            content: 'Address'
+        }]
+    }]
+    return tabList;
+}
 function logTableF() {
     var tableData = [{
         timestamp: '2016-05-02',
         source: '王小虎',
         information: '上海市普陀区'
+    }, {
+        timestamp: '2016-05-02',
+        source: '王小虎',
+        information: '上海市普陀区金沙江路 1518 弄'
+    }, {
+        timestamp: '2016-05-02',
+        source: '王小虎',
+        information: '上海市普陀区金沙江路 1518 弄'
     }, {
         timestamp: '2016-05-02',
         source: '王小虎',
@@ -38,6 +118,14 @@ function problemTableF() {
         timestamp: '2016-05-02',
         source: '王小虎',
         information: '上海市普陀区'
+    }, {
+        timestamp: '2016-05-02',
+        source: '王小虎',
+        information: '上海市普陀区金沙江路 1518 弄'
+    }, {
+        timestamp: '2016-05-02',
+        source: '王小虎',
+        information: '上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄上海市普陀区金沙江路 1518 弄'
     }, {
         timestamp: '2016-05-02',
         source: '王小虎',

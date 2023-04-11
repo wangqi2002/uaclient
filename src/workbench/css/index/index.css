@@ -1,0 +1,148 @@
+/* 自定义变量 */
+:root {
+    --top-bar-height: 30px;
+    --left-view-width: 300px;
+    --left-view-minwidth: 180px;
+    --main-view-minwidth: 200px;
+    --main-view-minheight: 150px;
+    --right-view-width: 270px;
+    --right-view-minwidth: 160px;
+    --log-view-height: 150px;
+    --log-view-minheight: 120px;
+    --sub-view-minheight: 50px;
+    --left-bar-width: 50px;
+    --right-bar-width: 26px;
+    --font-color: #a69e9f;
+}
+
+/* 框架 */
+* {
+    margin: 0;
+    padding: 0;
+    user-select: none;
+}
+.container {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+}
+header {
+    width: 100%;
+    height: var(--top-bar-height);
+    background-color: #EAEAEB;
+    position: relative;
+    overflow: hidden;
+}
+.main-container {
+    display: flex;
+    flex: 1;
+}
+.subview {
+    height: 100%;
+    min-width: var(--left-view-minwidth);
+    position: relative;
+    overflow: hidden;
+    background-color: #EAEAEB;
+}
+.subview.subviewRight {
+    min-width: var(--right-view-minwidth);
+}
+.main {
+    flex: 1;
+    background-color: #FAFAFA;
+    display: flex;
+    flex-direction: column;
+}
+.mainviewTop {
+    min-width: var(--main-view-minwidth);
+    flex: 1;
+}
+.main-bottom {
+    width: 100%;
+    min-height: var(--log-view-minheight);
+    border-top: 1px solid #D0D0D0;
+    background-color: #FAFAFA;
+    position: relative;
+    overflow: hidden;
+}
+.resize {
+    width: 100%;
+    min-width: var(--left-view-minwidth);
+    height: 16px;
+    transform: scaleY(100);
+    transform-origin: left;
+    overflow: scroll;
+    resize: horizontal;
+    opacity: 0;
+}
+.line {
+    width: 0px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+    transition: 0.3s;
+    pointer-events: none;
+}
+.resize:active + .line {
+    background-color: #EAEAEB;
+}
+.subviewRight.subview .resize {
+    min-width: var(--right-view-minwidth);
+    direction: rtl;
+}
+.subviewRight.subview .line {
+    right: auto;
+    left: 0;
+}
+.main-bottom .line {
+    height: 0px;
+    width: 100%;
+    right: 0;
+    left: 0;
+}
+.main-bottom .resize {
+    width: 16px;
+    min-width: 0;
+    max-height: 75vh;
+    min-height: var(--log-view-minheight);
+    resize: vertical;
+    transform: rotateX(180deg) scaleX(100);
+    transform-origin: left;
+}
+
+/* 通用样式 */
+.icon:hover {
+    filter: brightness(50%);
+}
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+.el-tabs__active-bar {
+    background-color: #424242 !important;
+}
+.el-tabs__item {
+    color: var(--font-color) !important;
+}
+.el-tabs__item:hover {
+    filter: brightness(50%);
+}
+.el-tabs__item.is-active {
+    filter: brightness(50%);
+}
+.el-tab-pane {
+    width: 100%;
+    height: 100%;
+}
+.el-table ::-webkit-scrollbar {
+    width: 3px;
+    height: 5px;
+}
+.el-table .el-table__cell {
+    min-width: 150px;
+}
+

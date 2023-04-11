@@ -1,0 +1,138 @@
+.subview-content {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    pointer-events: none;
+}
+.subview-content .el-tabs__header{
+    pointer-events: auto;
+}
+/* subviewLeft */
+.subviewLeft-content .el-tabs--left .el-tabs__nav-wrap.is-left::after {
+    height: 100%;
+    width: 2px;
+    background-color: #eaeaeb;
+    bottom: auto;
+    top: 0;
+}
+.subviewLeft-content .el-tabs--left .el-tabs__active-bar.is-left {
+    width: 2px;
+}
+.subviewLeft-content .el-tabs--left {
+    height: 100%;
+}
+.subviewLeft-content .el-tabs__header.is-left {
+    width: var(--left-bar-width);
+    margin-right: 3px;
+    background-color: #fafafa;
+}
+.subviewLeft-content .el-tabs__item {
+    height: 50px;
+    line-height: 50px;
+    padding: 0 14px 0 10px;
+    font-size: 26px;
+}
+.subviewLeft-content .el-tabs__item span {
+    height: 50px;
+    line-height: 55px;
+    display: block;
+}
+.subviewLeft-content .el-tabs__item i {
+    font-size: 26px;
+}
+.subviewLeft-content .el-tabs__content,
+.subviewLeft-content .el-tab-pane {
+    height: 100%;
+}
+.subviewLeft-content .grid-box {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.subviewLeft-content .grid-content {
+    width: calc(100% - 6px);
+    padding: 3px;
+}
+.subviewLeft-content .left-top {
+    min-height: var(--sub-view-minheight);
+    flex: 1;
+}
+.subviewLeft-content .left-bottom {
+    height: 200px;
+    min-height: var(--sub-view-minheight);
+}
+
+/* subviewRight-content */
+.subviewRight-content .el-tabs--right .el-tabs__nav-wrap.is-right::after {
+    width: 2px;
+    background-color: #eaeaeb;
+}
+.subviewRight-content .el-tabs--right .el-tabs__active-bar.is-right {
+    width: 2px;
+}
+.subviewRight-content .el-tabs--right {
+    height: 100%;
+}
+.subviewRight-content .el-tabs__header.is-right {
+    width: var(--right-bar-width);
+    margin-left: 3px;
+    background-color: #fafafa;
+}
+.subviewRight-content .el-tabs__item {
+    height: 50px;
+    line-height: 50px;
+    padding: 0 2px 0 6px;
+    font-size: 18px;
+}
+.subviewRight-content .el-tabs__item i {
+    font-size: 18px;
+}
+.subviewRight-content .el-tabs__content,
+.subviewRight-content .el-tab-pane {
+    height: 100%;
+}
+.subviewRight-content .grid-box {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.subviewRight-content .grid-content {
+    width: calc(100% - 6px);
+    padding: 3px;
+}
+.subviewRight-content .right-top {
+    min-height: var(--sub-view-minheight);
+    flex: 1;
+}
+.subviewRight-content .right-bottom {
+    height: 200px;
+    min-height: var(--sub-view-minheight);
+}
+
+/* subview 内部展开栏 */
+.subview .grid-box {
+    display: flex;
+    flex-direction: column;
+}
+.subviewItem {
+    width: 100%;
+    height: 200px;
+    background-color: antiquewhite;
+    display: flex;
+    flex-direction: column;
+}
+.subviewItem-1 {
+    width: 100%;
+    flex: 1;
+    background-color: azure;
+}
+.subviewItem > .subviewItembtn {
+    width: 100%;
+    height: 20px;
+    background-color: aqua;
+}
+.subviewItem > .subviewItemoptions {
+    width: 100%;
+    flex: 1;
+}
