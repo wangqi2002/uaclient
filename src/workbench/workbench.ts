@@ -1,14 +1,14 @@
-import { BrowserView, BrowserWindow, ipcMain, Rectangle, screen } from "electron"
+import {BrowserView, BrowserWindow, Rectangle, screen} from "electron"
 import WinState from "electron-win-state"
 import path from "path"
-import { EventEmitter } from "stream"
-import { MainHandler } from "../platform/ipc/handlers/ipc.handler"
+import {EventEmitter} from "stream"
+import {eventsBind} from "../platform/ipc/handlers/ipc.handler"
 
 type viewId = string
 
 export class Workbench extends EventEmitter {
     public winState: WinState<unknown>
-    private exsitViews: Map<viewId, BrowserView>
+    private existViews: Map<viewId, BrowserView>
     private mainWindow!: BrowserWindow
 
     constructor(preload?: string, homeViewPath?: string, dev: boolean = false) {
@@ -18,7 +18,7 @@ export class Workbench extends EventEmitter {
             defaultHeight: (screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
         })
         this.createMainWindow(preload, homeViewPath, dev)
-        this.exsitViews = new Map()
+        this.existViews = new Map()
     }
 
     private async createMainWindow(
@@ -30,20 +30,21 @@ export class Workbench extends EventEmitter {
             ...this.winState.winOptions,
             frame: false,
             center: true,
+            show: false,
             webPreferences: {
                 preload: path.join(__dirname, preloadPath),
                 devTools: true,
+                contextIsolation: false,
+                nodeIntegration: true,
             },
         })
         if (dev) {
             this.mainWindow.webContents.openDevTools()
         }
-        await this.mainWindow.loadFile(indexHtmlPath)
-        // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
-        this.mainWindow.once("ready-to-show", () => {
-            this.mainWindow.show()
-        })
-        MainHandler.initBind(this.mainWindow)
+        this.mainWindow.webContents
+        // await this.mainWindow.loadFile(indexHtmlPath)
+        await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
+        eventsBind.workbenchInitBind(this.mainWindow)
         this.winState.manage(this.mainWindow)
     }
 
@@ -61,7 +62,7 @@ export class Workbench extends EventEmitter {
         rectangle: Rectangle = { x: 0, y: 0, width: 300, height: 300 },
         isWebView: boolean = false
     ) {
-        if (this.exsitViews.has(viewId)) {
+        if (this.existViews.has(viewId)) {
             return false
         }
         const browserView = new BrowserView({
@@ -87,8 +88,8 @@ export class Workbench extends EventEmitter {
             height: false,
         })
         // browserView.webContents.openDevTools()
-        this.bindCloseEvent(viewId, browserView)
-        this.exsitViews.set(viewId, browserView)
+        // this.bindCloseEvent(viewId, browserView)
+        this.existViews.set(viewId, browserView)
         this.emit("created:view." + viewId)
         return true
     }
@@ -97,11 +98,16 @@ export class Workbench extends EventEmitter {
         return this.mainWindow
     }
 
-    private bindCloseEvent(viewId: string, view: BrowserView) {
-        ipcMain.once("close:view." + viewId, () => {
-            view.webContents.close()
-        })
+    beforeClose() {
+        this.emit("close")
     }
+
+    // private bindCloseEvent(viewId: string, view: BrowserView) {
+    //     EventBind.onceBind()
+    //     ipcMain.once("close:view." + viewId, () => {
+    //         view.webContents.close()
+    //     })
+    // }
 }
 // export const workbench = new Workbench()
 // export const mainWindow = workbench.getMainWindow()

@@ -1,44 +1,48 @@
-import { IpcMain, ipcMain, IpcMainEvent } from "electron"
-import { mainEvents } from "../events/ipc.events"
-import { ClientError, ClientInfo, Log } from "../../base/log/log"
-import { Persistence } from "../../base/persist/persistence"
+import {BrowserWindow, ipcMain, IpcMainEvent} from "electron"
+import {rendererEvents} from "../events/ipc.events"
+import {ClientError, ClientInfo, ClientWarn, Log} from "../../base/log/log"
 
-export module MainHandler {
-    import BrowserWindow = Electron.BrowserWindow
-
-    export function initBind(mainWindow: BrowserWindow) {
-        mainBind(mainWindow)
-        logBind()
-        persistBind()
-    }
-
-    export function mainBind(mainWindow: BrowserWindow) {
-        ipcMain.on(mainEvents.mainMenu, () => {})
-        ipcMain.on(mainEvents.mainMini, () => {
+export module eventsBind {
+    export function workbenchInitBind(mainWindow: BrowserWindow) {
+        ipcMain.on(rendererEvents.benchEvents.minimize, () => {
             mainWindow.minimize()
         })
-        ipcMain.on(mainEvents.mainMax, () => {
+        ipcMain.on(rendererEvents.benchEvents.maximize, () => {
             if (mainWindow.isMaximized()) {
                 mainWindow.restore()
             } else {
                 mainWindow.maximize()
             }
         })
-        ipcMain.on(mainEvents.mainClose, () => {
+        ipcMain.on(rendererEvents.benchEvents.close, () => {
             mainWindow.close()
         })
     }
 
-    export function logBind() {
-        ipcMain.on("log:info", (event, args: ClientInfo) => {
+    export function logInitBind() {
+        ipcMain.on(rendererEvents.logEvents.info, (event, args: ClientInfo) => {
             Log.info(args)
         })
-        ipcMain.on("log:error", (event, args: ClientError) => {
+        ipcMain.on(rendererEvents.logEvents.error, (event, args: ClientError) => {
             Log.error(args)
         })
-        ipcMain.on("log:warn", (event, args: ClientError) => {
+        ipcMain.on(rendererEvents.logEvents.warn, (event, args: ClientWarn) => {
             Log.warn(args)
         })
+    }
+
+    export function benchBind(
+        event: rendererEvents.benchEvents,
+        eventHandler: (event: IpcMainEvent, ...args: any[]) => void
+    ) {
+        ipcMain.on(event, eventHandler)
+    }
+
+    export function workspaceBind(
+        event: rendererEvents.workspaceEvents,
+        eventHandler: (event: IpcMainEvent, ...args: any[]) => void
+    ) {
+        ipcMain.on(event, eventHandler)
     }
 
     export function persistBind() {
@@ -47,11 +51,24 @@ export module MainHandler {
         // })
     }
 
-    export function extendBind(event: string, func: Function) {
-        ipcMain.on("extend:" + event, () => func)
+    export function extendBind(
+        event: rendererEvents.extensionEvents,
+        eventHandler: (event: Electron.IpcMainEvent, ...args: any[]) => void
+    ) {
+        ipcMain.on(event, eventHandler)
     }
 
     export function bindEvent(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
         ipcMain.on(event, eventHandler)
+    }
+
+    export function onceBind(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
+        ipcMain.once(event, eventHandler)
+    }
+}
+
+export module mainEmit {
+    export function emit(event: string, ...args: any[]) {
+        ipcMain.emit(event, ...args)
     }
 }

@@ -1,23 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MainHandler = void 0;
+exports.mainEmit = exports.eventsBind = void 0;
 const electron_1 = require("electron");
 const ipc_events_1 = require("../events/ipc.events");
 const log_1 = require("../../base/log/log");
-var MainHandler;
-(function (MainHandler) {
-    function initBind(mainWindow) {
-        mainBind(mainWindow);
-        logBind();
-        persistBind();
-    }
-    MainHandler.initBind = initBind;
-    function mainBind(mainWindow) {
-        electron_1.ipcMain.on(ipc_events_1.mainEvents.mainMenu, () => { });
-        electron_1.ipcMain.on(ipc_events_1.mainEvents.mainMini, () => {
+var eventsBind;
+(function (eventsBind) {
+    function workbenchInitBind(mainWindow) {
+        electron_1.ipcMain.on(ipc_events_1.rendererEvents.benchEvents.minimize, () => {
             mainWindow.minimize();
         });
-        electron_1.ipcMain.on(ipc_events_1.mainEvents.mainMax, () => {
+        electron_1.ipcMain.on(ipc_events_1.rendererEvents.benchEvents.maximize, () => {
             if (mainWindow.isMaximized()) {
                 mainWindow.restore();
             }
@@ -25,35 +18,54 @@ var MainHandler;
                 mainWindow.maximize();
             }
         });
-        electron_1.ipcMain.on(ipc_events_1.mainEvents.mainClose, () => {
+        electron_1.ipcMain.on(ipc_events_1.rendererEvents.benchEvents.close, () => {
             mainWindow.close();
         });
     }
-    MainHandler.mainBind = mainBind;
-    function logBind() {
-        electron_1.ipcMain.on("log:info", (event, args) => {
+    eventsBind.workbenchInitBind = workbenchInitBind;
+    function logInitBind() {
+        electron_1.ipcMain.on(ipc_events_1.rendererEvents.logEvents.info, (event, args) => {
             log_1.Log.info(args);
         });
-        electron_1.ipcMain.on("log:error", (event, args) => {
+        electron_1.ipcMain.on(ipc_events_1.rendererEvents.logEvents.error, (event, args) => {
             log_1.Log.error(args);
         });
-        electron_1.ipcMain.on("log:warn", (event, args) => {
+        electron_1.ipcMain.on(ipc_events_1.rendererEvents.logEvents.warn, (event, args) => {
             log_1.Log.warn(args);
         });
     }
-    MainHandler.logBind = logBind;
+    eventsBind.logInitBind = logInitBind;
+    function benchBind(event, eventHandler) {
+        electron_1.ipcMain.on(event, eventHandler);
+    }
+    eventsBind.benchBind = benchBind;
+    function workspaceBind(event, eventHandler) {
+        electron_1.ipcMain.on(event, eventHandler);
+    }
+    eventsBind.workspaceBind = workspaceBind;
     function persistBind() {
         // ipcMain.on("persist:init", (event, storage, tableName, attributes) => {
         //     Persistence.init(storage, tableName, attributes)
         // })
     }
-    MainHandler.persistBind = persistBind;
-    function extendBind(event, func) {
-        electron_1.ipcMain.on("extend:" + event, () => func);
+    eventsBind.persistBind = persistBind;
+    function extendBind(event, eventHandler) {
+        electron_1.ipcMain.on(event, eventHandler);
     }
-    MainHandler.extendBind = extendBind;
+    eventsBind.extendBind = extendBind;
     function bindEvent(event, eventHandler) {
         electron_1.ipcMain.on(event, eventHandler);
     }
-    MainHandler.bindEvent = bindEvent;
-})(MainHandler = exports.MainHandler || (exports.MainHandler = {}));
+    eventsBind.bindEvent = bindEvent;
+    function onceBind(event, eventHandler) {
+        electron_1.ipcMain.once(event, eventHandler);
+    }
+    eventsBind.onceBind = onceBind;
+})(eventsBind = exports.eventsBind || (exports.eventsBind = {}));
+var mainEmit;
+(function (mainEmit) {
+    function emit(event, ...args) {
+        electron_1.ipcMain.emit(event, ...args);
+    }
+    mainEmit.emit = emit;
+})(mainEmit = exports.mainEmit || (exports.mainEmit = {}));

@@ -1,3 +1,5 @@
 {
-    "rootDir": "C:\\Users\\Administrator\\Desktop\\client.data"
+  "appData": "C:\\Users\\Administrator\\Desktop\\client.data",
+  "preloadPath": "",
+  "indexViewPath": ""
 }

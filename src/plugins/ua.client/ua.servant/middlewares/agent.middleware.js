@@ -20,7 +20,8 @@ var AgentMiddleware;
     function clientValidator(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (ctx.request.path) {
-                case '/client/init': {
+                case "/client/init": {
+                    ctx.request.body;
                     if ((input => {
                         const $io0 = input => (undefined === input.requestedSessionTimeout || "number" === typeof input.requestedSessionTimeout) && (undefined === input.endpoint_must_exist || "boolean" === typeof input.endpoint_must_exist) && (undefined === input.endpointMustExist || "boolean" === typeof input.endpointMustExist) && (undefined === input.connectionStrategy || "object" === typeof input.connectionStrategy && null !== input.connectionStrategy && false === Array.isArray(input.connectionStrategy) && $io1(input.connectionStrategy)) && (undefined === input.serverCertificate || input.serverCertificate instanceof Buffer) && (undefined === input.defaultSecureTokenLifetime || "number" === typeof input.defaultSecureTokenLifetime) && (undefined === input.securityMode || 0 === input.securityMode || 1 === input.securityMode || 2 === input.securityMode || 3 === input.securityMode || "string" === typeof input.securityMode) && (undefined === input.securityPolicy || "string" === typeof input.securityPolicy) && (undefined === input.keepSessionAlive || "boolean" === typeof input.keepSessionAlive) && (undefined === input.certificateFile || "string" === typeof input.certificateFile) && (undefined === input.privateKeyFile || "string" === typeof input.privateKeyFile) && (undefined === input.clientName || "string" === typeof input.clientName) && (undefined === input.applicationName || "string" === typeof input.applicationName) && (undefined === input.applicationUri || "string" === typeof input.applicationUri) && (undefined === input.tokenRenewalInterval || "number" === typeof input.tokenRenewalInterval) && (undefined === input.keepPendingSessionsOnDisconnect || "boolean" === typeof input.keepPendingSessionsOnDisconnect) && (undefined === input.clientCertificateManager || "object" === typeof input.clientCertificateManager && null !== input.clientCertificateManager && $io2(input.clientCertificateManager)) && (undefined === input.discoveryUrl || "string" === typeof input.discoveryUrl) && (undefined === input.transportSettings || "object" === typeof input.transportSettings && null !== input.transportSettings && false === Array.isArray(input.transportSettings) && $io3(input.transportSettings));
                         const $io1 = input => (undefined === input.maxRetry || "number" === typeof input.maxRetry) && (undefined === input.initialDelay || "number" === typeof input.initialDelay) && (undefined === input.maxDelay || "number" === typeof input.maxDelay) && (undefined === input.randomisationFactor || "number" === typeof input.randomisationFactor);
@@ -32,11 +33,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('OPCUAClientOptions | undefined');
+                        throw validateError("OPCUAClientOptions | undefined");
                     }
                     break;
                 }
-                case '/client/connect': {
+                case "/client/connect": {
                     if ((input => {
                         const $io0 = input => "string" === typeof input.endpointUrl;
                         return "object" === typeof input && null !== input && "string" === typeof input.endpointUrl;
@@ -45,11 +46,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('{ endpointUrl: string }');
+                        throw validateError("{ endpointUrl: string }");
                     }
                     break;
                 }
-                case '/client/endpoints': {
+                case "/client/endpoints": {
                     if ((input => {
                         const $io0 = input => (undefined === input.reduce || "boolean" === typeof input.reduce) && (undefined === input.clientExist || "boolean" === typeof input.clientExist) && (undefined === input.endpoint || "string" === typeof input.endpoint);
                         return undefined === input || "object" === typeof input && null !== input && false === Array.isArray(input) && $io0(input);
@@ -58,11 +59,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('{ endpointUrl: string }');
+                        throw validateError("{ endpointUrl: string }");
                     }
                     break;
                 }
-                case '/client/disconnect': {
+                case "/client/disconnect": {
                     if ((input => {
                         const $io0 = input => "boolean" === typeof input.deleteSubscription;
                         return undefined === input || "object" === typeof input && null !== input && $io0(input);
@@ -72,15 +73,15 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('{ deleteSubscription: boolean } | {}');
+                        throw validateError("{ deleteSubscription: boolean } | {}");
                     }
                     break;
                 }
-                case '/client/private_key': {
+                case "/client/private_key": {
                     log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.clientService, ua_enums_1.UaInfos.getPrivateKey));
                     break;
                 }
-                case 'client/cert': {
+                case "client/cert": {
                     log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.clientService, ua_enums_1.UaInfos.getCertificate));
                     break;
                 }
@@ -93,7 +94,7 @@ var AgentMiddleware;
     function sessionValidator(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (ctx.request.body) {
-                case '/session/init': {
+                case "/session/init": {
                     if ((input => {
                         const $io0 = input => 0 === input.type;
                         const $io1 = input => 2 === input.type && input.certificateData instanceof Buffer && "string" === typeof input.privateKey && (null === input.policyId || undefined === input.policyId || "string" === typeof input.policyId);
@@ -113,11 +114,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('UserIdentityInfo | undefined');
+                        throw validateError("UserIdentityInfo | undefined");
                     }
                     break;
                 }
-                case '/session/change_identity': {
+                case "/session/change_identity": {
                     if ((input => {
                         const $io0 = input => 0 === input.type;
                         const $io1 = input => 2 === input.type && input.certificateData instanceof Buffer && "string" === typeof input.privateKey && (null === input.policyId || undefined === input.policyId || "string" === typeof input.policyId);
@@ -136,11 +137,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('UserIdentityInfo');
+                        throw validateError("UserIdentityInfo");
                     }
                     break;
                 }
-                case '/session/close': {
+                case "/session/close": {
                     if ((input => {
                         const $io0 = input => "boolean" === typeof input.deleteSubscription;
                         return undefined === input || "object" === typeof input && null !== input && $io0(input);
@@ -148,11 +149,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('{ deleteSubscription: boolean } | undefined');
+                        throw validateError("{ deleteSubscription: boolean } | undefined");
                     }
                     break;
                 }
-                case '/session/read': {
+                case "/session/read": {
                     if ((input => {
                         const $io0 = input => (null === input.nodeId || undefined === input.nodeId || "string" === typeof input.nodeId || "number" === typeof input.nodeId || "object" === typeof input.nodeId && null !== input.nodeId && $io1(input.nodeId)) && (undefined === input.attributeId || "number" === typeof input.attributeId) && (undefined === input.indexRange || "object" === typeof input.indexRange && null !== input.indexRange && $io2(input.indexRange)) && (null === input.dataEncoding || undefined === input.dataEncoding || "string" === typeof input.dataEncoding || "object" === typeof input.dataEncoding && null !== input.dataEncoding && false === Array.isArray(input.dataEncoding) && $io3(input.dataEncoding));
                         const $io1 = input => (1 === input.identifierType || 2 === input.identifierType || 3 === input.identifierType || 4 === input.identifierType) && (null !== input.value && undefined !== input.value && ("string" === typeof input.value || "number" === typeof input.value || input.value instanceof Buffer)) && "number" === typeof input.namespace;
@@ -177,11 +178,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('ReadValueIdOptions');
+                        throw validateError("ReadValueIdOptions");
                     }
                     break;
                 }
-                case '/session/id': {
+                case "/session/id": {
                     if ((input => {
                         const $io0 = input => "string" === typeof input.path;
                         return "object" === typeof input && null !== input && "string" === typeof input.path;
@@ -190,11 +191,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('{ path: string }');
+                        throw validateError("{ path: string }");
                     }
                     break;
                 }
-                case '/session/write': {
+                case "/session/write": {
                     if ((input => {
                         const $io0 = input => (null === input.nodeId || undefined === input.nodeId || "string" === typeof input.nodeId || "number" === typeof input.nodeId || "object" === typeof input.nodeId && null !== input.nodeId && $io1(input.nodeId)) && (undefined === input.attributeId || "number" === typeof input.attributeId) && (undefined === input.indexRange || "object" === typeof input.indexRange && null !== input.indexRange && $io2(input.indexRange)) && (null === input.value || undefined === input.value || "object" === typeof input.value && null !== input.value && false === Array.isArray(input.value) && $iu0(input.value));
                         const $io1 = input => (1 === input.identifierType || 2 === input.identifierType || 3 === input.identifierType || 4 === input.identifierType) && (null !== input.value && undefined !== input.value && ("string" === typeof input.value || "number" === typeof input.value || input.value instanceof Buffer)) && "number" === typeof input.namespace;
@@ -231,11 +232,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('WriteValueOptions');
+                        throw validateError("WriteValueOptions");
                     }
                     break;
                 }
-                case '/session/browse': {
+                case "/session/browse": {
                     if ((input => {
                         const $io0 = input => null !== input.node && undefined !== input.node && ("string" === typeof input.node || "object" === typeof input.node && null !== input.node && false === Array.isArray(input.node) && $io1(input.node)) && "boolean" === typeof input.browseNext;
                         const $io1 = input => (null === input.nodeId || undefined === input.nodeId || "string" === typeof input.nodeId || "number" === typeof input.nodeId || "object" === typeof input.nodeId && null !== input.nodeId && $io2(input.nodeId)) && (undefined === input.browseDirection || 0 === input.browseDirection || 1 === input.browseDirection || 2 === input.browseDirection || 3 === input.browseDirection) && (null === input.referenceTypeId || undefined === input.referenceTypeId || "string" === typeof input.referenceTypeId || "number" === typeof input.referenceTypeId || "object" === typeof input.referenceTypeId && null !== input.referenceTypeId && $io2(input.referenceTypeId)) && (undefined === input.includeSubtypes || "boolean" === typeof input.includeSubtypes) && (undefined === input.nodeClassMask || "number" === typeof input.nodeClassMask) && (undefined === input.resultMask || "number" === typeof input.resultMask);
@@ -245,11 +246,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('{ nodes: BrowseDescriptionLike, browseNext: boolean }');
+                        throw validateError("{ nodes: BrowseDescriptionLike, browseNext: boolean }");
                     }
                     break;
                 }
-                case '/session/history': {
+                case "/session/history": {
                     if ((input => {
                         const $io0 = input => "object" === typeof input.requestHeader && null !== input.requestHeader && $io1(input.requestHeader) && (null === input.historyReadDetails || "object" === typeof input.historyReadDetails && null !== input.historyReadDetails && false === Array.isArray(input.historyReadDetails) && $io4(input.historyReadDetails)) && (0 === input.timestampsToReturn || 1 === input.timestampsToReturn || 2 === input.timestampsToReturn || 3 === input.timestampsToReturn || 4 === input.timestampsToReturn) && "boolean" === typeof input.releaseContinuationPoints && (null === input.nodesToRead || Array.isArray(input.nodesToRead) && input.nodesToRead.every(elem => "object" === typeof elem && null !== elem && $io5(elem)));
                         const $io1 = input => "object" === typeof input.authenticationToken && null !== input.authenticationToken && $io2(input.authenticationToken) && (undefined !== input.timestamp && (null === input.timestamp || input.timestamp instanceof Date || "object" === typeof input.timestamp && null !== input.timestamp && $io3(input.timestamp))) && "number" === typeof input.requestHandle && "number" === typeof input.returnDiagnostics && (null === input.auditEntryId || "string" === typeof input.auditEntryId) && "number" === typeof input.timeoutHint && (null === input.additionalHeader || "object" === typeof input.additionalHeader && null !== input.additionalHeader && false === Array.isArray(input.additionalHeader) && $io4(input.additionalHeader));
@@ -278,11 +279,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('HistoryReadRequest');
+                        throw validateError("HistoryReadRequest");
                     }
                     break;
                 }
-                case '/session/history/value': {
+                case "/session/history/value": {
                     if ((input => {
                         const $io0 = input => null !== input.nodeToRead && undefined !== input.nodeToRead && ("string" === typeof input.nodeToRead || "number" === typeof input.nodeToRead || "object" === typeof input.nodeToRead && null !== input.nodeToRead && $iu0(input.nodeToRead)) && (undefined !== input.start && (null === input.start || input.start instanceof Date || "object" === typeof input.start && null !== input.start && $io5(input.start))) && (undefined !== input.end && (null === input.end || input.end instanceof Date || "object" === typeof input.end && null !== input.end && $io5(input.end))) && (undefined === input.options || "object" === typeof input.options && null !== input.options && false === Array.isArray(input.options) && $io6(input.options));
                         const $io1 = input => (1 === input.identifierType || 2 === input.identifierType || 3 === input.identifierType || 4 === input.identifierType) && (null !== input.value && undefined !== input.value && ("string" === typeof input.value || "number" === typeof input.value || input.value instanceof Buffer)) && "number" === typeof input.namespace;
@@ -317,7 +318,7 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('HistoryValueParam');
+                        throw validateError("HistoryValueParam");
                     }
                     break;
                 }
@@ -330,7 +331,7 @@ var AgentMiddleware;
     function subscriptValidator(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (ctx.request.path) {
-                case '/subscript/init': {
+                case "/subscript/init": {
                     if ((input => {
                         const $io0 = input => (undefined === input.requestedPublishingInterval || "number" === typeof input.requestedPublishingInterval) && (undefined === input.requestedLifetimeCount || "number" === typeof input.requestedLifetimeCount) && (undefined === input.requestedMaxKeepAliveCount || "number" === typeof input.requestedMaxKeepAliveCount) && (undefined === input.maxNotificationsPerPublish || "number" === typeof input.maxNotificationsPerPublish) && (undefined === input.publishingEnabled || "boolean" === typeof input.publishingEnabled) && (undefined === input.priority || "number" === typeof input.priority);
                         return undefined === input || "object" === typeof input && null !== input && false === Array.isArray(input) && $io0(input);
@@ -339,11 +340,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('ClientSubscriptionOptions');
+                        throw validateError("ClientSubscriptionOptions");
                     }
                     break;
                 }
-                case '/subscript/modify': {
+                case "/subscript/modify": {
                     if ((input => {
                         const $io0 = input => (undefined === input.requestedPublishingInterval || "number" === typeof input.requestedPublishingInterval) && (undefined === input.requestedLifetimeCount || "number" === typeof input.requestedLifetimeCount) && (undefined === input.requestedMaxKeepAliveCount || "number" === typeof input.requestedMaxKeepAliveCount) && (undefined === input.maxNotificationsPerPublish || "number" === typeof input.maxNotificationsPerPublish) && (undefined === input.priority || "number" === typeof input.priority);
                         return "object" === typeof input && null !== input && false === Array.isArray(input) && $io0(input);
@@ -352,11 +353,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('ModifySubscriptionOptions');
+                        throw validateError("ModifySubscriptionOptions");
                     }
                     break;
                 }
-                case '/subscript/item/group': {
+                case "/subscript/item/group": {
                     if ((input => {
                         const $io0 = input => Array.isArray(input.itemsToMonitor) && input.itemsToMonitor.every(elem => "object" === typeof elem && null !== elem && false === Array.isArray(elem) && $io1(elem)) && (Array.isArray(input.displayNames) && input.displayNames.every(elem => "string" === typeof elem)) && (undefined === input.timeStampToReturn || 0 === input.timeStampToReturn || 1 === input.timeStampToReturn || 2 === input.timeStampToReturn || 3 === input.timeStampToReturn || 4 === input.timeStampToReturn) && (undefined === input.parameters || "object" === typeof input.parameters && null !== input.parameters && false === Array.isArray(input.parameters) && $io5(input.parameters));
                         const $io1 = input => (null === input.nodeId || undefined === input.nodeId || "string" === typeof input.nodeId || "number" === typeof input.nodeId || "object" === typeof input.nodeId && null !== input.nodeId && $io2(input.nodeId)) && (undefined === input.attributeId || "number" === typeof input.attributeId) && (undefined === input.indexRange || "object" === typeof input.indexRange && null !== input.indexRange && $io3(input.indexRange)) && (null === input.dataEncoding || undefined === input.dataEncoding || "string" === typeof input.dataEncoding || "object" === typeof input.dataEncoding && null !== input.dataEncoding && false === Array.isArray(input.dataEncoding) && $io4(input.dataEncoding));
@@ -385,11 +386,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('SubscriptGroupParam');
+                        throw validateError("SubscriptGroupParam");
                     }
                     break;
                 }
-                case '/subscript/item/single': {
+                case "/subscript/item/single": {
                     if ((input => {
                         const $io0 = input => "object" === typeof input.itemToMonitor && null !== input.itemToMonitor && false === Array.isArray(input.itemToMonitor) && $io1(input.itemToMonitor) && "string" === typeof input.displayName && (undefined === input.timeStampToReturn || 0 === input.timeStampToReturn || 1 === input.timeStampToReturn || 2 === input.timeStampToReturn || 3 === input.timeStampToReturn || 4 === input.timeStampToReturn) && (undefined === input.parameters || "object" === typeof input.parameters && null !== input.parameters && false === Array.isArray(input.parameters) && $io5(input.parameters));
                         const $io1 = input => (null === input.nodeId || undefined === input.nodeId || "string" === typeof input.nodeId || "number" === typeof input.nodeId || "object" === typeof input.nodeId && null !== input.nodeId && $io2(input.nodeId)) && (undefined === input.attributeId || "number" === typeof input.attributeId) && (undefined === input.indexRange || "object" === typeof input.indexRange && null !== input.indexRange && $io3(input.indexRange)) && (null === input.dataEncoding || undefined === input.dataEncoding || "string" === typeof input.dataEncoding || "object" === typeof input.dataEncoding && null !== input.dataEncoding && false === Array.isArray(input.dataEncoding) && $io4(input.dataEncoding));
@@ -418,11 +419,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('SubscriptSingleParam');
+                        throw validateError("SubscriptSingleParam");
                     }
                     break;
                 }
-                case '/subscript/item/delete': {
+                case "/subscript/item/delete": {
                     if ((input => {
                         return Array.isArray(input) && input.every(elem => "string" === typeof elem);
                     })(ctx.request.body)) {
@@ -430,11 +431,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('NodeID[]');
+                        throw validateError("NodeID[]");
                     }
                     break;
                 }
-                case '/subscript/terminate': {
+                case "/subscript/terminate": {
                     log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaInfos.terminateSub));
                     yield next();
                     break;
@@ -448,7 +449,7 @@ var AgentMiddleware;
     function certValidator(ctx, next) {
         return __awaiter(this, void 0, void 0, function* () {
             switch (ctx.request.body) {
-                case '/cert/create': {
+                case "/cert/create": {
                     if ((input => {
                         const $io0 = input => (undefined === input.outputFile || "string" === typeof input.outputFile) && (null !== input.subject && undefined !== input.subject && ("string" === typeof input.subject || "object" === typeof input.subject && null !== input.subject && false === Array.isArray(input.subject) && $io1(input.subject))) && "string" === typeof input.applicationUri && Array.isArray(input.dns) && input.startDate instanceof Date && "number" === typeof input.validity && (undefined === input.ip || Array.isArray(input.ip) && input.ip.every(elem => "string" === typeof elem)) && (undefined === input.endDate || input.endDate instanceof Date);
                         const $io1 = input => (undefined === input.commonName || "string" === typeof input.commonName) && (undefined === input.organization || "string" === typeof input.organization) && (undefined === input.organizationalUnit || "string" === typeof input.organizationalUnit) && (undefined === input.locality || "string" === typeof input.locality) && (undefined === input.state || "string" === typeof input.state) && (undefined === input.country || "string" === typeof input.country) && (undefined === input.domainComponent || "string" === typeof input.domainComponent);
@@ -459,22 +460,22 @@ var AgentMiddleware;
                             yield next();
                         }
                         else {
-                            throw new log_1.ClientError(ua_enums_1.UaSources.paramValidator, ua_enums_1.UaErrors.errorCertOptions, 'country too long');
+                            throw new log_1.ClientError(ua_enums_1.UaSources.paramValidator, ua_enums_1.UaErrors.errorCertOptions, "country too long");
                         }
                     }
                     else {
-                        throw validateError('CreateSelfSignCertificateParam1');
+                        throw validateError("CreateSelfSignCertificateParam1");
                     }
                     break;
                 }
-                case '/cert/trust_status' || '/cert/trust' || '/cert/reject': {
+                case "/cert/trust_status" || "/cert/trust" || "/cert/reject": {
                     if ((input => {
                         return input instanceof Buffer;
                     })(ctx.request.body)) {
                         yield next();
                     }
                     else {
-                        throw validateError('Buffer');
+                        throw validateError("Buffer");
                     }
                     break;
                 }
@@ -490,21 +491,21 @@ var AgentMiddleware;
                 /**
                  * @description 此处绑定了pipe的事件,并且当
                  */
-                case '/db/init': {
+                case "/db/init": {
                     if ((input => {
                         const $io0 = input => (0 === input.createMode || 1 === input.createMode || 2 === input.createMode || 3 === input.createMode || 4 === input.createMode || 5 === input.createMode || 6 === input.createMode || 7 === input.createMode) && (undefined === input.tableName || "string" === typeof input.tableName) && (undefined === input.fields || "object" === typeof input.fields && null !== input.fields && $io1(input.fields));
                         const $io1 = input => "string" === typeof input.serverF && "string" === typeof input.nodeIdF && "string" === typeof input.displayNameF && "string" === typeof input.statusCodeF && "string" === typeof input.sourceTimestampF && "string" === typeof input.serverTimestampF && "string" === typeof input.valueF && "string" === typeof input.dataTypeF;
                         return "object" === typeof input && null !== input && $io0(input);
                     })(ctx.request.body)) {
-                        util_1.DbUtils.validateDbName(ctx.request.body['tableName']);
+                        util_1.DbUtils.validateDbName(ctx.request.body["tableName"]);
                         yield next();
                     }
                     else {
-                        throw validateError('{createMode:TableCreateModes, tableName?:string, fields:IFieldNames}');
+                        throw validateError("{createMode:TableCreateModes, tableName?:string, fields:IFieldNames}");
                     }
                     break;
                 }
-                case '/db/insert': {
+                case "/db/insert": {
                     if ((input => {
                         const $io0 = input => "string" === typeof input.server && "string" === typeof input.nodeId && "string" === typeof input.displayName && "string" === typeof input.value && "string" === typeof input.dataType && "string" === typeof input.sourceTimestamp && "string" === typeof input.serverTimestamp && "string" === typeof input.statusCode;
                         return "object" === typeof input && null !== input && $io0(input);
@@ -512,11 +513,11 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('IDbData');
+                        throw validateError("IDbData");
                     }
                     break;
                 }
-                case '/db/insert_many': {
+                case "/db/insert_many": {
                     if ((input => {
                         const $io0 = input => "string" === typeof input.server && "string" === typeof input.nodeId && "string" === typeof input.displayName && "string" === typeof input.value && "string" === typeof input.dataType && "string" === typeof input.sourceTimestamp && "string" === typeof input.serverTimestamp && "string" === typeof input.statusCode;
                         return Array.isArray(input) && input.every(elem => "object" === typeof elem && null !== elem && $io0(elem));
@@ -524,29 +525,29 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('IDbData[]');
+                        throw validateError("IDbData[]");
                     }
                     break;
                 }
-                case '/db/create_table': {
+                case "/db/create_table": {
                     if ((input => {
                         const $io0 = input => (undefined === input.tableName || "string" === typeof input.tableName) && (undefined === input.fieldNames || "object" === typeof input.fieldNames && null !== input.fieldNames && $io1(input.fieldNames));
                         const $io1 = input => "string" === typeof input.serverF && "string" === typeof input.nodeIdF && "string" === typeof input.displayNameF && "string" === typeof input.statusCodeF && "string" === typeof input.sourceTimestampF && "string" === typeof input.serverTimestampF && "string" === typeof input.valueF && "string" === typeof input.dataTypeF;
                         return undefined === input || "object" === typeof input && null !== input && false === Array.isArray(input) && $io0(input);
                     })(ctx.request.body)) {
                         if (ctx.request.body) {
-                            if ('tableName' in ctx.request.body) {
-                                if (!util_1.DbUtils.validateDbName(ctx.request.body['tableName'])) {
-                                    throw new log_1.ClientError(ua_enums_1.UaSources.paramValidator, ua_enums_1.UaErrors.unFormatDbName, 'It cannot start with a number. The name can only contain: ' +
-                                        'Chinese characters, numbers, lowercase letters, underscores, and the length is within 2-15 characters');
+                            if ("tableName" in ctx.request.body) {
+                                if (!util_1.DbUtils.validateDbName(ctx.request.body["tableName"])) {
+                                    throw new log_1.ClientError(ua_enums_1.UaSources.paramValidator, ua_enums_1.UaErrors.unFormatDbName, "It cannot start with a number. The name can only contain: " +
+                                        "Chinese characters, numbers, lowercase letters, underscores, and the length is within 2-15 characters");
                                 }
                             }
-                            if ('fieldNames' in ctx.request.body && ctx.request.body['fieldNames']) {
+                            if ("fieldNames" in ctx.request.body && ctx.request.body["fieldNames"]) {
                                 let key;
-                                for (key in ctx.request.body['fieldNames']) {
-                                    if (!util_1.DbUtils.validateDbName(ctx.request.body['fieldNames'][key])) {
-                                        throw new log_1.ClientError(ua_enums_1.UaSources.paramValidator, ua_enums_1.UaErrors.unFormatDbName, 'It cannot start with a number. The name can only contain: ' +
-                                            'Chinese characters, numbers, lowercase letters, underscores, and the length is within 2-15 characters');
+                                for (key in ctx.request.body["fieldNames"]) {
+                                    if (!util_1.DbUtils.validateDbName(ctx.request.body["fieldNames"][key])) {
+                                        throw new log_1.ClientError(ua_enums_1.UaSources.paramValidator, ua_enums_1.UaErrors.unFormatDbName, "It cannot start with a number. The name can only contain: " +
+                                            "Chinese characters, numbers, lowercase letters, underscores, and the length is within 2-15 characters");
                                     }
                                 }
                             }
@@ -554,7 +555,7 @@ var AgentMiddleware;
                         yield next();
                     }
                     else {
-                        throw validateError('{ tableName?: string, fieldNames?: IFieldNames } | undefined');
+                        throw validateError("{ tableName?: string, fieldNames?: IFieldNames } | undefined");
                     }
                     break;
                 }
