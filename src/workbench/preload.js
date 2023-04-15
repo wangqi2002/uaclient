@@ -1,4 +1,4 @@
-const {ipcRenderer} = require("electron")
+const { ipcRenderer } = require("electron")
 
 // export let RendererEvents = {
 //     //main
@@ -7,6 +7,7 @@ const {ipcRenderer} = require("electron")
 //     mainClose: 'main:close',
 //     mainMenu: 'main:menu',
 // }
+ipcRenderer.send("project:opcua")
 window.addEventListener("DOMContentLoaded", () => {
     window.ipcRenderer = ipcRenderer
     // const minimizeButton = document.getElementById("minimize-btn");

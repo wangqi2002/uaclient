@@ -26,11 +26,11 @@ class Workbench extends stream_1.EventEmitter {
             defaultHeight: (electron_1.screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
         });
         this.createMainWindow(preload, homeViewPath, dev);
-        this.exsitViews = new Map();
+        this.existViews = new Map();
     }
     createMainWindow(preloadPath = path_1.default.join(__dirname, "../preload.js"), indexHtmlPath = path_1.default.join(__dirname, "./index.html"), dev = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            this.mainWindow = new electron_1.BrowserWindow(Object.assign(Object.assign({}, this.winState.winOptions), { frame: false, center: true, webPreferences: {
+            this.mainWindow = new electron_1.BrowserWindow(Object.assign(Object.assign({}, this.winState.winOptions), { frame: false, center: true, show: false, webPreferences: {
                     preload: path_1.default.join(__dirname, preloadPath),
                     devTools: true,
                     nodeIntegration: true,
@@ -46,6 +46,7 @@ class Workbench extends stream_1.EventEmitter {
                 this.mainWindow.show();
             });
             ipc_handler_1.MainHandler.initBind(this.mainWindow);
+
             this.winState.manage(this.mainWindow);
         });
     }
@@ -57,7 +58,7 @@ class Workbench extends stream_1.EventEmitter {
     }
     createView(viewId, viewUrl, rectangle = { x: 0, y: 0, width: 300, height: 300 }, isWebView = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (this.exsitViews.has(viewId)) {
+            if (this.existViews.has(viewId)) {
                 return false;
             }
             const browserView = new electron_1.BrowserView({
@@ -82,8 +83,8 @@ class Workbench extends stream_1.EventEmitter {
                 height: false,
             });
             // browserView.webContents.openDevTools()
-            this.bindCloseEvent(viewId, browserView);
-            this.exsitViews.set(viewId, browserView);
+            // this.bindCloseEvent(viewId, browserView)
+            this.existViews.set(viewId, browserView);
             this.emit("created:view." + viewId);
             return true;
         });
@@ -91,10 +92,8 @@ class Workbench extends stream_1.EventEmitter {
     getMainWindow() {
         return this.mainWindow;
     }
-    bindCloseEvent(viewId, view) {
-        electron_1.ipcMain.once("close:view." + viewId, () => {
-            view.webContents.close();
-        });
+    beforeClose() {
+        this.emit("close");
     }
 }
 exports.Workbench = Workbench;

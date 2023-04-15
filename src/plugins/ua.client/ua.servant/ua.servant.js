@@ -10,7 +10,7 @@ const subscript_router_1 = require("./routers/subscript.router");
 const certificate_router_1 = require("./routers/certificate.router");
 const db_router_1 = require("./routers/db.router");
 const error_middleware_1 = require("./middlewares/error.middleware");
-require('v8-compile-cache');
+// require('v8-compile-cache')
 //todo 性能调优/v8-compile-cache缓存,实现插件系统,模仿vscode的架构设计
 var Server;
 (function (Server) {
@@ -20,7 +20,7 @@ var Server;
         session_router_1.SessionRouter.router,
         subscript_router_1.SubscriptRouter.router,
         certificate_router_1.CertificateRouter.router,
-        db_router_1.DbRouter.router
+        db_router_1.DbRouter.router,
     ];
     function activateServer() {
         Server.app.use((0, koa_body_1.koaBody)());
@@ -28,10 +28,14 @@ var Server;
         routers.forEach((router) => {
             Server.app.use(router.routes());
         });
-        Server.app.listen(config_default_1.Config.port, () => {
-            console.log('complete');
-            Server.app.emit('serverCreated', config_default_1.Config.port);
-        });
+        try {
+            Server.app.listen(config_default_1.Config.port, () => {
+                console.log("complete");
+                Server.app.emit("serverCreated", config_default_1.Config.port);
+            });
+        }
+        catch (e) {
+        }
     }
     Server.activateServer = activateServer;
 })(Server = exports.Server || (exports.Server = {}));

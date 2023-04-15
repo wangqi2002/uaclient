@@ -1,28 +1,32 @@
+import { GlobalExtensionManager } from "./extend/extend"
 import { ModelAttributes } from "sequelize"
 import { Workbench } from "./../workbench/workbench"
-import path from "path"
 import { Broker } from "../platform/base/broker/broker"
-import { app, BrowserWindow, ipcMain } from "electron"
-import { ErrorHandler } from "../platform/base/error/error"
+import { app, BrowserWindow } from "electron"
+import { ErrorHandler } from "./error/error"
 import { ClientError, Log } from "../platform/base/log/log"
-import { MainHandler } from "../platform/ipc/handlers/ipc.handler"
 import async from "async"
 import { Persistence } from "../platform/base/persist/persistence"
-import { ClientConfig } from "./config"
-export class Client {
-    static workbench: Workbench
-    static broker: Broker
-    static logger: Log
-    static persistor: Persistence
-    static mainWindow: BrowserWindow
+import { ClientStore } from "./store/store"
+import { eventsBind } from "../platform/ipc/handlers/ipc.handler"
+import { rendererEvents } from "../platform/ipc/events/ipc.events"
+import { GlobalWorkspaceManager } from "./workspace/workspace"
+import { Utils } from "../platform/base/utils/utils"
+
+const path = require("path")
+
+class Client {
+    workbench!: Workbench
+    broker!: Broker
+    persist!: Persistence
+    mainWindow!: BrowserWindow
+    extensionManager!: GlobalExtensionManager
 
     constructor() {
         try {
             this.requestSingleInstance()
+            this.bindQuitEvents()
             this.startup()
-            ipcMain.on("client:quit", () => {
-                this.quit()
-            })
         } catch (e: any) {
             console.error(e.message)
             app.exit(1)
@@ -54,40 +58,67 @@ export class Client {
             await this.createWorkbench()
             await this.initServices()
         } catch (e: any) {
-            console.log("nice")
+            console.log("出错了")
             throw e
         }
     }
 
-    private initServices() {
+    private bindQuitEvents() {
+        eventsBind.benchBind(rendererEvents.benchEvents.quit, () => {
+            this.quit()
+        })
+        app.on("window-all-closed", () => {
+            this.quit()
+        })
+    }
+
+    private async createWorkbench() {
+        this.workbench = new Workbench(
+            path.join(__dirname, "../workbench/preload.js"),
+            path.join(__dirname, "../workbench/index.html"),
+            true
+        )
+        this.mainWindow = this.workbench.getMainWindow()
+        this.mainWindow.once("ready-to-show", () => {
+            this.mainWindow.show()
+        })
+        // app.on()
+    }
+
+    private async initServices() {
+        new ClientStore()
+        new GlobalWorkspaceManager()
+        //初始化其他服务依赖的存储服务等
         async.parallel([
             //初始化Broker中间转发者服务
             async () => {
-                Client.broker = new Broker()
+                this.broker = new Broker()
             },
-            //初始化Log日志服务
+            //初始化ORM服务
             async () => {
-                Client.logger = new Log()
-            },
-            //初始化持久化ORM服务
-            async () => {
-                let defaultAttributes = ClientConfig.get("modelAttribute") as ModelAttributes
-                Client.persistor = new Persistence(
-                    path.join(__dirname, "..", "..", "/databases/data.db"),
-                    "2023", //TODO 处理数据库自动命名的问题
+                let defaultAttributes: ModelAttributes = ClientStore.get("config", "modelAttribute")
+                this.persist = new Persistence(
+                    ClientStore.get("config", "dbpath"),
+                    Utils.formatDateYMW(new Date()), //TODO 处理数据库自动命名的问题
                     defaultAttributes
                 )
             },
             //初始化插件服务
-            async () => {},
+            async () => {
+                this.extensionManager = new GlobalExtensionManager(GlobalWorkspaceManager.getCurrentWSNames())
+            },
+            //初始化workspace
+            async () => {
+                let g = new GlobalWorkspaceManager()
+                // g.createDirAsWorkspace("F:\\idea_projects\\uaclient\\src", "space")
+            },
+            //初始化log服务
+            async () => {
+                new Log()
+            },
             //初始化postbox服务
             async () => {},
         ])
-    }
-
-    private createWorkbench() {
-        Client.workbench = new Workbench()
-        Client.mainWindow = Client.workbench.getMainWindow()
     }
 
     private setErrorHandler(errorHandler: (error: any) => void) {
@@ -98,9 +129,17 @@ export class Client {
         async.series([
             //终结broker转发者服务
             async () => {
-                Client.broker.terminateAllPipe()
+                this.broker.beforeClose()
+            },
+            //结束extensionManager服务
+            async () => {
+                this.extensionManager.beforeClose()
+            },
+            async () => {
+                this.workbench.beforeClose()
             },
         ])
+        app.quit()
     }
 }
-export const client = new Client()
+const client = new Client()

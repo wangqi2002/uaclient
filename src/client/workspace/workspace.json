@@ -1,0 +1,14 @@
+{
+    "workspaces": [
+        {
+            "workspaceName": "string",
+            "storagePath": "string",
+            "projects": []
+        }
+    ],
+    "currentWS": {
+        "workspaceName": "string",
+        "storagePath": "string",
+        "projects": []
+    }
+}

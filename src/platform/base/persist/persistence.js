@@ -11,7 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Persistence = void 0;
 const sequelize_1 = require("sequelize");
-const config_1 = require("../../../client/config");
+const store_1 = require("../../../client/store/store");
 class Persistence {
     constructor(storage, tableName, attributes, options) {
         try {
@@ -62,7 +62,7 @@ class Persistence {
             try {
                 if (conf) {
                     Persistence.sequelize = new sequelize_1.Sequelize(conf);
-                    config_1.ClientConfig.set(config_1.ConfigNames.persistence, conf);
+                    store_1.ClientStore.set("config", store_1.ConfigNames.persistence, conf);
                 }
                 if (tableName && attributes) {
                     Persistence.initDataModel(tableName, attributes);
