@@ -1,8 +1,8 @@
-import {app} from "electron"
-import {Configuration, configure, getLogger, Logger} from "log4js"
-import {MainEvents} from "../../ipc/events/ipc.events"
-import {eventsBind, mainEmit} from "../../ipc/handlers/ipc.handler"
-import {ClientStore, ConfigNames} from "../../../client/store/store"
+import { app } from 'electron'
+import { Configuration, configure, getLogger, Logger } from 'log4js'
+import { MainEvents } from '../../ipc/events/ipc.events'
+import { eventsBind, mainEmit } from '../../ipc/handlers/ipc.handler'
+import { ClientStore, ConfigNames } from '../../../client/store/store'
 
 type Source = string | undefined
 type Warn = string
@@ -51,9 +51,9 @@ export class ClientInfo extends InfoModel {
 }
 
 export class Log {
-    private static clientLogger: Logger = getLogger("client")
+    private static clientLogger: Logger = getLogger('client')
 
-    constructor(loggerName: loggerName = "client", config?: Configuration) {
+    constructor(loggerName: loggerName = 'client', config?: Configuration) {
         this.configureLog(config)
         eventsBind.logInitBind()
     }
@@ -97,19 +97,19 @@ export class Log {
     configureLog(conf?: Configuration) {
         try {
             if (conf) {
-                ClientStore.set("config", ConfigNames.log, conf)
+                ClientStore.set('config', ConfigNames.log, conf)
             } else {
                 conf = {
                     appenders: {
                         client: {
-                            type: "file",
-                            filename: app.getPath("appData") + "/logs/client.log",
+                            type: 'file',
+                            filename: app.getPath('appData') + '/logs/client.log',
                             maxLogSize: 50000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
                         },
                     },
-                    categories: { default: { appenders: ["client"], level: "info" } },
+                    categories: { default: { appenders: ['client'], level: 'info' } },
                 }
-                if (!ClientStore.has("config", ConfigNames.log)) ClientStore.set("config", ConfigNames.log, conf)
+                if (!ClientStore.has('config', ConfigNames.log)) ClientStore.set('config', ConfigNames.log, conf)
                 configure(conf)
             }
         } catch (e: any) {
@@ -118,4 +118,3 @@ export class Log {
     }
 }
 //todo 安装时,应当初始化log和database服务
-//todo 添加socket服务以供更多程序使用
