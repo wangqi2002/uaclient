@@ -1,12 +1,11 @@
-import {FindServersOnNetworkRequestOptions, MessageSecurityMode, OPCUAClient, OPCUAClientOptions,} from 'node-opcua'
-import {UaErrors, UaSources, UaWarns} from '../../common/ua.enums'
-import {SessionService} from './session.service'
-import {Config} from '../../config/config.default'
-import {EndpointParam} from '../models/params.model'
-import {ClientError, ClientWarn} from '../../../../platform/base/log/log'
+import { FindServersOnNetworkRequestOptions, MessageSecurityMode, OPCUAClient, OPCUAClientOptions } from 'node-opcua'
+import { UaErrors, UaSources, UaWarns } from '../../common/ua.enums'
+import { SessionService } from './session.service'
+import { Config } from '../../config/config.default'
+import { EndpointParam } from '../models/params.model'
+import { ClientError, ClientWarn } from '../../../../platform/base/log/log'
 
 export module ClientService {
-
     export let client!: OPCUAClient
     export let uaConnectionAlive: boolean = false
     export let currentServer: string = 'No Server'
@@ -62,12 +61,12 @@ export module ClientService {
             if (!endpoints) throw new ClientWarn(UaSources.clientService, UaWarns.endPointsNotExist)
             if (params && params['reduce']) {
                 let re = /^.*?#/
-                return endpoints.map(endpoint => ({
+                return endpoints.map((endpoint) => ({
                     endpointUrl: endpoint.endpointUrl,
                     securityMode: MessageSecurityMode[endpoint.securityMode].toString(),
                     securityPolicy: endpoint.securityPolicyUri
                         ? endpoint.securityPolicyUri.toString().replace(re, '')
-                        : undefined
+                        : undefined,
                 }))
             } else {
                 return endpoints

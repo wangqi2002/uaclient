@@ -1,6 +1,6 @@
-import {BrowserWindow, ipcMain, IpcMainEvent} from "electron"
-import {rendererEvents} from "../events/ipc.events"
-import {ClientError, ClientInfo, ClientWarn, Log} from "../../base/log/log"
+import { BrowserWindow, ipcMain, IpcMainEvent } from 'electron'
+import { rendererEvents } from '../events/ipc.events'
+import { ClientError, ClientInfo, ClientWarn, Log } from '../../base/log/log'
 
 export module eventsBind {
     export function workbenchInitBind(mainWindow: BrowserWindow) {

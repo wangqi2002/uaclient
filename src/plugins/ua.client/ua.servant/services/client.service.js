@@ -83,12 +83,12 @@ var ClientService;
                     throw new log_1.ClientWarn(ua_enums_1.UaSources.clientService, ua_enums_1.UaWarns.endPointsNotExist);
                 if (params && params['reduce']) {
                     let re = /^.*?#/;
-                    return endpoints.map(endpoint => ({
+                    return endpoints.map((endpoint) => ({
                         endpointUrl: endpoint.endpointUrl,
                         securityMode: node_opcua_1.MessageSecurityMode[endpoint.securityMode].toString(),
                         securityPolicy: endpoint.securityPolicyUri
                             ? endpoint.securityPolicyUri.toString().replace(re, '')
-                            : undefined
+                            : undefined,
                     }));
                 }
                 else {

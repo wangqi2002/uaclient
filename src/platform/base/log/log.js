@@ -40,7 +40,7 @@ class ClientInfo extends InfoModel {
 }
 exports.ClientInfo = ClientInfo;
 class Log {
-    constructor(loggerName = "client", config) {
+    constructor(loggerName = 'client', config) {
         this.configureLog(config);
         ipc_handler_1.eventsBind.logInitBind();
     }
@@ -78,21 +78,21 @@ class Log {
     configureLog(conf) {
         try {
             if (conf) {
-                store_1.ClientStore.set("config", store_1.ConfigNames.log, conf);
+                store_1.ClientStore.set('config', store_1.ConfigNames.log, conf);
             }
             else {
                 conf = {
                     appenders: {
                         client: {
-                            type: "file",
-                            filename: electron_1.app.getPath("appData") + "/logs/client.log",
+                            type: 'file',
+                            filename: electron_1.app.getPath('appData') + '/logs/client.log',
                             maxLogSize: 50000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
                         },
                     },
-                    categories: { default: { appenders: ["client"], level: "info" } },
+                    categories: { default: { appenders: ['client'], level: 'info' } },
                 };
-                if (!store_1.ClientStore.has("config", store_1.ConfigNames.log))
-                    store_1.ClientStore.set("config", store_1.ConfigNames.log, conf);
+                if (!store_1.ClientStore.has('config', store_1.ConfigNames.log))
+                    store_1.ClientStore.set('config', store_1.ConfigNames.log, conf);
                 (0, log4js_1.configure)(conf);
             }
         }
@@ -102,6 +102,5 @@ class Log {
     }
 }
 exports.Log = Log;
-Log.clientLogger = (0, log4js_1.getLogger)("client");
+Log.clientLogger = (0, log4js_1.getLogger)('client');
 //todo 安装时,应当初始化log和database服务
-//todo 添加socket服务以供更多程序使用

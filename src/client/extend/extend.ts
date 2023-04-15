@@ -7,13 +7,20 @@ import { ExtensionActivator } from './activator'
 import { eventsBind } from '../../platform/ipc/handlers/ipc.handler'
 import { rendererEvents } from '../../platform/ipc/events/ipc.events'
 import { workspace } from '../workspace/workspace'
-import child_process from 'child_process'
 import path from 'path'
+import { ProcessManager } from '../process/process'
+import { moduleName } from '../enums'
 
 type extensionStorage = string
 type extensionActivateEvent = string
 type workspaceName = string
+type closeFunction = () => void
 
+// export type IGlobalExtensionManager = {
+//     extensionManagers: IExtensionManager[]
+//     projectExtends: string[]
+//     globalExtensionManager: IExtensionManager
+// }
 export interface IExtensionIdentifier {
     id: string
     uuid: string | null
@@ -30,10 +37,12 @@ export interface IMainExtension {
 
 export interface IExtensionManager {
     attributes: workspace
+    onStart: string[]
     enabledExtensions: IMainExtension[]
     disabledExtensions: IMainExtension[]
 }
-export interface IExtensionManagers {
+export interface IGlobalExtensionManager {
+    projectExtends: string[]
     extensionManagers: IExtensionManager[]
     globalExtensionManager: IExtensionManager
 }
@@ -41,27 +50,38 @@ export interface IExtensionManagers {
 function verifyStoragePath(path: string) {
     return existsSync(path)
 }
-class ExtensionManager extends EventEmitter implements IExtensionManager {
+export class ExtensionManager extends EventEmitter implements IExtensionManager {
     attributes: workspace
     enabledExtensions: IMainExtension[]
     disabledExtensions: IMainExtension[]
+    onStart: string[]
+    static onClose: closeFunction[]
 
-    constructor(attributes: IExtensionManager) {
+    constructor(manager: IExtensionManager) {
         super()
-        this.attributes = attributes.attributes
-        this.enabledExtensions = attributes.enabledExtensions
-        this.disabledExtensions = attributes.disabledExtensions
+        this.attributes = manager.attributes
+        this.enabledExtensions = manager.enabledExtensions
+        this.disabledExtensions = manager.disabledExtensions
+        this.onStart = manager.onStart
+        ExtensionManager.onClose = []
         this.loadExtensions()
+    }
+
+    static registerCloseFunction(func: closeFunction) {
+        ExtensionManager.onClose.push(func)
     }
 
     async loadExtensions() {
         this.enabledExtensions.forEach((extension: IMainExtension, index: number) => {
-            // this.bindActivateEvents(extension)
-            if (verifyStoragePath(extension.storage)) {
-                this.bindActivateEvents(extension)
+            if (this.onStart.includes(extension.identifier.id)) {
+                ExtensionActivator.activate(extension)
             } else {
-                delete this.enabledExtensions[index]
-                this.emit('extension-invalid', extension)
+                if (verifyStoragePath(extension.storage)) {
+                    this.bindActivateEvents(extension)
+                } else {
+                    delete this.enabledExtensions[index]
+                    this.emit('extension-invalid', extension)
+                }
             }
         })
     }
@@ -131,6 +151,12 @@ class ExtensionManager extends EventEmitter implements IExtensionManager {
             this.attributes = attributes
         }
     }
+
+    beforeClose() {
+        ExtensionManager.onClose.forEach((func) => {
+            func()
+        })
+    }
 }
 export class GlobalExtensionManager {
     workspace: workspace
@@ -176,11 +202,11 @@ export class GlobalExtensionManager {
     }
 
     loadAllManagers() {
-        let managers: IExtensionManagers = {
+        let managers: IGlobalExtensionManager = {
+            projectExtends: ClientStore.get(this.extensionStore, 'projectExtends'),
             extensionManagers: ClientStore.get(this.extensionStore, 'extensionManagers'),
             globalExtensionManager: ClientStore.get(this.extensionStore, 'globalExtensionManager'),
         }
-
         managers.extensionManagers.forEach((IManager) => {
             if (IManager.attributes.workspaceName == this.workspace.workspaceName) {
                 this.currentManager = new ExtensionManager(IManager)
@@ -202,7 +228,7 @@ export class GlobalExtensionManager {
 
     //启动activator.js文件作为一个子进程存在
     initActivator() {
-        child_process.fork(path.join(__dirname, './activator.js'))
+        ProcessManager.createChildProcess(path.join(__dirname, './activator.js'), moduleName.extensionActivator)
     }
 
     /**
@@ -243,6 +269,7 @@ export class GlobalExtensionManager {
                         workspaceName: workspace,
                         storagePath: storage,
                     },
+                    onStart: [],
                     enabledExtensions: [],
                     disabledExtensions: [],
                 }
@@ -254,6 +281,7 @@ export class GlobalExtensionManager {
     createNewManagerForWS() {
         let manager: IExtensionManager = {
             attributes: this.workspace,
+            onStart: [],
             enabledExtensions: [],
             disabledExtensions: [],
         }
@@ -285,6 +313,7 @@ export class GlobalExtensionManager {
 
     beforeClose() {
         this.updateStoreOfManagers()
+        this.currentManager.beforeClose()
         ExtensionActivator.beforeClose()
     }
 }

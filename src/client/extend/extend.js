@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GlobalExtensionManager = void 0;
+exports.GlobalExtensionManager = exports.ExtensionManager = void 0;
 const workspace_1 = require("./../workspace/workspace");
 const store_1 = require("../store/store");
 const fs_1 = require("fs");
@@ -22,24 +22,38 @@ const activator_1 = require("./activator");
 const ipc_handler_1 = require("../../platform/ipc/handlers/ipc.handler");
 const ipc_events_1 = require("../../platform/ipc/events/ipc.events");
 const path_1 = __importDefault(require("path"));
+const process_1 = require("../process/process");
+const enums_1 = require("../enums");
+function verifyStoragePath(path) {
+    return (0, fs_1.existsSync)(path);
+}
 class ExtensionManager extends events_1.default {
-    constructor(attributes) {
+    constructor(manager) {
         super();
-        this.attributes = attributes.attributes;
-        this.enabledExtensions = attributes.enabledExtensions;
-        this.disabledExtensions = attributes.disabledExtensions;
+        this.attributes = manager.attributes;
+        this.enabledExtensions = manager.enabledExtensions;
+        this.disabledExtensions = manager.disabledExtensions;
+        this.onStart = manager.onStart;
+        ExtensionManager.onClose = [];
         this.loadExtensions();
+    }
+    static registerCloseFunction(func) {
+        ExtensionManager.onClose.push(func);
     }
     loadExtensions() {
         return __awaiter(this, void 0, void 0, function* () {
             this.enabledExtensions.forEach((extension, index) => {
-                // this.bindActivateEvents(extension)
-                if (verifyStoragePath(extension.storage)) {
-                    this.bindActivateEvents(extension);
+                if (this.onStart.includes(extension.identifier.id)) {
+                    activator_1.ExtensionActivator.activate(extension);
                 }
                 else {
-                    delete this.enabledExtensions[index];
-                    this.emit('extension-invalid', extension);
+                    if (verifyStoragePath(extension.storage)) {
+                        this.bindActivateEvents(extension);
+                    }
+                    else {
+                        delete this.enabledExtensions[index];
+                        this.emit('extension-invalid', extension);
+                    }
                 }
             });
         });
@@ -96,7 +110,7 @@ class ExtensionManager extends events_1.default {
         extension.onEvents.forEach((event) => {
             //todo 修改考虑插件的项目数据恢复
             electron_1.ipcMain.once(event, () => __awaiter(this, void 0, void 0, function* () {
-                activator_1.ExtensionActivator.activateExtension(extension);
+                activator_1.ExtensionActivator.activate(extension);
             }));
         });
     }
@@ -105,13 +119,18 @@ class ExtensionManager extends events_1.default {
             this.attributes = attributes;
         }
     }
+    beforeClose() {
+        ExtensionManager.onClose.forEach((func) => {
+            func();
+        });
+    }
 }
+exports.ExtensionManager = ExtensionManager;
 class GlobalExtensionManager {
     constructor(workspace) {
         this.extensionStore = 'extensions';
         this.workspace = workspace;
         this.extensionManagers = new Map();
-        this.activator = new activator_1.ExtensionActivator();
         store_1.ClientStore.create({
             name: this.extensionStore,
             fileExtension: 'json',
@@ -120,6 +139,7 @@ class GlobalExtensionManager {
             clearInvalidConfig: true,
         });
         this.hookRequire(path_1.default.join(__dirname, '..', '..', '/platform/platform'));
+        this.initActivator();
         this.loadAllManagers();
         this.bindEventsToMain();
     }
@@ -143,6 +163,7 @@ class GlobalExtensionManager {
     }
     loadAllManagers() {
         let managers = {
+            projectExtends: store_1.ClientStore.get(this.extensionStore, 'projectExtends'),
             extensionManagers: store_1.ClientStore.get(this.extensionStore, 'extensionManagers'),
             globalExtensionManager: store_1.ClientStore.get(this.extensionStore, 'globalExtensionManager'),
         };
@@ -163,6 +184,10 @@ class GlobalExtensionManager {
         this.currentManager.on('extension-invalid', (extension) => {
             console.log(extension.identifier);
         });
+    }
+    //启动activator.js文件作为一个子进程存在
+    initActivator() {
+        process_1.ProcessManager.createChildProcess(path_1.default.join(__dirname, './activator.js'), enums_1.moduleName.extensionActivator);
     }
     /**
      * @description 将插件相关的所有事件绑定到主进程上面,并且制定了相关listener
@@ -198,6 +223,7 @@ class GlobalExtensionManager {
                         workspaceName: workspace,
                         storagePath: storage,
                     },
+                    onStart: [],
                     enabledExtensions: [],
                     disabledExtensions: [],
                 };
@@ -208,6 +234,7 @@ class GlobalExtensionManager {
     createNewManagerForWS() {
         let manager = {
             attributes: this.workspace,
+            onStart: [],
             enabledExtensions: [],
             disabledExtensions: [],
         };
@@ -237,11 +264,9 @@ class GlobalExtensionManager {
     }
     beforeClose() {
         this.updateStoreOfManagers();
-        this.activator.beforeClose();
+        this.currentManager.beforeClose();
+        activator_1.ExtensionActivator.beforeClose();
     }
 }
 exports.GlobalExtensionManager = GlobalExtensionManager;
-function verifyStoragePath(path) {
-    return (0, fs_1.existsSync)(path);
-}
 //todo platform中的服务都是提供给插件可以使用的,应该重构代码模块

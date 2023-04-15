@@ -1,13 +1,15 @@
 import EventEmitter from 'events'
 import { Worker } from 'worker_threads'
-import { IExtensionIdentifier, IMainExtension } from './extend'
+import { ExtensionManager, IExtensionIdentifier, IMainExtension } from './extend'
 
 type extensionId = string
+
 export interface extensionInstance {
     activate: () => void
     beforeClose: () => boolean
     actualEntrance: string
 }
+
 export interface extensionInstanceManager {
     identifier: IExtensionIdentifier
     worker: Worker
@@ -30,6 +32,7 @@ export class ExtensionActivator {
         let { activate, beforeClose, actualEntrance } = require(extension.storage)
         try {
             await activate()
+            ExtensionManager.registerCloseFunction(beforeClose)
             ExtensionActivator.extensionInstanceManagers.set(extension.identifier.id, {
                 identifier: extension.identifier,
                 worker: new Worker(actualEntrance),
@@ -64,6 +67,7 @@ export class ExtensionActivator {
         )
     }
 }
+
 const activator = new ExtensionActivator()
 ExtensionActivator.events.on('activate', (extension: IMainExtension) => {
     activator.doActivateExtension(extension)

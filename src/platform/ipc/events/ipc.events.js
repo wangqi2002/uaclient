@@ -14,6 +14,7 @@ var rendererEvents;
     (function (extensionEvents) {
         extensionEvents["install"] = "render:extension.install";
         extensionEvents["uninstall"] = "render:extension.uninstall";
+        extensionEvents["activate"] = "render:extension.activate";
     })(extensionEvents = rendererEvents.extensionEvents || (rendererEvents.extensionEvents = {}));
     let workspaceEvents;
     (function (workspaceEvents) {

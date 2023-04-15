@@ -10,17 +10,17 @@ import {
     ReferenceDescription,
     UserIdentityInfo,
     UserTokenType,
-    WriteValueOptions
+    WriteValueOptions,
 } from 'node-opcua'
-import {UaErrors, UaSources, UaWarns} from '../../common/ua.enums'
-import {ClientService} from './client.service'
-import {is} from 'typia'
-import {HistoryValueParam} from '../models/params.model'
-import {ClientError, ClientWarn} from '../../../../platform/base/log/log'
+import { UaErrors, UaSources, UaWarns } from '../../common/ua.enums'
+import { ClientService } from './client.service'
+import { is } from 'typia'
+import { HistoryValueParam } from '../models/params.model'
+import { ClientError, ClientWarn } from '../../../../platform/base/log/log'
 
 export module SessionService {
     export let session!: ClientSession
-    export let userIdentity: UserIdentityInfo = {type: UserTokenType.Anonymous}
+    export let userIdentity: UserIdentityInfo = { type: UserTokenType.Anonymous }
 
     export async function createSession(userInfo?: UserIdentityInfo) {
         try {
@@ -109,7 +109,8 @@ export module SessionService {
         try {
             if (is<BrowseDescriptionOptions>(nodeToBrowse) && 'resultMask' in nodeToBrowse) {
                 nodeToBrowse.resultMask = makeResultMask(
-                    'ReferenceType | IsForward | BrowseName | NodeClass | TypeDefinition')
+                    'ReferenceType | IsForward | BrowseName | NodeClass | TypeDefinition'
+                )
             }
             let result = await session.browse(nodeToBrowse)
             if (browseNext && result.continuationPoint) {
@@ -136,7 +137,7 @@ export module SessionService {
 
     export async function readHistoryValue(param: HistoryValueParam) {
         try {
-            let {nodeToRead, start, end, options} = param
+            let { nodeToRead, start, end, options } = param
             if (options) return await session.readHistoryValue(nodeToRead, start, end, options)
             return await session.readHistoryValue(nodeToRead, start, end)
         } catch (e: any) {
