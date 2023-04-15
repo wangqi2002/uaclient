@@ -1,0 +1,64 @@
+/* topBar */
+.top-container {
+    text-align: center;
+}
+.top-container .topLeft {
+    left: 0;
+}
+.logo{
+    height: var(--top-bar-height - 10px);
+    line-height: var(--top-bar-height - 10px);
+    margin: 5px 0;
+    float: left;
+}
+.top-container .el-menu-demo {
+    width: auto;
+    height: var(--top-bar-height);
+    float: left;
+    -webkit-app-region: no-drag;
+    font-size: 14px;
+}
+.top-container .el-menu--horizontal > .el-submenu .el-submenu__title {
+    position: relative;
+    height: var(--top-bar-height);
+    line-height: var(--top-bar-height);
+    color: #909399;
+    padding: 0 12px;
+}
+.top-container .el-submenu__title i {
+    display: none;
+}
+.top-container .el-menu--popup-bottom-start {
+    margin-top: 0px;
+}
+.searchBox {
+    width: 300px;
+    line-height: calc(var(--top-bar-height) - 4px);
+    margin-top: 2px;
+    text-align: center;
+    -webkit-app-region: no-drag;
+}
+.searchBox .el-input__inner {
+    height: calc(var(--top-bar-height) - 6px) !important;
+    border-radius: 15px;
+}
+.searchBox input::-ms-input-placeholder {
+    text-align: center;
+}
+.searchBox input::-webkit-input-placeholder {
+    text-align: center;
+}
+.operationBox {
+    width: auto;
+    height: var(--top-bar-height);
+    line-height: var(--top-bar-height);
+    margin-right: 5px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    -webkit-app-region: no-drag;
+}
+.operationBox > i {
+    margin: auto 10px;
+    font-size: 16px;
+}

@@ -33,16 +33,20 @@ class Workbench extends stream_1.EventEmitter {
             this.mainWindow = new electron_1.BrowserWindow(Object.assign(Object.assign({}, this.winState.winOptions), { frame: false, center: true, show: false, webPreferences: {
                     preload: path_1.default.join(__dirname, preloadPath),
                     devTools: true,
-                    contextIsolation: false,
                     nodeIntegration: true,
+                    contextIsolation: false,
                 } }));
             if (dev) {
                 this.mainWindow.webContents.openDevTools();
             }
-            this.mainWindow.webContents;
-            // await this.mainWindow.loadFile(indexHtmlPath)
-            yield this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app");
-            ipc_handler_1.eventsBind.workbenchInitBind(this.mainWindow);
+            this.mainWindow.webContents.openDevTools();
+            yield this.mainWindow.loadFile(indexHtmlPath);
+            // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
+            this.mainWindow.once("ready-to-show", () => {
+                this.mainWindow.show();
+            });
+            ipc_handler_1.MainHandler.initBind(this.mainWindow);
+
             this.winState.manage(this.mainWindow);
         });
     }

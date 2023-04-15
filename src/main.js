@@ -2,9 +2,10 @@ const { app, Menu } = require("electron")
 const path = require("path")
 require("v8-compile-cache")
 const product = require("./client/product.json")
-const userDataPath = getUserDataPath()
 
-const workspacePath = app.setPath("userData", userDataPath)
+// const userDataPath = getUserDataPath()
+
+// const workspacePath = app.setPath("userData", userDataPath)
 Menu.setApplicationMenu(null)
 const codeCachePath = getCodeCachePath()
 

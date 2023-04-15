@@ -34,17 +34,20 @@ export class Workbench extends EventEmitter {
             webPreferences: {
                 preload: path.join(__dirname, preloadPath),
                 devTools: true,
-                contextIsolation: false,
-                nodeIntegration: true,
+                nodeIntegration:true,
+                contextIsolation:false,
             },
         })
         if (dev) {
             this.mainWindow.webContents.openDevTools()
         }
-        this.mainWindow.webContents
-        // await this.mainWindow.loadFile(indexHtmlPath)
-        await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
-        eventsBind.workbenchInitBind(this.mainWindow)
+        this.mainWindow.webContents.openDevTools()
+        await this.mainWindow.loadFile(indexHtmlPath)
+        // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
+        this.mainWindow.once("ready-to-show", () => {
+            this.mainWindow.show()
+        })
+        MainHandler.initBind(this.mainWindow)
         this.winState.manage(this.mainWindow)
     }
 
