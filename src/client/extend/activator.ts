@@ -1,34 +1,70 @@
+import EventEmitter from 'events'
 import { Worker } from 'worker_threads'
-import { IMainExtension } from './extend'
+import { IExtensionIdentifier, IMainExtension } from './extend'
 
-type workerId = string
+type extensionId = string
+export interface extensionInstance {
+    activate: () => void
+    beforeClose: () => boolean
+    actualEntrance: string
+}
+export interface extensionInstanceManager {
+    identifier: IExtensionIdentifier
+    worker: Worker
+    instance: extensionInstance
+}
+
 export class ExtensionActivator {
-    static runningWorkers: Map<workerId, Worker>
+    static events: EventEmitter
+    static extensionInstanceManagers: Map<extensionId, extensionInstanceManager>
 
-    constructor() {}
-    //通过vm2沙箱执行插件文件
-    static async activateExtension(extension: IMainExtension) {
-        ExtensionActivator.runningWorkers.set(
-            extension.identifier.id,
-            new Worker('./src/client/run.js', { workerData: extension.storage })
+    constructor() {
+        ExtensionActivator.extensionInstanceManagers = new Map()
+    }
+
+    static activate(extension: IMainExtension) {
+        ExtensionActivator.events.emit('activate', extension)
+    }
+
+    async doActivateExtension(extension: IMainExtension) {
+        let { activate, beforeClose, actualEntrance } = require(extension.storage)
+        try {
+            await activate()
+            ExtensionActivator.extensionInstanceManagers.set(extension.identifier.id, {
+                identifier: extension.identifier,
+                worker: new Worker(actualEntrance),
+                instance: {
+                    activate: activate,
+                    beforeClose: beforeClose,
+                    actualEntrance: actualEntrance,
+                },
+            })
+        } catch (e: any) {
+            throw e
+        }
+    }
+
+    static terminateExtensionInstance(extensionId: string) {
+        let instance = ExtensionActivator.extensionInstanceManagers.get(extensionId)
+        try {
+            if (instance) {
+                instance.instance.beforeClose()
+                instance.worker.terminate()
+            }
+        } catch (e: any) {
+            throw e
+        }
+    }
+
+    static beforeClose() {
+        ExtensionActivator.extensionInstanceManagers.forEach(
+            (instance: extensionInstanceManager, extensionId: string) => {
+                ExtensionActivator.terminateExtensionInstance(extensionId)
+            }
         )
     }
-
-    static activateThis(start: () => void, beforeClose: () => void) {
-        new Worker(__dirname)
-    }
-
-    static runFile(path: string) {}
-
-    killWorker(workerId: string) {
-        let worker = ExtensionActivator.runningWorkers.get(workerId)
-        ExtensionActivator.runningWorkers.delete(workerId)
-        worker?.terminate()
-    }
-
-    beforeClose() {
-        ExtensionActivator.runningWorkers.forEach((value: Worker, workerId: string) => {
-            this.killWorker(workerId)
-        })
-    }
 }
+const activator = new ExtensionActivator()
+ExtensionActivator.events.on('activate', (extension: IMainExtension) => {
+    activator.doActivateExtension(extension)
+})

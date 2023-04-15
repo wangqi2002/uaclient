@@ -7,10 +7,12 @@ import { ExtensionActivator } from './activator'
 import { eventsBind } from '../../platform/ipc/handlers/ipc.handler'
 import { rendererEvents } from '../../platform/ipc/events/ipc.events'
 import { workspace } from '../workspace/workspace'
+import child_process from 'child_process'
 import path from 'path'
 
 type extensionStorage = string
 type extensionActivateEvent = string
+type workspaceName = string
 
 export interface IExtensionIdentifier {
     id: string
@@ -22,8 +24,6 @@ export interface IMainExtension {
     engine: string
     identifier: IExtensionIdentifier
     storage: extensionStorage
-    renderPath: string | null
-    isJsExtension: boolean
     onEvents: extensionActivateEvent[]
     projectExtend: string[]
 }
@@ -36,6 +36,10 @@ export interface IExtensionManager {
 export interface IExtensionManagers {
     extensionManagers: IExtensionManager[]
     globalExtensionManager: IExtensionManager
+}
+
+function verifyStoragePath(path: string) {
+    return existsSync(path)
 }
 class ExtensionManager extends EventEmitter implements IExtensionManager {
     attributes: workspace
@@ -117,7 +121,7 @@ class ExtensionManager extends EventEmitter implements IExtensionManager {
         extension.onEvents.forEach((event) => {
             //todo 修改考虑插件的项目数据恢复
             ipcMain.once(event, async () => {
-                ExtensionActivator.activateExtension(extension)
+                ExtensionActivator.activate(extension)
             })
         })
     }
@@ -128,26 +132,24 @@ class ExtensionManager extends EventEmitter implements IExtensionManager {
         }
     }
 }
-
 export class GlobalExtensionManager {
     workspace: workspace
-    extensionManagers: Map<string, IExtensionManager>
+    extensionManagers: Map<workspaceName, IExtensionManager>
     currentManager!: ExtensionManager
-    activator: ExtensionActivator
     extensionStore = 'extensions'
 
     constructor(workspace: workspace) {
         this.workspace = workspace
         this.extensionManagers = new Map()
-        this.activator = new ExtensionActivator()
         ClientStore.create({
             name: this.extensionStore,
             fileExtension: 'json',
-            cwd: app.getPath('appData'),
-            // cwd: "C:\\Users\\Administrator\\Desktop\\client.data",
+            // cwd: app.getPath('appData'),
+            cwd: 'C:\\Users\\Administrator\\Desktop\\client.data',
             clearInvalidConfig: true,
         })
         this.hookRequire(path.join(__dirname, '..', '..', '/platform/platform'))
+        this.initActivator()
         this.loadAllManagers()
         this.bindEventsToMain()
     }
@@ -196,6 +198,11 @@ export class GlobalExtensionManager {
         this.currentManager.on('extension-invalid', (extension: IMainExtension) => {
             console.log(extension.identifier)
         })
+    }
+
+    //启动activator.js文件作为一个子进程存在
+    initActivator() {
+        child_process.fork(path.join(__dirname, './activator.js'))
     }
 
     /**
@@ -278,12 +285,8 @@ export class GlobalExtensionManager {
 
     beforeClose() {
         this.updateStoreOfManagers()
-        this.activator.beforeClose()
+        ExtensionActivator.beforeClose()
     }
-}
-
-function verifyStoragePath(path: string) {
-    return existsSync(path)
 }
 
 //todo platform中的服务都是提供给插件可以使用的,应该重构代码模块

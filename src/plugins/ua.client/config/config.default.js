@@ -13,17 +13,13 @@ let Path = require('path');
 var Config;
 (function (Config) {
     dotenv.config({
-        path: Path.join(__dirname, "..", "..", "..", "..", ".env").toString()
+        path: Path.join(__dirname, '..', '..', '..', '..', '.env').toString(),
     });
-    Config.port = process.env.APP_PORT
-        ? process.env.APP_PORT
-        : 3030;
-    Config.mqLength = process.env.MQ_LENGTH
-        ? process.env.MQ_LENGTH
-        : 200;
-    Config.dbPath = Path.join(__dirname, "..", "..", "..", "..", process.env.DB_PATH)
-        ? Path.join(__dirname, "..", "..", "..", "..", process.env.DB_PATH).toString()
-        : Path.join(__dirname, "..", "..", "..", "..", "/databases/data.db").toString();
+    Config.port = process.env.APP_PORT ? process.env.APP_PORT : 3030;
+    Config.mqLength = process.env.MQ_LENGTH ? process.env.MQ_LENGTH : 200;
+    Config.dbPath = Path.join(__dirname, '..', '..', '..', '..', process.env.DB_PATH)
+        ? Path.join(__dirname, '..', '..', '..', '..', process.env.DB_PATH).toString()
+        : Path.join(__dirname, '..', '..', '..', '..', '/databases/data.db').toString();
     Config.defaultTable = util_1.DbUtils.formatDateYMW(new Date());
     Config.certRoot = path_1.default.join(__dirname, '..', '..', 'ua.client', 'certificates', 'PKI');
     Config.defaultAttributes = {
@@ -92,11 +88,11 @@ var Config;
         appenders: {
             client: {
                 type: 'file',
-                filename: Path.join(__dirname, "..", "..", "..", "..", '/logs/client.log'),
+                filename: Path.join(__dirname, '..', '..', '..', '..', '/logs/client.log'),
                 maxLogSize: 50000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
-            }
+            },
         },
-        categories: { default: { appenders: ['client'], level: 'info' } }
+        categories: { default: { appenders: ['client'], level: 'info' } },
     };
     Config.defaultPipeName = 'ua';
 })(Config = exports.Config || (exports.Config = {}));

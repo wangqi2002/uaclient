@@ -115,8 +115,8 @@ class GlobalExtensionManager {
         store_1.ClientStore.create({
             name: this.extensionStore,
             fileExtension: 'json',
-            cwd: electron_1.app.getPath('appData'),
-            // cwd: "C:\\Users\\Administrator\\Desktop\\client.data",
+            // cwd: app.getPath('appData'),
+            cwd: 'C:\\Users\\Administrator\\Desktop\\client.data',
             clearInvalidConfig: true,
         });
         this.hookRequire(path_1.default.join(__dirname, '..', '..', '/platform/platform'));

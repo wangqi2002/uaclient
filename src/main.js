@@ -1,11 +1,11 @@
-const { app, Menu } = require("electron")
-const path = require("path")
-require("v8-compile-cache")
-const product = require("./client/product.json")
+const { app, Menu } = require('electron')
+const path = require('path')
+require('v8-compile-cache')
+const product = require('./client/product.json')
 
-// const userDataPath = getUserDataPath()
+const userDataPath = getUserDataPath()
 
-// const workspacePath = app.setPath("userData", userDataPath)
+const workspacePath = app.setPath('userData', userDataPath)
 Menu.setApplicationMenu(null)
 const codeCachePath = getCodeCachePath()
 
@@ -18,7 +18,7 @@ app.whenReady().then(() => {
 })
 
 function startUp(cachePath, workspacePath, appDataPath, config) {
-    require("./client/client")
+    require('./client/client')
 }
 
 async function onReady() {
@@ -26,9 +26,9 @@ async function onReady() {
 }
 
 function getUserDataPath() {
-    let path = product["userData"]
+    let path = product['userData']
     if (!path) {
-        path = app.getPath("userData")
+        path = app.getPath('userData')
     }
     return path
 }
@@ -38,7 +38,7 @@ function getCodeCachePath() {
     if (!commit) {
         return undefined
     }
-    return path.join(userDataPath, "CacheData", commit)
+    return path.join(userDataPath, 'CacheData', commit)
 }
 
 // export function createPKI() {
