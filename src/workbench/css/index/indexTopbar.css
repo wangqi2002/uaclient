@@ -1,19 +1,29 @@
 /* topBar */
-.top-container{
+.top-container {
     text-align: center;
+}
+.top-container .topLeft {
+    left: 0;
+}
+.logo{
+    height: var(--top-bar-height - 10px);
+    line-height: var(--top-bar-height - 10px);
+    margin: 5px 0;
+    float: left;
 }
 .top-container .el-menu-demo {
     width: auto;
     height: var(--top-bar-height);
-    position: fixed;
-    left: 0;
+    float: left;
     -webkit-app-region: no-drag;
+    font-size: 14px;
 }
 .top-container .el-menu--horizontal > .el-submenu .el-submenu__title {
     position: relative;
     height: var(--top-bar-height);
     line-height: var(--top-bar-height);
     color: #909399;
+    padding: 0 12px;
 }
 .top-container .el-submenu__title i {
     display: none;

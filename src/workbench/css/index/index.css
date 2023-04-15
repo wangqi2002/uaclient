@@ -12,7 +12,11 @@
     --sub-view-minheight: 50px;
     --left-bar-width: 50px;
     --right-bar-width: 26px;
+
     --font-color: #a69e9f;
+    --font-size-level1: 16px;
+    --font-size-level2: 14px;
+    --font-size-level3: 12px;
 }
 
 /* 框架 */
@@ -30,7 +34,7 @@
 header {
     width: 100%;
     height: var(--top-bar-height);
-    background-color: #EAEAEB;
+    background-color: #eaeaeb;
     position: relative;
     overflow: hidden;
 }
@@ -43,14 +47,14 @@ header {
     min-width: var(--left-view-minwidth);
     position: relative;
     overflow: hidden;
-    background-color: #EAEAEB;
+    background-color: #eaeaeb;
 }
 .subview.subviewRight {
     min-width: var(--right-view-minwidth);
 }
 .main {
     flex: 1;
-    background-color: #FAFAFA;
+    background-color: #fafafa;
     display: flex;
     flex-direction: column;
 }
@@ -61,8 +65,8 @@ header {
 .main-bottom {
     width: 100%;
     min-height: var(--log-view-minheight);
-    border-top: 1px solid #D0D0D0;
-    background-color: #FAFAFA;
+    border-top: 1px solid #d0d0d0;
+    background-color: #fafafa;
     position: relative;
     overflow: hidden;
 }
@@ -87,7 +91,7 @@ header {
     pointer-events: none;
 }
 .resize:active + .line {
-    background-color: #EAEAEB;
+    background-color: #eaeaeb;
 }
 .subviewRight.subview .resize {
     min-width: var(--right-view-minwidth);
@@ -138,11 +142,38 @@ iframe {
     width: 100%;
     height: 100%;
 }
-.el-table ::-webkit-scrollbar {
+.el-table .el-table__cell {
+    padding: 0;
+    min-width: 150px;
+}
+.el-table .cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
+}
+.el-table .cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
+}
+/* 表格样式 滚动条 */
+.el-table__body-wrapper::-webkit-scrollbar {
     width: 3px;
     height: 5px;
 }
-.el-table .el-table__cell {
-    min-width: 150px;
+.el-table__body-wrapper::-webkit-scrollbar-thumb {
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+    -webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+    background-color: #ccc;
 }
-
+.el-table__body-wrapper::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 1);
+}
+.el-table__body-wrapper::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(144, 147, 153, 0.3);
+}

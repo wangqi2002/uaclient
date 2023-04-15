@@ -1,3 +1,4 @@
+/* 鼠标事件开启和关闭 */
 .subview-content {
     width: 100%;
     height: 100%;
@@ -5,26 +6,33 @@
     top: 0;
     pointer-events: none;
 }
-.subview-content .el-tabs__header{
+.subview-content .el-tabs__header,
+.subview-content .subviewItembtn,
+.subview-content .subviewItemoptions {
     pointer-events: auto;
+}
+.subview-content .subviewItembtn {
+    cursor: pointer;
 }
 /* subviewLeft */
 .subviewLeft-content .el-tabs--left .el-tabs__nav-wrap.is-left::after {
     height: 100%;
-    width: 2px;
-    background-color: #eaeaeb;
+    width: 0px;
     bottom: auto;
     top: 0;
 }
 .subviewLeft-content .el-tabs--left .el-tabs__active-bar.is-left {
-    width: 2px;
+    width: 1px;
+    margin-left: 1px;
+    right: auto;
+    left: 0;
 }
 .subviewLeft-content .el-tabs--left {
     height: 100%;
 }
 .subviewLeft-content .el-tabs__header.is-left {
     width: var(--left-bar-width);
-    margin-right: 3px;
+    margin-right: 0px;
     background-color: #fafafa;
 }
 .subviewLeft-content .el-tabs__item {
@@ -45,31 +53,19 @@
 .subviewLeft-content .el-tab-pane {
     height: 100%;
 }
-.subviewLeft-content .grid-box {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-.subviewLeft-content .grid-content {
-    width: calc(100% - 6px);
-    padding: 3px;
-}
-.subviewLeft-content .left-top {
-    min-height: var(--sub-view-minheight);
-    flex: 1;
-}
-.subviewLeft-content .left-bottom {
-    height: 200px;
-    min-height: var(--sub-view-minheight);
-}
 
 /* subviewRight-content */
 .subviewRight-content .el-tabs--right .el-tabs__nav-wrap.is-right::after {
-    width: 2px;
-    background-color: #eaeaeb;
+    height: 100%;
+    width: 0px;
+    bottom: auto;
+    top: 0;
 }
 .subviewRight-content .el-tabs--right .el-tabs__active-bar.is-right {
     width: 2px;
+    /* margin-right: 1px; */
+    right: 0;
+    left: auto;
 }
 .subviewRight-content .el-tabs--right {
     height: 100%;
@@ -92,47 +88,38 @@
 .subviewRight-content .el-tab-pane {
     height: 100%;
 }
-.subviewRight-content .grid-box {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-.subviewRight-content .grid-content {
-    width: calc(100% - 6px);
-    padding: 3px;
-}
-.subviewRight-content .right-top {
-    min-height: var(--sub-view-minheight);
-    flex: 1;
-}
-.subviewRight-content .right-bottom {
-    height: 200px;
-    min-height: var(--sub-view-minheight);
-}
 
 /* subview 内部展开栏 */
 .subview .grid-box {
+    height: calc(100% - 35px);
     display: flex;
     flex-direction: column;
+}
+.subview .titleBox {
+    width: 100%;
+    height: 35px;
+    background-color: #eaeaeb;
+    font-size: 14px;
 }
 .subviewItem {
     width: 100%;
-    height: 200px;
-    background-color: antiquewhite;
-    display: flex;
-    flex-direction: column;
-}
-.subviewItem-1 {
-    width: 100%;
-    flex: 1;
-    background-color: azure;
+    overflow: hidden;
 }
 .subviewItem > .subviewItembtn {
     width: 100%;
     height: 20px;
-    background-color: aqua;
+    background-color: #fafafa;
 }
 .subviewItem > .subviewItemoptions {
-    width: 100%;
-    flex: 1;
+    width: calc(100% - 2px);
+    transition: all 0.2s;
+}
+.subviewRight-content .subviewItem > .subviewItemoptions {
+    width: calc(100% - 2px);
+    float: right;
+}
+
+/* 数据展示 */
+.subviewItem .el-tree {
+    background-color: #eaeaeb;
 }

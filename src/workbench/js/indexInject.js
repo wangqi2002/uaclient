@@ -62,8 +62,8 @@ function subviewLeftTabsF() {
         title: 'Tab 2',
         name: '2',
         content: 'Tab 2 content',
-        iconSrc: "./assets/icon/resource-management.svg",
-        items: [{
+        iconSrc: "./assets/icon/address-management.svg",
+        itemList: [{
             title: 'Project',
             name: '1',
             content: 'Project'
@@ -76,8 +76,67 @@ function subviewLeftTabsF() {
         title: 'Tab 3',
         name: '3',
         content: 'Tab 3 content',
-        iconSrc: "./assets/icon/resource-management.svg",
-        items: [{
+        iconSrc: "./assets/icon/options-management.svg",
+        itemList: [{
+            title: 'Project',
+            name: '1',
+            content: 'Project'
+        }, {
+            title: 'Address',
+            name: '2',
+            content: 'Address'
+        }]
+    }]
+    return tabList;
+}
+function subviewRightTabsF() {
+    var tabList = [{
+        title: 'Tab 1',
+        name: '1',
+        content: 'Tab 1 content',
+        iconSrc: "./assets/icon/attribute-management.svg",
+        itemList: [{
+            title: 'Attributes',
+            name: '1',
+            content: 'Attributes',
+            items: [{
+                id: 1,
+                date: '2016-05-02',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+            }, {
+                id: 2,
+                date: '2016-05-01',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1519 弄',
+                children: [{
+                    id: 21,
+                    date: '2016-05-01',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1519 弄'
+                }, {
+                    id: 22,
+                    date: '2016-05-01',
+                    name: '王小虎',
+                    address: '上海市普陀区金沙江路 1519 弄'
+                }]
+            }, {
+                id: 3,
+                date: '2016-05-03',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1516 弄'
+            }]
+        }, {
+            title: 'References',
+            name: '2',
+            content: 'References'
+        }]
+    }, {
+        title: 'Tab 2',
+        name: '2',
+        content: 'Tab 2 content',
+        iconSrc: "./assets/icon/reference-management.svg",
+        itemList: [{
             title: 'Project',
             name: '1',
             content: 'Project'

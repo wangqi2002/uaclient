@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="element-ui/css/index.css">
-    <link rel="stylesheet" href="css/common.css">
+    <!-- <link rel="stylesheet" href="css/common.css"> -->
     <link rel="stylesheet" href="css/index/index.css">
     <link rel="stylesheet" href="css/index/indexTopbar.css">
     <link rel="stylesheet" href="css/index/indexSubview.css">
@@ -14,8 +14,8 @@
 
 <body>
     <div id="app">
-        <el-container class="home-container">
-            <el-header class="main-top">
+        <div class="container">
+            <header class="top-container">
                 <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" background-color="#eaeaeb"
                     text-color="#4F4F50" active-text-color="#535457" menu-trigger="click">
                     <el-submenu index="1">
@@ -55,94 +55,114 @@
                     <i class="el-icon-copy-document max-unmax-btn" @click="handlerMax"></i>
                     <i class="el-icon-close close-btn" @click="handlerClose"></i>
                 </div>
-            </el-header>
-            <el-container class="main-box">
-                <el-aside class="subview subviewLeft" v-show="leftViewShow">
-                    <el-tabs value="1" tab-position="left">
-                        <el-tab-pane v-for="(item, index) in subviewLeftTabs" label="" :name="item.name">
-                            <span slot="label">
-                                <img class="icon" :src="item.iconSrc" />
-                            </span>
-                            <div class="grid-box">
-                                <div v-for="itemlist in item.itemList"
-                                    :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'">
-                                    <div class="subviewItembtn">
-                                        {{itemlist.title}}
+            </header>
+            <div class="main-container">
+                <div class="subview subviewLeft">
+                    <div class="resize horizontal"></div>
+                    <div class="line"></div>
+                    <div class="subview-content subviewLeft-content">
+                        <el-tabs value="1" tab-position="left">
+                            <el-tab-pane v-for="(item, index) in subviewLeftTabs" label="" :name="item.name">
+                                <span slot="label">
+                                    <img class="icon" :src="item.iconSrc" />
+                                </span>
+                                <div class="grid-box">
+                                    <div class="titleBox">资源管理器</div>
+                                    <div v-for="itemlist in item.itemList"
+                                        :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'">
+                                        <div class="subviewItembtn">
+                                            {{itemlist.title}}
+                                        </div>
+                                        <div class="subviewItemoptions">
+                                            <el-tree :data="itemlist.items" :props="subviewItemoptionProps"
+                                                @node-click="handleNodeClick"></el-tree>
+                                        </div>
                                     </div>
-                                    <div class="subviewItemoptions"></div>
                                 </div>
-                            </div>
-                        </el-tab-pane>
-                    </el-tabs>
-                </el-aside>
-                <div class="dragBar-v resize-leftView" v-show="leftViewShow"></div>
-                <el-container class="content-box">
-                    <el-main class="mainviewTop">
+                            </el-tab-pane>
+                        </el-tabs>
+                    </div>
+                </div>
+                <main class="main content-box">
+                    <div class="mainviewTop">
                         <el-tabs v-model="mainTabsValue" type="border-card" closable>
                             <el-tab-pane v-for="(item, index) in mainTabs" :key="item.name" :label="item.title"
                                 :name="item.name">
                                 <!-- <iframe :src="item.src" :style="{'pointer-events':resize_pointer}"></iframe> -->
-                                <!-- <iframe src="./components/mainView.html"></iframe> -->
+                                <iframe src="./components/opcua/dataView.html"></iframe>
                             </el-tab-pane>
                         </el-tabs>
-                    </el-main>
-                    <div class="dragBar-l resize-logView" v-show="logShow"></div>
-                    <el-footer class="logview mianviewBottom" v-show="logShow">
-                        <el-tabs>
-                            <el-tab-pane label="日志">
-                                <el-table class="logTable" :data="logTableData" :height="logtableHeight" stripe border
-                                    style="width: 100%">
-                                    <el-table-column prop="timestamp" label="Timestamp" width="150">
-                                    </el-table-column>
-                                    <el-table-column prop="source" label="Source" width="100">
-                                    </el-table-column>
-                                    <el-table-column prop="information" label="Information">
-                                    </el-table-column>
-                                </el-table>
-                            </el-tab-pane>
-                            <el-tab-pane label="问题">
-                                <el-table class="logTable" :data="problemTableData" :height="logtableHeight" stripe
-                                    border style="width: 100%">
-                                    <el-table-column prop="timestamp" label="Timestamp" width="150">
-                                    </el-table-column>
-                                    <el-table-column prop="source" label="Source" width="100">
-                                    </el-table-column>
-                                    <el-table-column prop="information" label="Information">
-                                    </el-table-column>
-                                </el-table>
-                            </el-tab-pane>
-                            <el-tab-pane label="输出">
-                                hhhhhhhh
+                    </div>
+                    <footer class="main-bottom">
+                        <div class="resize mian-vertical"></div>
+                        <div class="line"></div>
+                        <div class="logview">
+                            <el-tabs>
+                                <el-tab-pane label="日志">
+                                    <el-table class="logTable" :data="logTableData" height="100%" stripe
+                                        style="width: 100%;" border>
+                                        <el-table-column prop="timestamp" label="Timestamp" width="150">
+                                        </el-table-column>
+                                        <el-table-column prop="source" label="Source" width="100">
+                                        </el-table-column>
+                                        <el-table-column prop="information" label="Information">
+                                        </el-table-column>
+                                    </el-table>
+                                </el-tab-pane>
+                                <el-tab-pane label="问题">
+                                    <el-table class="logTable" :data="problemTableData" :height="logviewHeight" stripe
+                                        border style="width: 100%">
+                                        <el-table-column prop="timestamp" label="Timestamp" width="150">
+                                        </el-table-column>
+                                        <el-table-column prop="source" label="Source" width="100">
+                                        </el-table-column>
+                                        <el-table-column prop="information" label="Information">
+                                        </el-table-column>
+                                    </el-table>
+                                </el-tab-pane>
+                                <el-tab-pane label="输出">
+                                    hhhhhhhh
+                                </el-tab-pane>
+                            </el-tabs>
+                        </div>
+                    </footer>
+                </main>
+                <div class="subview subviewRight">
+                    <div class="resize horizontal"></div>
+                    <div class="line"></div>
+                    <div class="subview-content subviewRight-content">
+                        <el-tabs value="1" tab-position="right">
+                            <el-tab-pane v-for="(item, index) in subviewRightTabs" label="" :name="item.name">
+                                <span slot="label">
+                                    <img class="icon" :src="item.iconSrc" />
+                                </span>
+                                <div class="grid-box">
+                                    <div class="titleBox">资源管理器</div>
+                                    <div v-for="itemlist in item.itemList"
+                                        :class="itemlist.name==='1'?'subviewItem subviewItem-1':'subviewItem'">
+                                        <div class="subviewItembtn">
+                                            {{itemlist.title}}
+                                        </div>
+                                        <div class="subviewItemoptions">
+                                            <el-table :data="itemlist.items" height="250" style="width: 100%;"
+                                                row-key="id" border default-expand-all
+                                                :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+                                                <el-table-column prop="date" label="日期" width="180">
+                                                </el-table-column>
+                                                <el-table-column prop="name" label="姓名" width="180">
+                                                </el-table-column>
+                                                <el-table-column prop="address" label="地址">
+                                                </el-table-column>
+                                            </el-table>
+                                        </div>
+                                    </div>
+                                </div>
                             </el-tab-pane>
                         </el-tabs>
-                    </el-footer>
-                </el-container>
-                <div class="dragBar-v resize-rightView" v-show="rightViewShow"></div>
-                <el-aside class="subview subviewRight" v-show="rightViewShow">
-                    <el-tabs tab-position="right">
-                        <el-tab-pane label="">
-                            <span slot="label">
-                                <i class="el-icon-folder"></i>
-                            </span>
-                        </el-tab-pane>
-                        <el-tab-pane label="">
-                            <span slot="label">
-                                <i class="el-icon-set-up"></i>
-                            </span>
-                            <div class="grid-box grid-box-right">
-                                <div class="grid-content right-top">
-                                    address-view
-                                </div>
-                                <div class="dragBar-l resize-rightView-inside"></div>
-                                <div class="grid-content right-bottom">
-                                    project-view
-                                </div>
-                            </div>
-                        </el-tab-pane>
-                    </el-tabs>
-                </el-aside>
-            </el-container>
-        </el-container>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 <script src="vue/vue.js"></script>
@@ -156,9 +176,8 @@
         data: function () {
             return {
                 left_view_minwidth: null,
-                main_view_minwidth: null,
-                right_view_minwidth: null,
                 logviewHeight: null,
+                attributeviewHeight: null,
                 resize_pointer: 'auto',
                 activeIndex: '1',
                 search: "", //当前输入框的值
@@ -168,19 +187,24 @@
                 mainTabsValue: '1',
                 mainTabs: [],
                 subviewLeftTabs: [],
+                subviewRightTabs: [],
                 logTableData: [],
                 problemTableData: [],
                 attributeTableData: [],
+                subviewItemoptionProps: {
+                    children: 'children',
+                    label: 'label'
+                }
             }
         },
         computed: {
-            logtableHeight: function () {
-                return this.logviewHeight - 20;
-            }
         },
         methods: {
             searchHandler() {
                 console.log('+++: searchHandler')
+            },
+            handleNodeClick(data) {
+                console.log(data);
             },
             handlerMin() {
                 mainMini()
@@ -212,144 +236,42 @@
                 // 计算每列内容最大的宽度 + 表格的内间距（依据实际情况而定）
                 return (getMaxLength(arr) + 20) + 'px'
             },
-            dragLevel(box, top, bottom, resize) {
-                var that = this;
-                var box = document.getElementsByClassName(box);
-                var top = document.getElementsByClassName(top);
-                var bottom = document.getElementsByClassName(bottom);
-                var resize = document.getElementsByClassName(resize);
-                var bottomMinheight = parseInt(getComputedStyle(bottom[0], null)['min-height']);
-                var topMinheight = parseInt(getComputedStyle(top[0], null)['min-height']);
-                // console.log(resize)
+            /**
+             * MutationObserver 实时监控元素属性
+             * @param targetNode: DOM元素
+             * @param options : 监听的变动类型
+             */
+            attributeObserver() {
+                var resizeDom = document.querySelectorAll('.container .resize')
+                resizeDom.forEach(item => {
+                    resizeObserve.observe(item, {
+                        attributes: true
+                    });
+                })
 
-                resize[0].onmousedown = function (e) {
-                    const mask = document.createElement('div')
-                    mask.style.cssText = 'position: absolute;top: 0;left: 0;width: 100vw;height: 100vh;z-index: 9999;'
-                    mask.setAttribute('id', 'mousemoveMask')
-                    document.body.append(mask)
-
-                    var startY = e.clientY;
-                    resize[0].top = resize[0].offsetTop;
-                    document.onmousemove = function (e) {
-                        var endY = e.clientY;
-                        var topH = top[0].offsetHeight;
-                        var maxT = box[0].clientHeight - resize[0].offsetHeight;
-                        if (endY > maxT - bottomMinheight) {
-                            endY = maxT - bottomMinheight
-                        }
-                        if (endY < topMinheight + 10) {
-                            endY = topMinheight + 15
-                        }
-                        var moveLen = resize[0].top + (endY - startY);
-
-                        // top[0].style.height = moveLen + 'px';
-                        bottom[0].style.height = (box[0].clientHeight - moveLen - 5) + 'px';
-                        that.logviewHeight = box[0].clientHeight - moveLen - 5;
-                    }
-                    document.onmouseup = function (evt) {
-                        const mask = document.getElementById('mousemoveMask')
-                        mask && mask.remove()
-
-                        document.onmousemove = null;
-                        document.onmouseup = null;
-                        resize[0].releaseCapture && resize[0].releaseCapture();
-                    }
-                    resize[0].setCapture && resize[0].setCapture();
-                    return false;
-                }
-            },
-            dragVertical() {
-                var that = this;
-                var box = document.getElementsByClassName("main-box");
-                var left = document.getElementsByClassName("subviewLeft");
-                var mid = document.getElementsByClassName("content-box");
-                var right = document.getElementsByClassName("subviewRight");
-                var resize = document.getElementsByClassName("resize-leftView");
-                var resize2 = document.getElementsByClassName("resize-rightView");
-
-                resize[0].onmousedown = function (e) {
-                    const mask = document.createElement('div')
-                    mask.style.cssText = 'position: absolute;top: 0;left: 0;width: 100vw;height: 100vh;z-index: 9999;'
-                    mask.setAttribute('id', 'mousemoveMask')
-                    document.body.append(mask)
-
-                    var startX = e.clientX;
-                    resize[0].left = resize[0].offsetLeft;
-                    document.onmousemove = function (e) {
-                        var endX = e.clientX;
-                        var rightW = right[0].offsetWidth;
-                        var maxT = box[0].clientWidth - resize[0].offsetWidth - 5;
-                        if (endX == that.left_view_minwidth || endX < that.left_view_minwidth)
-                            endX = that.left_view_minwidth;
-                        if (endX == maxT - rightW - that.main_view_minwidth || endX > maxT - rightW - that.main_view_minwidth)
-                            endX = maxT - rightW - that.main_view_minwidth;
-                        var moveLen = resize[0].left + (endX - startX);
-
-                        left[0].style.width = moveLen + 'px';
-                        mid[0].style.width = (box[0].clientWidth - moveLen - rightW - 10) + 'px';
-                    }
-                    document.onmouseup = function (evt) {
-                        const mask = document.getElementById('mousemoveMask')
-                        mask && mask.remove()
-
-                        document.onmousemove = null;
-                        document.onmouseup = null;
-                        resize[0].releaseCapture && resize[0].releaseCapture();
-                    }
-                    resize[0].setCapture && resize[0].setCapture();
-                    return false;
-                }
-                resize2[0].onmousedown = function (e) {
-                    const mask = document.createElement('div')
-                    mask.style.cssText = 'position: absolute;top: 0;left: 0;width: 100vw;height: 100vh;z-index: 9999;'
-                    mask.setAttribute('id', 'mousemoveMask')
-                    document.body.append(mask)
-
-                    var startX = e.clientX;
-                    resize2[0].left = resize2[0].offsetLeft;
-                    document.onmousemove = function (e) {
-                        var endX = e.clientX;
-                        var leftW = left[0].offsetWidth;
-                        var maxT = box[0].clientWidth - resize2[0].offsetWidth - 5;
-                        if (endX > maxT - that.right_view_minwidth)
-                            endX = maxT - that.right_view_minwidth
-                        if (endX < leftW + that.main_view_minwidth)
-                            endX = leftW + that.main_view_minwidth
-                        var moveLen = resize2[0].left + (endX - startX) - leftW;
-
-                        mid[0].style.width = moveLen + 'px';
-                        right[0].style.width = (box[0].clientWidth - moveLen - leftW - 10) + 'px';
-                    }
-                    document.onmouseup = function (evt) {
-                        const mask = document.getElementById('mousemoveMask')
-                        mask && mask.remove()
-
-                        document.onmousemove = null;
-                        document.onmouseup = null;
-                        resize2[0].releaseCapture && resize2[0].releaseCapture();
-                    }
-                    resize2[0].setCapture && resize2[0].setCapture();
-                    return false;
-                }
+                // var logtableDom = document.querySelectorAll('.main-bottom .resize')
+                // logtableDom.forEach(item => {
+                //     tableheightObserve.observe(item, {
+                //         attributes: true
+                //     });
+                // })
             }
         },
         mounted() {
             this.mainTabs = mainTabsF()
             this.subviewLeftTabs = subviewLeftTabsF()
+            this.subviewRightTabs = subviewRightTabsF()
             this.logTableData = logTableF()
             this.problemTableData = problemTableF()
             this.attributeTableData = attributeTableF()
-            this.dragLevel('content-box', 'mainviewTop', 'mianviewBottom', 'resize-logView')
-            // this.dragLevel('grid-box-left', 'left-top', 'left-bottom', 'resize-leftView-inside')
-            // this.dragLevel('grid-box-right', 'right-top', 'right-bottom', 'resize-rightView-inside')
-            this.dragVertical()
-            // subviewItemInit(window, document);
+            subviewItemInit(window, document)
+            this.attributeObserver()
+            this.logviewHeight = parseInt(getComputedStyle(document.getElementsByClassName("logview")[0], null)['height'])
+            // console.log(document.querySelector(".subviewRight-content .el-tabs__content"))
+            // this.attributeviewHeight = parseInt(getComputedStyle(document.querySelector(".subviewRight-content .subviewItem.subviewItem-1"), null)['height'])
+            // console.log(this.attributeviewHeight)
         },
         created() {
-            this.left_view_minwidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--left-view-minwidth"));
-            this.main_view_minwidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--main-view-minwidth"));
-            this.right_view_minwidth = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--right-view-minwidth"));
-            this.logviewHeight = parseInt(getComputedStyle(document.getElementsByClassName("logview")[0], null)['height'])
         }
     })
 </script>
