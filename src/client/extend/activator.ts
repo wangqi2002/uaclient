@@ -1,30 +1,34 @@
-import { IMainExtension } from "./extend"
-import child_process from "child_process"
-import { NodeVM, NodeVMOptions } from "vm2"
+import { Worker } from 'worker_threads'
+import { IMainExtension } from './extend'
 
+type workerId = string
 export class ExtensionActivator {
-    static sandbox: NodeVM
+    static runningWorkers: Map<workerId, Worker>
 
-    constructor(options?: NodeVMOptions) {
-        if (options) {
-            ExtensionActivator.sandbox = new NodeVM(options)
-        } else {
-            ExtensionActivator.sandbox = new NodeVM({
-                require: {
-                    builtin: ["*"],
-                    external: true,
-                },
-            })
-        }
-    }
+    constructor() {}
     //通过vm2沙箱执行插件文件
     static async activateExtension(extension: IMainExtension) {
-        child_process.fork(".//run.js", {
-            execArgv: ["F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\ua.servant.js"],
-        })
+        ExtensionActivator.runningWorkers.set(
+            extension.identifier.id,
+            new Worker('./src/client/run.js', { workerData: extension.storage })
+        )
     }
 
-    static runFile(path: string) {
-        ExtensionActivator.sandbox.runFile(path)
+    static activateThis(start: () => void, beforeClose: () => void) {
+        new Worker(__dirname)
+    }
+
+    static runFile(path: string) {}
+
+    killWorker(workerId: string) {
+        let worker = ExtensionActivator.runningWorkers.get(workerId)
+        ExtensionActivator.runningWorkers.delete(workerId)
+        worker?.terminate()
+    }
+
+    beforeClose() {
+        ExtensionActivator.runningWorkers.forEach((value: Worker, workerId: string) => {
+            this.killWorker(workerId)
+        })
     }
 }

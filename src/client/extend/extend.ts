@@ -1,12 +1,13 @@
-import {GlobalWorkspaceManager} from "./../workspace/workspace"
-import {ClientStore} from "../store/store"
-import {existsSync} from "fs"
-import {app, ipcMain} from "electron"
-import EventEmitter from "events"
-import {ExtensionActivator} from "./activator"
-import {eventsBind} from "../../platform/ipc/handlers/ipc.handler"
-import {rendererEvents} from "../../platform/ipc/events/ipc.events"
-import {workspace} from "../workspace/workspace"
+import { GlobalWorkspaceManager } from './../workspace/workspace'
+import { ClientStore } from '../store/store'
+import { existsSync } from 'fs'
+import { app, ipcMain } from 'electron'
+import EventEmitter from 'events'
+import { ExtensionActivator } from './activator'
+import { eventsBind } from '../../platform/ipc/handlers/ipc.handler'
+import { rendererEvents } from '../../platform/ipc/events/ipc.events'
+import { workspace } from '../workspace/workspace'
+import path from 'path'
 
 type extensionStorage = string
 type extensionActivateEvent = string
@@ -56,7 +57,7 @@ class ExtensionManager extends EventEmitter implements IExtensionManager {
                 this.bindActivateEvents(extension)
             } else {
                 delete this.enabledExtensions[index]
-                this.emit("extension-invalid", extension)
+                this.emit('extension-invalid', extension)
             }
         })
     }
@@ -71,7 +72,7 @@ class ExtensionManager extends EventEmitter implements IExtensionManager {
     }
 
     disableExtension(extension: IMainExtension) {
-        let n = this.findExtension("disabled", extension)
+        let n = this.findExtension('disabled', extension)
         if (n != -1) {
             delete this.enabledExtensions[n]
             return true
@@ -79,7 +80,7 @@ class ExtensionManager extends EventEmitter implements IExtensionManager {
     }
 
     findExtension(from: string, extension: IMainExtension): number {
-        if (from == "enabled") {
+        if (from == 'enabled') {
             this.enabledExtensions.find((extend, index) => {
                 if (extend.identifier === extension.identifier) {
                     return index
@@ -105,7 +106,7 @@ class ExtensionManager extends EventEmitter implements IExtensionManager {
 
     uninstallExtension(extension: IMainExtension) {
         if (verifyStoragePath(extension.storage)) {
-            let n = this.findExtension("enabled", extension)
+            let n = this.findExtension('enabled', extension)
             if (n != -1) {
                 delete this.enabledExtensions[n]
             }
@@ -114,7 +115,7 @@ class ExtensionManager extends EventEmitter implements IExtensionManager {
 
     bindActivateEvents(extension: IMainExtension) {
         extension.onEvents.forEach((event) => {
-            //todo 修改
+            //todo 修改考虑插件的项目数据恢复
             ipcMain.once(event, async () => {
                 ExtensionActivator.activateExtension(extension)
             })
@@ -132,27 +133,50 @@ export class GlobalExtensionManager {
     workspace: workspace
     extensionManagers: Map<string, IExtensionManager>
     currentManager!: ExtensionManager
-    extensionStore = "extensions"
+    activator: ExtensionActivator
+    extensionStore = 'extensions'
 
     constructor(workspace: workspace) {
         this.workspace = workspace
         this.extensionManagers = new Map()
-        new ExtensionActivator()
+        this.activator = new ExtensionActivator()
         ClientStore.create({
             name: this.extensionStore,
-            fileExtension: "json",
-            cwd: app.getPath("appData"),
+            fileExtension: 'json',
+            cwd: app.getPath('appData'),
             // cwd: "C:\\Users\\Administrator\\Desktop\\client.data",
             clearInvalidConfig: true,
         })
+        this.hookRequire(path.join(__dirname, '..', '..', '/platform/platform'))
         this.loadAllManagers()
         this.bindEventsToMain()
     }
 
+    /**
+     * @description 将api注入到插件运行过程中,通过劫持extension.js文件的require
+     *  然后替换其中的uniclient字段改为api实际路径
+     * @param apiPath
+     */
+    hookRequire(apiPath: string) {
+        let addHook = require('pirates').addHook
+        const matcher = (fileName: string) => {
+            if (fileName === 'extension.js') return true
+            return false
+        }
+        addHook(
+            (code: string, filename: string) => {
+                return code.replace(/require\((['"])uniclient\1\)/, () => {
+                    return `require("${apiPath}")`
+                })
+            },
+            { exts: ['.js'], matcher }
+        )
+    }
+
     loadAllManagers() {
         let managers: IExtensionManagers = {
-            extensionManagers: ClientStore.get(this.extensionStore, "extensionManagers"),
-            globalExtensionManager: ClientStore.get(this.extensionStore, "globalExtensionManager"),
+            extensionManagers: ClientStore.get(this.extensionStore, 'extensionManagers'),
+            globalExtensionManager: ClientStore.get(this.extensionStore, 'globalExtensionManager'),
         }
 
         managers.extensionManagers.forEach((IManager) => {
@@ -167,9 +191,9 @@ export class GlobalExtensionManager {
             // this.createNewManagerForWS()
             // this.updateStoreOfManagers()
         }
-        this.extensionManagers.set("currentManager", this.currentManager)
+        this.extensionManagers.set('currentManager', this.currentManager)
         //监听无效扩展事件
-        this.currentManager.on("extension-invalid", (extension: IMainExtension) => {
+        this.currentManager.on('extension-invalid', (extension: IMainExtension) => {
             console.log(extension.identifier)
         })
     }
@@ -182,10 +206,10 @@ export class GlobalExtensionManager {
         eventsBind.extendBind(
             rendererEvents.extensionEvents.install,
             (event, workspace: string, extension: IMainExtension) => {
-                if (this.workspace.workspaceName != "global" && workspace == "global") {
-                    let gm: IExtensionManager = ClientStore.get(this.extensionStore, "globalExtensionManager")
+                if (this.workspace.workspaceName != 'global' && workspace == 'global') {
+                    let gm: IExtensionManager = ClientStore.get(this.extensionStore, 'globalExtensionManager')
                     gm.enabledExtensions.push(extension)
-                    ClientStore.set(this.extensionStore, "globalExtensionManager", gm)
+                    ClientStore.set(this.extensionStore, 'globalExtensionManager', gm)
                 } else {
                     this.currentManager.installExtension(extension)
                 }
@@ -195,10 +219,10 @@ export class GlobalExtensionManager {
         eventsBind.extendBind(
             rendererEvents.extensionEvents.uninstall,
             (event, workspace: string, extension: IMainExtension) => {
-                if (this.workspace.workspaceName != "global" && workspace == "global") {
-                    let gm: IExtensionManager = ClientStore.get(this.extensionStore, "globalExtensionManager")
+                if (this.workspace.workspaceName != 'global' && workspace == 'global') {
+                    let gm: IExtensionManager = ClientStore.get(this.extensionStore, 'globalExtensionManager')
                     gm.enabledExtensions.push(extension)
-                    ClientStore.set(this.extensionStore, "globalExtensionManager", gm)
+                    ClientStore.set(this.extensionStore, 'globalExtensionManager', gm)
                 } else {
                     this.currentManager.uninstallExtension(extension)
                 }
@@ -206,7 +230,7 @@ export class GlobalExtensionManager {
         )
         //绑定新建workspace方法,如果是全局则不会新建extensionManager
         eventsBind.workspaceBind(rendererEvents.workspaceEvents.create, (event, workspace: string, storage: string) => {
-            if (workspace != "global") {
+            if (workspace != 'global') {
                 let m: IExtensionManager = {
                     attributes: {
                         workspaceName: workspace,
@@ -230,10 +254,10 @@ export class GlobalExtensionManager {
     }
 
     updateStoreOfManagers() {
-        if (ClientStore.set(this.extensionStore, "extensionManagers", [...this.extensionManagers.values()])) {
+        if (ClientStore.set(this.extensionStore, 'extensionManagers', [...this.extensionManagers.values()])) {
             return true
         } else {
-            console.log("出错")
+            console.log('出错')
         }
     }
 
@@ -254,6 +278,7 @@ export class GlobalExtensionManager {
 
     beforeClose() {
         this.updateStoreOfManagers()
+        this.activator.beforeClose()
     }
 }
 
