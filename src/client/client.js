@@ -78,6 +78,7 @@ class Client {
             this.mainWindow.once("ready-to-show", () => {
                 this.mainWindow.show();
             });
+            // app.on()
         });
     }
     initServices() {

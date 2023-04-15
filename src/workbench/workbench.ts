@@ -1,8 +1,8 @@
-import {BrowserView, BrowserWindow, Rectangle, screen} from "electron"
-import WinState from "electron-win-state"
-import path from "path"
-import {EventEmitter} from "stream"
-import {eventsBind} from "../platform/ipc/handlers/ipc.handler"
+import { BrowserView, BrowserWindow, Rectangle, screen } from 'electron'
+import WinState from 'electron-win-state'
+import path from 'path'
+import { EventEmitter } from 'stream'
+import { eventsBind } from '../platform/ipc/handlers/ipc.handler'
 
 type viewId = string
 
@@ -22,8 +22,8 @@ export class Workbench extends EventEmitter {
     }
 
     private async createMainWindow(
-        preloadPath: string = path.join(__dirname, "../preload.js"),
-        indexHtmlPath: string = path.join(__dirname, "./index.html"),
+        preloadPath: string = path.join(__dirname, '../preload.js'),
+        indexHtmlPath: string = path.join(__dirname, './index.html'),
         dev: boolean = false
     ) {
         this.mainWindow = new BrowserWindow({
@@ -34,8 +34,8 @@ export class Workbench extends EventEmitter {
             webPreferences: {
                 preload: path.join(__dirname, preloadPath),
                 devTools: true,
-                nodeIntegration:true,
-                contextIsolation:false,
+                nodeIntegration: true,
+                contextIsolation: false,
             },
         })
         if (dev) {
@@ -44,10 +44,11 @@ export class Workbench extends EventEmitter {
         this.mainWindow.webContents.openDevTools()
         await this.mainWindow.loadFile(indexHtmlPath)
         // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
-        this.mainWindow.once("ready-to-show", () => {
+        this.mainWindow.once('ready-to-show', () => {
             this.mainWindow.show()
         })
-        MainHandler.initBind(this.mainWindow)
+        // MainHandler.initBind(this.mainWindow)
+        eventsBind.workbenchInitBind(this.mainWindow)
         this.winState.manage(this.mainWindow)
     }
 
@@ -93,7 +94,7 @@ export class Workbench extends EventEmitter {
         // browserView.webContents.openDevTools()
         // this.bindCloseEvent(viewId, browserView)
         this.existViews.set(viewId, browserView)
-        this.emit("created:view." + viewId)
+        this.emit('created:view.' + viewId)
         return true
     }
 
@@ -102,7 +103,7 @@ export class Workbench extends EventEmitter {
     }
 
     beforeClose() {
-        this.emit("close")
+        this.emit('close')
     }
 
     // private bindCloseEvent(viewId: string, view: BrowserView) {

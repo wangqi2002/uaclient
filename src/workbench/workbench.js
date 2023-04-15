@@ -28,7 +28,7 @@ class Workbench extends stream_1.EventEmitter {
         this.createMainWindow(preload, homeViewPath, dev);
         this.existViews = new Map();
     }
-    createMainWindow(preloadPath = path_1.default.join(__dirname, "../preload.js"), indexHtmlPath = path_1.default.join(__dirname, "./index.html"), dev = false) {
+    createMainWindow(preloadPath = path_1.default.join(__dirname, '../preload.js'), indexHtmlPath = path_1.default.join(__dirname, './index.html'), dev = false) {
         return __awaiter(this, void 0, void 0, function* () {
             this.mainWindow = new electron_1.BrowserWindow(Object.assign(Object.assign({}, this.winState.winOptions), { frame: false, center: true, show: false, webPreferences: {
                     preload: path_1.default.join(__dirname, preloadPath),
@@ -42,11 +42,11 @@ class Workbench extends stream_1.EventEmitter {
             this.mainWindow.webContents.openDevTools();
             yield this.mainWindow.loadFile(indexHtmlPath);
             // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
-            this.mainWindow.once("ready-to-show", () => {
+            this.mainWindow.once('ready-to-show', () => {
                 this.mainWindow.show();
             });
-            ipc_handler_1.MainHandler.initBind(this.mainWindow);
-
+            // MainHandler.initBind(this.mainWindow)
+            ipc_handler_1.eventsBind.workbenchInitBind(this.mainWindow);
             this.winState.manage(this.mainWindow);
         });
     }
@@ -85,7 +85,7 @@ class Workbench extends stream_1.EventEmitter {
             // browserView.webContents.openDevTools()
             // this.bindCloseEvent(viewId, browserView)
             this.existViews.set(viewId, browserView);
-            this.emit("created:view." + viewId);
+            this.emit('created:view.' + viewId);
             return true;
         });
     }
@@ -93,7 +93,7 @@ class Workbench extends stream_1.EventEmitter {
         return this.mainWindow;
     }
     beforeClose() {
-        this.emit("close");
+        this.emit('close');
     }
 }
 exports.Workbench = Workbench;

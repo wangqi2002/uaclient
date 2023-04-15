@@ -37,6 +37,7 @@ header {
     background-color: #eaeaeb;
     position: relative;
     overflow: hidden;
+    -webkit-app-region: drag;
 }
 .main-container {
     display: flex;
