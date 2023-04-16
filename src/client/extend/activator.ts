@@ -1,6 +1,6 @@
 import EventEmitter from 'events'
 import { Worker } from 'worker_threads'
-import { ExtensionManager, IExtensionIdentifier, IMainExtension } from './extend'
+import { ExtensionManager, IExtensionIdentifier, IExtension } from './extend'
 
 type extensionId = string
 
@@ -30,29 +30,29 @@ export class ExtensionActivator {
         ExtensionActivator.extensionInstanceManagers = new Map()
     }
 
-    static activate(extension: IMainExtension) {
+    static activate(extension: IExtension) {
         ExtensionActivator.events.emit('activate', extension)
     }
 
     /**
      * @description 每个插件的入口文件extension.js必须导出一个instance对象实现extensionInstance接口
-     * @param extension
+     * @param IExtension
      */
-    async doActivateExtension(extension: IMainExtension) {
+    async doActivateExtension(IExtension: IExtension) {
         try {
-            let { instance } = await import(extension.storage)
-            await instance.activate()
+            let { extension } = await import(IExtension.storage)
+            await extension.activate()
             let worker = undefined
-            if (instance.workerEntrance) {
-                worker = new Worker(instance.workerEntrance)
+            if (extension.workerEntrance) {
+                worker = new Worker(extension.workerEntrance)
             }
-            ExtensionActivator.extensionInstanceManagers.set(extension.identifier.id, {
-                identifier: extension.identifier,
+            ExtensionActivator.extensionInstanceManagers.set(IExtension.identifier.id, {
+                identifier: IExtension.identifier,
                 worker: worker,
                 instance: {
-                    activate: instance.activate,
-                    beforeClose: instance.beforeClose,
-                    workerEntrance: instance.workerEntrance,
+                    activate: extension.activate,
+                    beforeClose: extension.beforeClose,
+                    workerEntrance: extension.workerEntrance,
                 },
             })
         } catch (e: any) {
@@ -82,6 +82,6 @@ export class ExtensionActivator {
 }
 
 const activator = new ExtensionActivator()
-ExtensionActivator.events.on('activate', (extension: IMainExtension) => {
+ExtensionActivator.events.on('activate', (extension: IExtension) => {
     activator.doActivateExtension(extension)
 })

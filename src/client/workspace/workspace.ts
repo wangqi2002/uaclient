@@ -1,40 +1,58 @@
-import {ClientStore} from "../store/store"
-import {mkdir, readdir, watch} from "fs"
-import {ipcMain} from "electron"
+import { moduleStoreNames } from './../enums'
+import { ClientStore } from '../store/store'
+import { mkdir, readdir, watch } from 'fs'
+import { ipcMain } from 'electron'
+
+enum storeNames {
+    workspaceManager = 'workspaceManagers',
+    currentManager = 'currentManager',
+    projectExtend = 'projectExtend',
+}
 
 export type workspace = {
     workspaceName: string
     storagePath: string
 }
 
-export interface IWorkspace {
+export interface IWorkspaceManager {
     workspace: workspace
     projects: string[]
+    onStart: string[]
 }
 
-export interface WsGlobalManager {
-    workspaces: IWorkspace[]
-    currentWS: IWorkspace
+export interface IGlobalWorkSpaceInfo {
+    workspaces: IWorkspaceManager[]
+    currentManager: IWorkspaceManager
     projectExtend: string[]
 }
 
-export class WorkspaceManager implements IWorkspace {
+export interface IGlobalWorkSpaceManager {
+    workspaces: Map<string, IWorkspaceManager>
+}
+
+export class WorkspaceManager implements IWorkspaceManager {
     workspace: workspace
     projects: string[]
+    onStart: string[]
 
-    constructor(ws: IWorkspace) {
+    constructor(ws: IWorkspaceManager) {
         this.workspace = ws.workspace
         this.projects = ws.projects
+        this.onStart = ws.onStart
     }
 
     createProject(projectName: string, projectType: string) {
         mkdir(this.workspace.storagePath + `\\${projectName}` + `\\.${projectType}`, () => {
-            mkdir(this.workspace.storagePath + `\\${projectName}` + "\\.client", () => {})
+            mkdir(this.workspace.storagePath + `\\${projectName}` + '\\.client', () => {})
         })
     }
     deleteProject() {}
-    loadProject(projectName: string) {
-        ipcMain.emit("加载了project")
+    loadProject(fileName: string) {
+        GlobalWorkspaceManager.projectExtend.forEach((projectName) => {
+            if (fileName.endsWith(projectName)) {
+                ipcMain.emit('加载了project')
+            }
+        })
     }
     loadProjectOptions() {}
     watchFolder(path: string) {
@@ -55,42 +73,40 @@ export class WorkspaceManager implements IWorkspace {
     }
 }
 
-export class GlobalWorkspaceManager {
-    workspaces: Map<string, IWorkspace>
-    static currentWS: IWorkspace
+export class GlobalWorkspaceManager implements IGlobalWorkSpaceManager {
+    workspaces: Map<string, IWorkspaceManager>
+    static currentManager: IWorkspaceManager
     static projectExtend: string[]
 
     constructor() {
         this.workspaces = new Map()
-        // GlobalWorkspaceManager.projectExtend = []
+        GlobalWorkspaceManager.projectExtend = []
         ClientStore.create({
-            name: "workspace",
-            fileExtension: "json",
-            // cwd: app.getPath("appData"),
-            cwd: "C:\\Users\\Administrator\\Desktop\\client.data",
+            name: moduleStoreNames.workspace,
+            fileExtension: 'json',
             clearInvalidConfig: true,
         })
         this.loadAllWorkspaces()
     }
 
     loadAllWorkspaces() {
-        let ws: IWorkspace[] = ClientStore.get("workspace", "workspaces")
-        let current: IWorkspace = ClientStore.get("workspace", "currentWS")
-        GlobalWorkspaceManager.projectExtend = ClientStore.get("workspace", "projectExtend")
+        let ws: IWorkspaceManager[] = ClientStore.get(moduleStoreNames.workspace, storeNames.workspaceManager)
+        let current: IWorkspaceManager = ClientStore.get(moduleStoreNames.workspace, storeNames.currentManager)
+        GlobalWorkspaceManager.projectExtend = ClientStore.get(moduleStoreNames.workspace, storeNames.projectExtend)
         if (ws) {
             ws.forEach((wsIns) => {
                 this.workspaces.set(wsIns.workspace.workspaceName, wsIns)
             })
         }
         if (current) {
-            GlobalWorkspaceManager.currentWS = new WorkspaceManager(current)
+            GlobalWorkspaceManager.currentManager = new WorkspaceManager(current)
         }
     }
 
     createDirAsWorkspace(dirPath: string, workspaceName: string) {
         if (!this.workspaces.has(workspaceName)) {
             mkdir(dirPath + `//${workspaceName}`, () => {
-                mkdir(dirPath + "//.ws", () => {})
+                mkdir(dirPath + '//.ws', () => {})
             })
             let w = {
                 workspace: {
@@ -100,14 +116,14 @@ export class GlobalWorkspaceManager {
                 projects: [],
             }
             this.workspaces.set(workspaceName, w)
-            GlobalWorkspaceManager.currentWS = new WorkspaceManager(w)
+            GlobalWorkspaceManager.currentManager = new WorkspaceManager(w)
         }
     }
 
     switchWorkspace(workspaceName: string) {
         let ws = this.workspaces.get(workspaceName)
         if (ws) {
-            GlobalWorkspaceManager.currentWS = new WorkspaceManager(ws)
+            GlobalWorkspaceManager.currentManager = new WorkspaceManager(ws)
         }
     }
 
@@ -120,11 +136,13 @@ export class GlobalWorkspaceManager {
     }
 
     static getCurrentWSNames() {
-        return GlobalWorkspaceManager.currentWS.workspace
+        return GlobalWorkspaceManager.currentManager.workspace
     }
 
+    static changeWorkspace() {}
+
     updateStore() {
-        ClientStore.set("workspace", "workspaces", [...this.workspaces.values()])
+        ClientStore.set('workspace', 'workspaces', [...this.workspaces.values()])
     }
 
     beforeClose() {

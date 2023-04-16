@@ -1,32 +1,29 @@
-import Store from "electron-store"
+import Store from 'electron-store'
 
 export enum ConfigNames {
-    persistence = "PersistConfig",
-    log = "LogConfig",
+    persistence = 'PersistConfig',
+    log = 'LogConfig',
 }
 
 export type storeOptions = {
     name: string
     fileExtension: string
-    cwd: string
     clearInvalidConfig: boolean
 }
 
 type storeName = string
 export class ClientStore {
     static stores: Map<storeName, Store>
+    static cwd: string
 
-    constructor() {
+    constructor(cwd: string = 'C:\\Users\\Administrator\\Desktop\\client.data') {
+        ClientStore.cwd = cwd
         ClientStore.stores = new Map<string, Store>()
-        ClientStore.stores.set(
-            "config",
-            new Store({
-                name: "config",
-                fileExtension: "json",
-                cwd: "C:\\Users\\Administrator\\Desktop\\client.data",
-                clearInvalidConfig: true,
-            })
-        )
+        ClientStore.create({
+            name: 'config',
+            fileExtension: 'json',
+            clearInvalidConfig: true,
+        })
     }
 
     static set(storeName: storeName, key: string, content: any): boolean {
@@ -71,7 +68,7 @@ export class ClientStore {
         if (ClientStore.stores.has(options.name)) {
             return false
         } else {
-            let store = new Store(options)
+            let store = new Store({ ...options, cwd: ClientStore.cwd })
             ClientStore.stores.set(options.name, store)
             store.openInEditor()
             return store

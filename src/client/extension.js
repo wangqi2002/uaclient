@@ -1,5 +1,4 @@
 let api = require('uniclient')
-
 module.exports = {
     extension: {
         activate: () => {
@@ -11,4 +10,5 @@ module.exports = {
         },
         workerEntrance: 'WorkerEntranceAbsolutePath',
     },
+    nice: 'nice',
 }
