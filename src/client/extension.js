@@ -1,12 +1,14 @@
 let api = require('uniclient')
 
 module.exports = {
-    activate: () => {
-        //做一些注册之类的事情
-        console.log('activate')
+    extension: {
+        activate: () => {
+            //做一些注册之类的事情
+            console.log('activate')
+        },
+        beforeClose: () => {
+            console.log('即将结束')
+        },
+        workerEntrance: 'WorkerEntranceAbsolutePath',
     },
-    beforeClose: () => {
-        return true
-    },
-    actualEntrance: 'actualEntranceAbsolutePath',
 }

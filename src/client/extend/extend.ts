@@ -55,7 +55,6 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
     enabledExtensions: IMainExtension[]
     disabledExtensions: IMainExtension[]
     onStart: string[]
-    static onClose: closeFunction[]
 
     constructor(manager: IExtensionManager) {
         super()
@@ -63,12 +62,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
         this.enabledExtensions = manager.enabledExtensions
         this.disabledExtensions = manager.disabledExtensions
         this.onStart = manager.onStart
-        ExtensionManager.onClose = []
         this.loadExtensions()
-    }
-
-    static registerCloseFunction(func: closeFunction) {
-        ExtensionManager.onClose.push(func)
     }
 
     async loadExtensions() {
@@ -153,9 +147,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
     }
 
     beforeClose() {
-        ExtensionManager.onClose.forEach((func) => {
-            func()
-        })
+        ExtensionActivator.beforeClose()
     }
 }
 export class GlobalExtensionManager {
@@ -187,6 +179,7 @@ export class GlobalExtensionManager {
      */
     hookRequire(apiPath: string) {
         let addHook = require('pirates').addHook
+        //匹配者:只针对extension.js文件进行api的替换
         const matcher = (fileName: string) => {
             if (fileName === 'extension.js') return true
             return false
