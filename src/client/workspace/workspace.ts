@@ -1,7 +1,10 @@
+import { ProjectManagerFactory, ProjectManager, IProject } from './../../platform/base/project/project'
 import { moduleStoreNames } from './../enums'
 import { ClientStore } from '../store/store'
 import { mkdir, readdir, watch } from 'fs'
 import { ipcMain } from 'electron'
+import { eventsBind, mainEmit } from '../../platform/ipc/handlers/ipc.handler'
+import { FileUtils } from '../../platform/base/utils/utils'
 
 enum storeNames {
     workspaceManager = 'workspaceManagers',
@@ -17,7 +20,7 @@ export type workspace = {
 export interface IWorkspaceManager {
     workspace: workspace
     projects: string[]
-    onStart: string[]
+    onStart: string | null
 }
 
 export interface IGlobalWorkSpaceInfo {
@@ -33,12 +36,21 @@ export interface IGlobalWorkSpaceManager {
 export class WorkspaceManager implements IWorkspaceManager {
     workspace: workspace
     projects: string[]
-    onStart: string[]
+    onStart: string | null
 
     constructor(ws: IWorkspaceManager) {
         this.workspace = ws.workspace
         this.projects = ws.projects
         this.onStart = ws.onStart
+        eventsBind.on('extension:ready', () => {
+            this.startUp()
+        })
+    }
+
+    startUp() {
+        if (this.onStart) {
+            this.loadProject(this.workspace.storagePath + '/' + this.onStart)
+        }
     }
 
     createProject(projectName: string, projectType: string) {
@@ -48,29 +60,19 @@ export class WorkspaceManager implements IWorkspaceManager {
     }
     deleteProject() {}
     loadProject(fileName: string) {
-        GlobalWorkspaceManager.projectExtend.forEach((projectName) => {
-            if (fileName.endsWith(projectName)) {
-                ipcMain.emit('加载了project')
+        GlobalWorkspaceManager.projectExtend.forEach((projectType: string) => {
+            if (fileName.endsWith(projectType)) {
+                mainEmit.emit('project:' + projectType)
             }
         })
+        let files = FileUtils.openFolder(fileName)
+        mainEmit.emit('folder:open', files)
+        if (files.includes('project.json')) {
+            let project: IProject = require(fileName + '/project.json')
+            ProjectManagerFactory.produceProjectManager(project)
+        }
     }
     loadProjectOptions() {}
-    watchFolder(path: string) {
-        watch(
-            path,
-            {
-                persistent: true,
-            },
-            (event, filename) => {}
-        )
-    }
-    openFolder(projectName: string) {
-        let files: string[] = []
-        readdir(this.workspace.storagePath + `\\${projectName}`, (err, list) => {
-            files.push(...list)
-        })
-        return files
-    }
 }
 
 export class GlobalWorkspaceManager implements IGlobalWorkSpaceManager {
@@ -114,6 +116,7 @@ export class GlobalWorkspaceManager implements IGlobalWorkSpaceManager {
                     storagePath: dirPath + workspaceName,
                 },
                 projects: [],
+                onStart: null,
             }
             this.workspaces.set(workspaceName, w)
             GlobalWorkspaceManager.currentManager = new WorkspaceManager(w)

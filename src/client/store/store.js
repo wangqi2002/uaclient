@@ -11,14 +11,14 @@ var ConfigNames;
     ConfigNames["log"] = "LogConfig";
 })(ConfigNames = exports.ConfigNames || (exports.ConfigNames = {}));
 class ClientStore {
-    constructor() {
+    constructor(cwd = 'C:\\Users\\Administrator\\Desktop\\client.data') {
+        ClientStore.cwd = cwd;
         ClientStore.stores = new Map();
-        ClientStore.stores.set("config", new electron_store_1.default({
-            name: "config",
-            fileExtension: "json",
-            cwd: "C:\\Users\\Administrator\\Desktop\\client.data",
+        ClientStore.create({
+            name: 'config',
+            fileExtension: 'json',
             clearInvalidConfig: true,
-        }));
+        });
     }
     static set(storeName, key, content) {
         let store = ClientStore.stores.get(storeName);
@@ -63,7 +63,7 @@ class ClientStore {
             return false;
         }
         else {
-            let store = new electron_store_1.default(options);
+            let store = new electron_store_1.default(Object.assign(Object.assign({}, options), { cwd: ClientStore.cwd }));
             ClientStore.stores.set(options.name, store);
             store.openInEditor();
             return store;

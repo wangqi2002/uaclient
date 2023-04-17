@@ -53,14 +53,14 @@ var eventsBind;
         electron_1.ipcMain.on(event, eventHandler);
     }
     eventsBind.extendBind = extendBind;
-    function bindEvent(event, eventHandler) {
+    function on(event, eventHandler) {
         electron_1.ipcMain.on(event, eventHandler);
     }
-    eventsBind.bindEvent = bindEvent;
-    function onceBind(event, eventHandler) {
+    eventsBind.on = on;
+    function once(event, eventHandler) {
         electron_1.ipcMain.once(event, eventHandler);
     }
-    eventsBind.onceBind = onceBind;
+    eventsBind.once = once;
 })(eventsBind = exports.eventsBind || (exports.eventsBind = {}));
 var mainEmit;
 (function (mainEmit) {

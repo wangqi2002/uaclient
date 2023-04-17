@@ -12,7 +12,7 @@ type extensionId = string
 export interface IExtensionInstance {
     activate: () => void
     beforeClose: () => void
-    workerEntrance: string | undefined | null
+    workerEntrance: string | null
 }
 
 export interface IExtensionInstanceManager {

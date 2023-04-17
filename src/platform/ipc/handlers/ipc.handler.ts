@@ -58,11 +58,11 @@ export module eventsBind {
         ipcMain.on(event, eventHandler)
     }
 
-    export function bindEvent(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
+    export function on(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
         ipcMain.on(event, eventHandler)
     }
 
-    export function onceBind(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
+    export function once(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
         ipcMain.once(event, eventHandler)
     }
 }

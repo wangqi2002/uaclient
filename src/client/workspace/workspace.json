@@ -9,6 +9,6 @@
     "currentWS": {
         "workspaceName": "string",
         "storagePath": "string",
-        "projects": []
+        "projects": null
     }
 }

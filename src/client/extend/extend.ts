@@ -4,7 +4,7 @@ import EventEmitter from 'events'
 import { GlobalWorkspaceManager } from './../workspace/workspace'
 import { ClientStore } from '../store/store'
 import { ExtensionActivator } from './activator'
-import { eventsBind } from '../../platform/ipc/handlers/ipc.handler'
+import { eventsBind, mainEmit } from '../../platform/ipc/handlers/ipc.handler'
 import { rendererEvents } from '../../platform/ipc/events/ipc.events'
 import { workspace } from '../workspace/workspace'
 import { ProcessManager } from '../process/process'
@@ -76,6 +76,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
                 }
             }
         })
+        mainEmit.emit('extension:ready')
     }
 
     enableExtension(extension: IExtension) {
@@ -148,7 +149,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
     bindActivateEvents(extension: IExtension) {
         extension.onEvents.forEach((event) => {
             //todo 修改考虑插件的项目数据恢复
-            eventsBind.onceBind(event, async () => {
+            eventsBind.once(event, async () => {
                 ExtensionActivator.activate(extension)
             })
         })
@@ -230,6 +231,10 @@ export class GlobalExtensionManager implements IGlobalExtensionManager {
         this.currentManager.on('extension-invalid', (extension: IExtension) => {
             console.log(extension.identifier)
         })
+    }
+
+    produceExtensionManager(extensionManager: IExtensionManager) {
+        this.extensionManagers.set(extensionManager.attributes.workspaceName, extensionManager)
     }
 
     //启动activator.js文件作为一个子进程存在
