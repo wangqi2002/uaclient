@@ -1,4 +1,5 @@
-import { EventEmitter } from "events"
+import { ipcClient } from './../../ipc/handlers/ipc.handler'
+import { EventEmitter } from 'events'
 type pipeId = string
 
 /**
@@ -7,9 +8,11 @@ type pipeId = string
 export class MessagePipe extends EventEmitter {
     content: Map<string, any[]>
     maxLength: number
+    pipeId: pipeId
 
-    constructor(maxLength?: number) {
+    constructor(pipeId: pipeId, maxLength?: number) {
         super()
+        this.pipeId = pipeId
         this.content = new Map()
         this.maxLength = maxLength ? maxLength : 200
     }
@@ -27,18 +30,21 @@ export class MessagePipe extends EventEmitter {
         if (data) {
             data.push(message)
             if (data.length >= this.maxLength) {
-                this.emit("full", data)
+                this.emit('full', data)
+                ipcClient.emit(this.pipeId + ':full', data)
                 data.length = 0
             }
         } else {
             this.content.set(message.nodeId, [message])
         }
-        this.emit("pushed", message)
+        this.emit('pushed', message)
+        ipcClient.emit(this.pipeId + ':pushed', message)
     }
 
     terminate() {
         let copy = new Map(this.content)
-        this.emit("close", copy)
+        this.emit('close', copy)
+        ipcClient.emit(this.pipeId + ':close', copy)
         this.content.clear()
         return copy
     }
@@ -48,11 +54,7 @@ export class MessagePipe extends EventEmitter {
  * @description 一个中间消息转发者,通过自主新建的MessagePipe来实现不同管道的订阅与通信
  */
 export class Broker {
-    private static pipes: Map<pipeId, MessagePipe>
-
-    constructor() {
-        Broker.pipes = new Map<pipeId, MessagePipe>()
-    }
+    static pipes: Map<pipeId, MessagePipe> = new Map()
 
     /**
      * @description 接收消息并且推入pipe中,如果pipe不存在,那么新建一个pipe
@@ -69,7 +71,7 @@ export class Broker {
     static async receive(pipeId: pipeId, messageId: string, message: any) {
         let data = Broker.pipes.get(pipeId)
         if (!data) {
-            let pipe = new MessagePipe()
+            let pipe = new MessagePipe(pipeId)
             Broker.pipes.set(pipeId, pipe)
             data = pipe
         }
@@ -81,8 +83,12 @@ export class Broker {
         return Broker.pipes.has(pipeId)
     }
 
-    static async getPipe(pipeId: string) {
-        return Broker.pipes.get(pipeId)
+    static getPipe(pipeId: string): MessagePipe {
+        let pipe = Broker.pipes.get(pipeId)
+        if (!pipe) {
+            pipe = Broker.createPipe(pipeId)
+        }
+        return pipe
     }
 
     /**
@@ -92,7 +98,7 @@ export class Broker {
      * Broker.createPipe(Config.defaultPipeName)
      */
     static createPipe(pipeId: string) {
-        let pipe = new MessagePipe()
+        let pipe = new MessagePipe(pipeId)
         Broker.pipes.set(pipeId, pipe)
         return pipe
     }

@@ -1,4 +1,4 @@
-import { readdirSync, watch } from 'fs'
+import { readdirSync, watch, stat, statSync } from 'fs'
 
 export class Utils {
     /**
@@ -45,7 +45,10 @@ export class Utils {
         }
     }
 }
-
+type file = {
+    name: string
+    child: Object[] | null
+}
 export class FileUtils {
     constructor() {}
 
@@ -55,8 +58,21 @@ export class FileUtils {
         // })
     }
 
-    static openFolder(fileName: string) {
+    static openFolder(fileName: string): string[] {
         return readdirSync(fileName)
+    }
+
+    static openFolderWithChild(fileName: string): file[] {
+        let files = readdirSync(fileName)
+        let results: file[] = []
+        files.forEach((file) => {
+            if (statSync(fileName + '/' + file).isDirectory()) {
+                results.push({ name: file, child: readdirSync(fileName + '/' + file) })
+            } else {
+                results.push({ name: file, child: null })
+            }
+        })
+        return results
     }
 
     static watchFolder(path: string) {

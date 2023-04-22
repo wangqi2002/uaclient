@@ -42,12 +42,12 @@ exports.ClientInfo = ClientInfo;
 class Log {
     constructor(loggerName = 'client', config) {
         this.configureLog(config);
-        ipc_handler_1.eventsBind.logInitBind();
+        this.initBind();
     }
     static info(info) {
         try {
             Log.clientLogger.info(info.information, Object.assign({ source: info.source }, info.message));
-            ipc_handler_1.mainEmit.emit(ipc_events_1.MainEvents.logEmitEvents.info, info);
+            ipc_handler_1.ipcClient.emit(ipc_events_1.MainEvents.logEmitEvents.info, info);
         }
         catch (e) {
             throw e;
@@ -56,7 +56,7 @@ class Log {
     static error(info) {
         try {
             Log.clientLogger.error(info.information, Object.assign({ source: info.source, error: info.error, stack: info.trace }, info.message));
-            ipc_handler_1.mainEmit.emit(ipc_events_1.MainEvents.logEmitEvents.error, info);
+            ipc_handler_1.ipcClient.emit(ipc_events_1.MainEvents.logEmitEvents.error, info);
         }
         catch (e) {
             throw e;
@@ -65,7 +65,7 @@ class Log {
     static warn(info) {
         try {
             Log.clientLogger.warn(info.information, Object.assign({ source: info.source, warn: info.warn }, info.message));
-            ipc_handler_1.mainEmit.emit(ipc_events_1.MainEvents.logEmitEvents.warn, info);
+            ipc_handler_1.ipcClient.emit(ipc_events_1.MainEvents.logEmitEvents.warn, info);
         }
         catch (e) {
             throw e;
@@ -99,6 +99,17 @@ class Log {
         catch (e) {
             throw e;
         }
+    }
+    initBind() {
+        ipc_handler_1.ipcClient.on(ipc_events_1.rendererEvents.logEvents.info, (event, args) => {
+            Log.info(args);
+        });
+        ipc_handler_1.ipcClient.on(ipc_events_1.rendererEvents.logEvents.error, (event, args) => {
+            Log.error(args);
+        });
+        ipc_handler_1.ipcClient.on(ipc_events_1.rendererEvents.logEvents.warn, (event, args) => {
+            Log.warn(args);
+        });
     }
 }
 exports.Log = Log;

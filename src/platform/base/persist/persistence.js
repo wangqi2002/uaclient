@@ -10,23 +10,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Persistence = void 0;
+const utils_1 = require("./../utils/utils");
 const sequelize_1 = require("sequelize");
 const store_1 = require("../../../client/store/store");
 class Persistence {
-    constructor(storage, tableName, attributes, options) {
+    constructor(options, storage) {
         try {
             // let options = ClientConfig.get(ConfigNames.persistence)
             if (options) {
                 Persistence.sequelize = new sequelize_1.Sequelize(options);
             }
             else {
-                Persistence.sequelize = new sequelize_1.Sequelize({
-                    dialect: "sqlite",
-                    storage: storage,
-                    logging: false,
-                });
+                if (storage) {
+                    Persistence.sequelize = new sequelize_1.Sequelize({
+                        dialect: 'sqlite',
+                        storage: storage,
+                        logging: false,
+                    });
+                }
             }
-            Persistence.initDataModel(tableName, attributes);
+            // Persistence.initDataModel(tableName, attributes)
         }
         catch (e) {
             throw e;
@@ -62,10 +65,10 @@ class Persistence {
             try {
                 if (conf) {
                     Persistence.sequelize = new sequelize_1.Sequelize(conf);
-                    store_1.ClientStore.set("config", store_1.ConfigNames.persistence, conf);
+                    store_1.ClientStore.set('config', store_1.ConfigNames.persistence, conf);
                 }
                 if (tableName && attributes) {
-                    Persistence.initDataModel(tableName, attributes);
+                    Persistence.initDataModel(attributes, tableName);
                 }
             }
             catch (e) {
@@ -73,9 +76,10 @@ class Persistence {
             }
         });
     }
-    static initDataModel(tableName, attributes) {
+    static initDataModel(attributes, tableName) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                tableName = tableName ? tableName : utils_1.Utils.formatDateYMW(new Date());
                 yield Persistence.sequelize.authenticate();
                 Persistence.currentModel = yield Persistence.sequelize.define(tableName, attributes, { timestamps: false });
                 yield Persistence.currentModel.sync();

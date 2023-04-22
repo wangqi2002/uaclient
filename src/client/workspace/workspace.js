@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GlobalWorkspaceManager = exports.WorkspaceManager = void 0;
 const project_1 = require("./../../platform/base/project/project");
@@ -7,6 +10,7 @@ const store_1 = require("../store/store");
 const fs_1 = require("fs");
 const ipc_handler_1 = require("../../platform/ipc/handlers/ipc.handler");
 const utils_1 = require("../../platform/base/utils/utils");
+const events_1 = __importDefault(require("events"));
 var storeNames;
 (function (storeNames) {
     storeNames["workspaceManager"] = "workspaceManagers";
@@ -15,16 +19,24 @@ var storeNames;
 })(storeNames || (storeNames = {}));
 class WorkspaceManager {
     constructor(ws) {
+        this.events = new events_1.default();
         this.workspace = ws.workspace;
         this.projects = ws.projects;
         this.onStart = ws.onStart;
-        ipc_handler_1.eventsBind.on('extension:ready', () => {
-            this.startUp();
+        this.initBind();
+        ipc_handler_1.ipcClient.on('extension:ready', () => {
+            this.toStart();
         });
     }
-    startUp() {
+    initBind() {
+        ipc_handler_1.ipcClient.on('project:load', (event, fileName) => {
+            console.log(fileName);
+            this.loadProject(fileName);
+        });
+    }
+    toStart() {
         if (this.onStart) {
-            this.loadProject(this.workspace.storagePath + '/' + this.onStart);
+            ipc_handler_1.ipcClient.emit('project:load', this.workspace.storagePath + '/' + this.onStart);
         }
     }
     createProject(projectName, projectType) {
@@ -36,17 +48,12 @@ class WorkspaceManager {
     loadProject(fileName) {
         GlobalWorkspaceManager.projectExtend.forEach((projectType) => {
             if (fileName.endsWith(projectType)) {
-                ipc_handler_1.mainEmit.emit('project:' + projectType);
+                ipc_handler_1.ipcClient.emit('project:activate.' + projectType);
             }
         });
-        let files = utils_1.FileUtils.openFolder(fileName);
-        ipc_handler_1.mainEmit.emit('folder:open', files);
-        if (files.includes('project.json')) {
-            let project = require(fileName + '/project.json');
-            project_1.ProjectManagerFactory.produceProjectManager(project);
-        }
+        let project = require(fileName + '/project.json');
+        project_1.ProjectManagerFactory.produceProjectManager(project);
     }
-    loadProjectOptions() { }
 }
 exports.WorkspaceManager = WorkspaceManager;
 class GlobalWorkspaceManager {
@@ -58,19 +65,33 @@ class GlobalWorkspaceManager {
             fileExtension: 'json',
             clearInvalidConfig: true,
         });
+        this.initBind();
         this.loadAllWorkspaces();
+        ipc_handler_1.ipcClient.emit('workspace:ready');
+    }
+    initBind() {
+        ipc_handler_1.ipcClient.handle('folder:open', (event, fileName) => {
+            let files = utils_1.FileUtils.openFolder(fileName);
+            if (files.includes('project.json')) {
+                ipc_handler_1.ipcClient.emit('project:load', fileName, files);
+                return null;
+            }
+            else {
+                return files;
+            }
+        });
     }
     loadAllWorkspaces() {
         let ws = store_1.ClientStore.get(enums_1.moduleStoreNames.workspace, storeNames.workspaceManager);
         let current = store_1.ClientStore.get(enums_1.moduleStoreNames.workspace, storeNames.currentManager);
         GlobalWorkspaceManager.projectExtend = store_1.ClientStore.get(enums_1.moduleStoreNames.workspace, storeNames.projectExtend);
+        if (current) {
+            GlobalWorkspaceManager.currentManager = new WorkspaceManager(current);
+        }
         if (ws) {
             ws.forEach((wsIns) => {
                 this.workspaces.set(wsIns.workspace.workspaceName, wsIns);
             });
-        }
-        if (current) {
-            GlobalWorkspaceManager.currentManager = new WorkspaceManager(current);
         }
     }
     createDirAsWorkspace(dirPath, workspaceName) {

@@ -1,6 +1,8 @@
 import EventEmitter from 'events'
-import { Worker } from 'worker_threads'
+// import { Worker } from 'worker_threads'
+import { fork } from 'child_process'
 import { ExtensionManager, IExtensionIdentifier, IExtension } from './extend'
+// import cluster from 'cluster'
 
 type extensionId = string
 
@@ -44,7 +46,10 @@ export class ExtensionActivator {
             await extension.activate()
             let worker = undefined
             if (extension.workerEntrance) {
-                worker = new Worker(extension.workerEntrance)
+                // worker = new Worker(extension.workerEntrance)
+                fork(extension.workerEntrance)
+                // cluster.fork(extension.workerEntrance)
+                // await require(extension.workerEntrance)
             }
             ExtensionActivator.extensionInstanceManagers.set(IExtension.identifier.id, {
                 identifier: IExtension.identifier,

@@ -1,7 +1,7 @@
 import { app } from 'electron'
 import { Configuration, configure, getLogger, Logger } from 'log4js'
-import { MainEvents } from '../../ipc/events/ipc.events'
-import { eventsBind, mainEmit } from '../../ipc/handlers/ipc.handler'
+import { MainEvents, rendererEvents } from '../../ipc/events/ipc.events'
+import { ipcClient } from '../../ipc/handlers/ipc.handler'
 import { ClientStore, ConfigNames } from '../../../client/store/store'
 
 type Source = string | undefined
@@ -55,13 +55,13 @@ export class Log {
 
     constructor(loggerName: loggerName = 'client', config?: Configuration) {
         this.configureLog(config)
-        eventsBind.logInitBind()
+        this.initBind()
     }
 
     static info(info: ClientInfo) {
         try {
             Log.clientLogger.info(info.information, { source: info.source, ...info.message })
-            mainEmit.emit(MainEvents.logEmitEvents.info, info)
+            ipcClient.emit(MainEvents.logEmitEvents.info, info)
         } catch (e: any) {
             throw e
         }
@@ -75,7 +75,7 @@ export class Log {
                 stack: info.trace,
                 ...info.message,
             })
-            mainEmit.emit(MainEvents.logEmitEvents.error, info)
+            ipcClient.emit(MainEvents.logEmitEvents.error, info)
         } catch (e: any) {
             throw e
         }
@@ -84,7 +84,7 @@ export class Log {
     static warn(info: ClientWarn) {
         try {
             Log.clientLogger.warn(info.information, { source: info.source, warn: info.warn, ...info.message })
-            mainEmit.emit(MainEvents.logEmitEvents.warn, info)
+            ipcClient.emit(MainEvents.logEmitEvents.warn, info)
         } catch (e: any) {
             throw e
         }
@@ -115,6 +115,18 @@ export class Log {
         } catch (e: any) {
             throw e
         }
+    }
+
+    initBind() {
+        ipcClient.on(rendererEvents.logEvents.info, (event, args: ClientInfo) => {
+            Log.info(args)
+        })
+        ipcClient.on(rendererEvents.logEvents.error, (event, args: ClientError) => {
+            Log.error(args)
+        })
+        ipcClient.on(rendererEvents.logEvents.warn, (event, args: ClientWarn) => {
+            Log.warn(args)
+        })
     }
 }
 //todo 安装时,应当初始化log和database服务

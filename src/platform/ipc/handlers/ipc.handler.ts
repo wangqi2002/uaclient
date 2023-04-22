@@ -1,74 +1,30 @@
-import { BrowserWindow, ipcMain, IpcMainEvent } from 'electron'
-import { rendererEvents } from '../events/ipc.events'
-import { ClientError, ClientInfo, ClientWarn, Log } from '../../base/log/log'
+import { BrowserWindow, ipcMain, IpcMainEvent, IpcMainInvokeEvent } from 'electron'
 
-export module eventsBind {
-    export function workbenchInitBind(mainWindow: BrowserWindow) {
-        ipcMain.on(rendererEvents.benchEvents.minimize, () => {
-            mainWindow.minimize()
-        })
-        ipcMain.on(rendererEvents.benchEvents.maximize, () => {
-            if (mainWindow.isMaximized()) {
-                mainWindow.restore()
-            } else {
-                mainWindow.maximize()
-            }
-        })
-        ipcMain.on(rendererEvents.benchEvents.close, () => {
-            mainWindow.close()
-        })
+export class ipcClient {
+    static mainWindow: BrowserWindow
+
+    constructor(mainWindow: BrowserWindow) {
+        ipcClient.mainWindow = mainWindow
     }
 
-    export function logInitBind() {
-        ipcMain.on(rendererEvents.logEvents.info, (event, args: ClientInfo) => {
-            Log.info(args)
-        })
-        ipcMain.on(rendererEvents.logEvents.error, (event, args: ClientError) => {
-            Log.error(args)
-        })
-        ipcMain.on(rendererEvents.logEvents.warn, (event, args: ClientWarn) => {
-            Log.warn(args)
-        })
-    }
-
-    export function benchBind(
-        event: rendererEvents.benchEvents,
-        eventHandler: (event: IpcMainEvent, ...args: any[]) => void
-    ) {
+    static on(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
         ipcMain.on(event, eventHandler)
     }
 
-    export function workspaceBind(
-        event: rendererEvents.workspaceEvents,
-        eventHandler: (event: IpcMainEvent, ...args: any[]) => void
-    ) {
-        ipcMain.on(event, eventHandler)
-    }
-
-    export function persistBind() {
-        // ipcMain.on("persist:init", (event, storage, tableName, attributes) => {
-        //     Persistence.init(storage, tableName, attributes)
-        // })
-    }
-
-    export function extendBind(
-        event: rendererEvents.extensionEvents,
-        eventHandler: (event: Electron.IpcMainEvent, ...args: any[]) => void
-    ) {
-        ipcMain.on(event, eventHandler)
-    }
-
-    export function on(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
-        ipcMain.on(event, eventHandler)
-    }
-
-    export function once(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
+    static once(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
         ipcMain.once(event, eventHandler)
     }
-}
 
-export module mainEmit {
-    export function emit(event: string, ...args: any[]) {
-        ipcMain.emit(event, ...args)
+    static handle(event: string, eventHandler: (event: IpcMainInvokeEvent, ...args: any[]) => void) {
+        ipcMain.handle(event, eventHandler)
+    }
+
+    /**
+     * @description 通过mainwindow进行广播,并且发送消息到mainwindow.webContents
+     * @param event
+     * @param args
+     */
+    static emit(event: string, ...args: any[]) {
+        ipcClient.mainWindow.webContents.emit(event, ...args)
     }
 }

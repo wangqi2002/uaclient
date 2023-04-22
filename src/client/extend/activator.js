@@ -37,7 +37,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExtensionActivator = void 0;
 const events_1 = __importDefault(require("events"));
-const worker_threads_1 = require("worker_threads");
+// import { Worker } from 'worker_threads'
+const child_process_1 = require("child_process");
 class ExtensionActivator {
     constructor() {
         ExtensionActivator.events = new events_1.default();
@@ -58,7 +59,10 @@ class ExtensionActivator {
                 yield extension.activate();
                 let worker = undefined;
                 if (extension.workerEntrance) {
-                    worker = new worker_threads_1.Worker(extension.workerEntrance);
+                    // worker = new Worker(extension.workerEntrance)
+                    (0, child_process_1.fork)(extension.workerEntrance);
+                    // cluster.fork(extension.workerEntrance)
+                    // await require(extension.workerEntrance)
                 }
                 ExtensionActivator.extensionInstanceManagers.set(IExtension.identifier.id, {
                     identifier: IExtension.identifier,

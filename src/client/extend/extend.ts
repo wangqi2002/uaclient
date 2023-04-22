@@ -4,7 +4,7 @@ import EventEmitter from 'events'
 import { GlobalWorkspaceManager } from './../workspace/workspace'
 import { ClientStore } from '../store/store'
 import { ExtensionActivator } from './activator'
-import { eventsBind, mainEmit } from '../../platform/ipc/handlers/ipc.handler'
+import { ipcClient } from '../../platform/ipc/handlers/ipc.handler'
 import { rendererEvents } from '../../platform/ipc/events/ipc.events'
 import { workspace } from '../workspace/workspace'
 import { ProcessManager } from '../process/process'
@@ -74,9 +74,9 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
                     delete this.enabledExtensions[index]
                     this.emit('extension-invalid', extension)
                 }
+                // this.bindActivateEvents(extension)
             }
         })
-        mainEmit.emit('extension:ready')
     }
 
     enableExtension(extension: IExtension) {
@@ -149,7 +149,7 @@ export class ExtensionManager extends EventEmitter implements IExtensionManager 
     bindActivateEvents(extension: IExtension) {
         extension.onEvents.forEach((event) => {
             //todo 修改考虑插件的项目数据恢复
-            eventsBind.once(event, async () => {
+            ipcClient.once(event, async () => {
                 ExtensionActivator.activate(extension)
             })
         })
@@ -180,6 +180,7 @@ export class GlobalExtensionManager implements IGlobalExtensionManager {
             clearInvalidConfig: true,
         })
         this.startUp()
+        ipcClient.emit('extension:ready')
     }
 
     async startUp() {
@@ -199,15 +200,15 @@ export class GlobalExtensionManager implements IGlobalExtensionManager {
         //替换字符串中的转义字符
         apiPath = apiPath.replace(/\\/g, '/')
         //匹配者:只针对extension.js文件进行api的替换
-        const matcher = (fileName: string) => {
-            if (fileName.endsWith('extension.js')) return true
-            return false
-        }
+        // const matcher = (fileName: string) => {
+        //     if (fileName.endsWith('extension.js')) return true
+        //     return false
+        // }
         addHook(
             (code: string, filename: string) => {
                 return code.replace(/require\((['"])uniclient\1\)/, `require("${apiPath}")`)
             },
-            { exts: ['.js'], matcher }
+            { exts: ['.js'] }
         )
     }
 
@@ -247,33 +248,27 @@ export class GlobalExtensionManager implements IGlobalExtensionManager {
      */
     bindEventsToMain() {
         //绑定插件安装
-        eventsBind.extendBind(
-            rendererEvents.extensionEvents.install,
-            (event, workspace: string, extension: IExtension) => {
-                if (this.workspace.workspaceName != 'global' && workspace == 'global') {
-                    let gm: IExtensionManager = ClientStore.get(moduleStoreNames.extension, 'globalExtensionManager')
-                    gm.enabledExtensions.push(extension)
-                    ClientStore.set(moduleStoreNames.extension, 'globalExtensionManager', gm)
-                } else {
-                    this.currentManager.installExtension(extension)
-                }
+        ipcClient.on(rendererEvents.extensionEvents.install, (event, workspace: string, extension: IExtension) => {
+            if (this.workspace.workspaceName != 'global' && workspace == 'global') {
+                let gm: IExtensionManager = ClientStore.get(moduleStoreNames.extension, 'globalExtensionManager')
+                gm.enabledExtensions.push(extension)
+                ClientStore.set(moduleStoreNames.extension, 'globalExtensionManager', gm)
+            } else {
+                this.currentManager.installExtension(extension)
             }
-        )
+        })
         //绑定插件卸载方法
-        eventsBind.extendBind(
-            rendererEvents.extensionEvents.uninstall,
-            (event, workspace: string, extension: IExtension) => {
-                if (this.workspace.workspaceName != 'global' && workspace == 'global') {
-                    let gm: IExtensionManager = ClientStore.get(moduleStoreNames.extension, 'globalExtensionManager')
-                    gm.enabledExtensions.push(extension)
-                    ClientStore.set(moduleStoreNames.extension, 'globalExtensionManager', gm)
-                } else {
-                    this.currentManager.uninstallExtension(extension)
-                }
+        ipcClient.on(rendererEvents.extensionEvents.uninstall, (event, workspace: string, extension: IExtension) => {
+            if (this.workspace.workspaceName != 'global' && workspace == 'global') {
+                let gm: IExtensionManager = ClientStore.get(moduleStoreNames.extension, 'globalExtensionManager')
+                gm.enabledExtensions.push(extension)
+                ClientStore.set(moduleStoreNames.extension, 'globalExtensionManager', gm)
+            } else {
+                this.currentManager.uninstallExtension(extension)
             }
-        )
+        })
         //绑定新建workspace方法,如果是全局则不会新建extensionManager
-        eventsBind.workspaceBind(rendererEvents.workspaceEvents.create, (event, workspace: string, storage: string) => {
+        ipcClient.on(rendererEvents.workspaceEvents.create, (event, workspace: string, storage: string) => {
             if (workspace != 'global') {
                 let m: IExtensionManager = {
                     attributes: {

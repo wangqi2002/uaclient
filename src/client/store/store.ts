@@ -1,3 +1,4 @@
+import { app } from 'electron'
 import Store from 'electron-store'
 
 export enum ConfigNames {
@@ -16,8 +17,8 @@ export class ClientStore {
     static stores: Map<storeName, Store>
     static cwd: string
 
-    constructor(cwd: string = 'C:\\Users\\Administrator\\Desktop\\client.data') {
-        ClientStore.cwd = cwd
+    constructor(cwd?: string) {
+        ClientStore.cwd = cwd ? cwd : app.getPath('appData')
         ClientStore.stores = new Map<string, Store>()
         ClientStore.create({
             name: 'config',

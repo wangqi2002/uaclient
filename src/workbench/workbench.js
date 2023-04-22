@@ -17,6 +17,7 @@ const electron_1 = require("electron");
 const electron_win_state_1 = __importDefault(require("electron-win-state"));
 const path_1 = __importDefault(require("path"));
 const stream_1 = require("stream");
+const ipc_events_1 = require("../platform/ipc/events/ipc.events");
 const ipc_handler_1 = require("../platform/ipc/handlers/ipc.handler");
 class Workbench extends stream_1.EventEmitter {
     constructor(preload, homeViewPath, dev = false) {
@@ -28,10 +29,10 @@ class Workbench extends stream_1.EventEmitter {
         this.createMainWindow(preload, homeViewPath, dev);
         this.existViews = new Map();
     }
-    createMainWindow(preloadPath = path_1.default.join(__dirname, '../preload.js'), indexHtmlPath = path_1.default.join(__dirname, './index.html'), dev = false) {
+    createMainWindow(preloadPath = path_1.default.join(__dirname, './preload.js'), indexHtmlPath = path_1.default.join(__dirname, './index.html'), dev = false) {
         return __awaiter(this, void 0, void 0, function* () {
             this.mainWindow = new electron_1.BrowserWindow(Object.assign(Object.assign({}, this.winState.winOptions), { frame: false, center: true, show: false, webPreferences: {
-                    preload: path_1.default.join(__dirname, preloadPath),
+                    preload: preloadPath,
                     devTools: true,
                     nodeIntegration: true,
                     contextIsolation: false,
@@ -39,15 +40,27 @@ class Workbench extends stream_1.EventEmitter {
             if (dev) {
                 this.mainWindow.webContents.openDevTools();
             }
-            this.mainWindow.webContents.openDevTools();
             yield this.mainWindow.loadFile(indexHtmlPath);
             // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
-            this.mainWindow.once('ready-to-show', () => {
-                this.mainWindow.show();
-            });
-            // MainHandler.initBind(this.mainWindow)
-            ipc_handler_1.eventsBind.workbenchInitBind(this.mainWindow);
+            new ipc_handler_1.ipcClient(this.mainWindow);
+            this.initBind(this.mainWindow);
             this.winState.manage(this.mainWindow);
+        });
+    }
+    initBind(mainWindow) {
+        ipc_handler_1.ipcClient.on(ipc_events_1.rendererEvents.benchEvents.minimize, () => {
+            mainWindow.minimize();
+        });
+        ipc_handler_1.ipcClient.on(ipc_events_1.rendererEvents.benchEvents.maximize, () => {
+            if (mainWindow.isMaximized()) {
+                mainWindow.restore();
+            }
+            else {
+                mainWindow.maximize();
+            }
+        });
+        ipc_handler_1.ipcClient.on(ipc_events_1.rendererEvents.benchEvents.close, () => {
+            mainWindow.close();
         });
     }
     createWindow(viewUrl, isWebView) {

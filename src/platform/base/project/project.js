@@ -11,6 +11,9 @@ class ProjectManagerFactory {
         ProjectManagerFactory.currentManager = manager;
         return manager;
     }
+    static getCurrentProject() {
+        return ProjectManagerFactory.currentProject;
+    }
 }
 exports.ProjectManagerFactory = ProjectManagerFactory;
 class ProjectManager {

@@ -1,23 +1,26 @@
-import {FindOptions, ModelAttributes, ModelCtor, Options, Sequelize} from "sequelize"
-import {ClientStore, ConfigNames} from "../../../client/store/store"
+import { Utils } from './../utils/utils'
+import { FindOptions, ModelAttributes, ModelCtor, Options, Sequelize } from 'sequelize'
+import { ClientStore, ConfigNames } from '../../../client/store/store'
 
 export class Persistence {
     private static sequelize: Sequelize
     private static currentModel: ModelCtor<any>
 
-    constructor(storage: string, tableName: string, attributes: ModelAttributes, options?: Options) {
+    constructor(options?: Options, storage?: string) {
         try {
             // let options = ClientConfig.get(ConfigNames.persistence)
             if (options) {
                 Persistence.sequelize = new Sequelize(options)
             } else {
-                Persistence.sequelize = new Sequelize({
-                    dialect: "sqlite",
-                    storage: storage,
-                    logging: false,
-                })
+                if (storage) {
+                    Persistence.sequelize = new Sequelize({
+                        dialect: 'sqlite',
+                        storage: storage,
+                        logging: false,
+                    })
+                }
             }
-            Persistence.initDataModel(tableName, attributes)
+            // Persistence.initDataModel(tableName, attributes)
         } catch (e: any) {
             throw e
         }
@@ -47,18 +50,19 @@ export class Persistence {
         try {
             if (conf) {
                 Persistence.sequelize = new Sequelize(conf)
-                ClientStore.set("config", ConfigNames.persistence, conf)
+                ClientStore.set('config', ConfigNames.persistence, conf)
             }
             if (tableName && attributes) {
-                Persistence.initDataModel(tableName, attributes)
+                Persistence.initDataModel(attributes, tableName)
             }
         } catch (e: any) {
             throw e
         }
     }
 
-    static async initDataModel(tableName: string, attributes: ModelAttributes) {
+    static async initDataModel(attributes: ModelAttributes, tableName?: string) {
         try {
+            tableName = tableName ? tableName : Utils.formatDateYMW(new Date())
             await Persistence.sequelize.authenticate()
             Persistence.currentModel = await Persistence.sequelize.define(tableName, attributes, { timestamps: false })
             await Persistence.currentModel.sync()

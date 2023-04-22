@@ -1,10 +1,10 @@
-import { ProjectManagerFactory, ProjectManager, IProject } from './../../platform/base/project/project'
+import { ProjectManagerFactory, IProject } from './../../platform/base/project/project'
 import { moduleStoreNames } from './../enums'
 import { ClientStore } from '../store/store'
-import { mkdir, readdir, watch } from 'fs'
-import { ipcMain } from 'electron'
-import { eventsBind, mainEmit } from '../../platform/ipc/handlers/ipc.handler'
+import { mkdir } from 'fs'
+import { ipcClient } from '../../platform/ipc/handlers/ipc.handler'
 import { FileUtils } from '../../platform/base/utils/utils'
+import EventEmitter from 'events'
 
 enum storeNames {
     workspaceManager = 'workspaceManagers',
@@ -35,21 +35,31 @@ export interface IGlobalWorkSpaceManager {
 
 export class WorkspaceManager implements IWorkspaceManager {
     workspace: workspace
+    events: EventEmitter
     projects: string[]
     onStart: string | null
 
     constructor(ws: IWorkspaceManager) {
+        this.events = new EventEmitter()
         this.workspace = ws.workspace
         this.projects = ws.projects
         this.onStart = ws.onStart
-        eventsBind.on('extension:ready', () => {
-            this.startUp()
+        this.initBind()
+        ipcClient.on('extension:ready', () => {
+            this.toStart()
         })
     }
 
-    startUp() {
+    initBind() {
+        ipcClient.on('project:load', (event, fileName: string) => {
+            console.log(fileName)
+            this.loadProject(fileName)
+        })
+    }
+
+    toStart() {
         if (this.onStart) {
-            this.loadProject(this.workspace.storagePath + '/' + this.onStart)
+            ipcClient.emit('project:load', this.workspace.storagePath + '/' + this.onStart)
         }
     }
 
@@ -62,17 +72,12 @@ export class WorkspaceManager implements IWorkspaceManager {
     loadProject(fileName: string) {
         GlobalWorkspaceManager.projectExtend.forEach((projectType: string) => {
             if (fileName.endsWith(projectType)) {
-                mainEmit.emit('project:' + projectType)
+                ipcClient.emit('project:activate.' + projectType)
             }
         })
-        let files = FileUtils.openFolder(fileName)
-        mainEmit.emit('folder:open', files)
-        if (files.includes('project.json')) {
-            let project: IProject = require(fileName + '/project.json')
-            ProjectManagerFactory.produceProjectManager(project)
-        }
+        let project: IProject = require(fileName + '/project.json')
+        ProjectManagerFactory.produceProjectManager(project)
     }
-    loadProjectOptions() {}
 }
 
 export class GlobalWorkspaceManager implements IGlobalWorkSpaceManager {
@@ -88,20 +93,34 @@ export class GlobalWorkspaceManager implements IGlobalWorkSpaceManager {
             fileExtension: 'json',
             clearInvalidConfig: true,
         })
+        this.initBind()
         this.loadAllWorkspaces()
+        ipcClient.emit('workspace:ready')
+    }
+
+    initBind() {
+        ipcClient.handle('folder:open', (event, fileName: string) => {
+            let files = FileUtils.openFolder(fileName)
+            if (files.includes('project.json')) {
+                ipcClient.emit('project:load', fileName, files)
+                return null
+            } else {
+                return files
+            }
+        })
     }
 
     loadAllWorkspaces() {
         let ws: IWorkspaceManager[] = ClientStore.get(moduleStoreNames.workspace, storeNames.workspaceManager)
         let current: IWorkspaceManager = ClientStore.get(moduleStoreNames.workspace, storeNames.currentManager)
         GlobalWorkspaceManager.projectExtend = ClientStore.get(moduleStoreNames.workspace, storeNames.projectExtend)
+        if (current) {
+            GlobalWorkspaceManager.currentManager = new WorkspaceManager(current)
+        }
         if (ws) {
             ws.forEach((wsIns) => {
                 this.workspaces.set(wsIns.workspace.workspaceName, wsIns)
             })
-        }
-        if (current) {
-            GlobalWorkspaceManager.currentManager = new WorkspaceManager(current)
         }
     }
 

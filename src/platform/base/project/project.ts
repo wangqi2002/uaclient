@@ -1,5 +1,4 @@
 import { workspace } from './../../../client/workspace/workspace'
-import { eventsBind, mainEmit } from '../../ipc/handlers/ipc.handler'
 
 export interface IProject {
     workspace: workspace
@@ -21,7 +20,6 @@ export class ProjectManagerFactory {
         let manager = new ProjectManager(project)
         ProjectManagerFactory.currentProject = project
         ProjectManagerFactory.currentManager = manager
-        mainEmit.emit('project:loaded', project)
         return manager
     }
 

@@ -49,9 +49,9 @@ class ExtensionManager extends events_1.default {
                         delete this.enabledExtensions[index];
                         this.emit('extension-invalid', extension);
                     }
+                    // this.bindActivateEvents(extension)
                 }
             });
-            ipc_handler_1.mainEmit.emit('extension:ready');
         });
     }
     enableExtension(extension) {
@@ -119,7 +119,7 @@ class ExtensionManager extends events_1.default {
     bindActivateEvents(extension) {
         extension.onEvents.forEach((event) => {
             //todo 修改考虑插件的项目数据恢复
-            ipc_handler_1.eventsBind.once(event, () => __awaiter(this, void 0, void 0, function* () {
+            ipc_handler_1.ipcClient.once(event, () => __awaiter(this, void 0, void 0, function* () {
                 activator_1.ExtensionActivator.activate(extension);
             }));
         });
@@ -144,6 +144,7 @@ class GlobalExtensionManager {
             clearInvalidConfig: true,
         });
         this.startUp();
+        ipc_handler_1.ipcClient.emit('extension:ready');
     }
     startUp() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -163,14 +164,13 @@ class GlobalExtensionManager {
         //替换字符串中的转义字符
         apiPath = apiPath.replace(/\\/g, '/');
         //匹配者:只针对extension.js文件进行api的替换
-        const matcher = (fileName) => {
-            if (fileName.endsWith('extension.js'))
-                return true;
-            return false;
-        };
+        // const matcher = (fileName: string) => {
+        //     if (fileName.endsWith('extension.js')) return true
+        //     return false
+        // }
         addHook((code, filename) => {
             return code.replace(/require\((['"])uniclient\1\)/, `require("${apiPath}")`);
-        }, { exts: ['.js'], matcher });
+        }, { exts: ['.js'] });
     }
     loadAllManagers() {
         let managers = {
@@ -205,7 +205,7 @@ class GlobalExtensionManager {
      */
     bindEventsToMain() {
         //绑定插件安装
-        ipc_handler_1.eventsBind.extendBind(ipc_events_1.rendererEvents.extensionEvents.install, (event, workspace, extension) => {
+        ipc_handler_1.ipcClient.on(ipc_events_1.rendererEvents.extensionEvents.install, (event, workspace, extension) => {
             if (this.workspace.workspaceName != 'global' && workspace == 'global') {
                 let gm = store_1.ClientStore.get(enums_1.moduleStoreNames.extension, 'globalExtensionManager');
                 gm.enabledExtensions.push(extension);
@@ -216,7 +216,7 @@ class GlobalExtensionManager {
             }
         });
         //绑定插件卸载方法
-        ipc_handler_1.eventsBind.extendBind(ipc_events_1.rendererEvents.extensionEvents.uninstall, (event, workspace, extension) => {
+        ipc_handler_1.ipcClient.on(ipc_events_1.rendererEvents.extensionEvents.uninstall, (event, workspace, extension) => {
             if (this.workspace.workspaceName != 'global' && workspace == 'global') {
                 let gm = store_1.ClientStore.get(enums_1.moduleStoreNames.extension, 'globalExtensionManager');
                 gm.enabledExtensions.push(extension);
@@ -227,7 +227,7 @@ class GlobalExtensionManager {
             }
         });
         //绑定新建workspace方法,如果是全局则不会新建extensionManager
-        ipc_handler_1.eventsBind.workspaceBind(ipc_events_1.rendererEvents.workspaceEvents.create, (event, workspace, storage) => {
+        ipc_handler_1.ipcClient.on(ipc_events_1.rendererEvents.workspaceEvents.create, (event, workspace, storage) => {
             if (workspace != 'global') {
                 let m = {
                     attributes: {

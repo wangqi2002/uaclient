@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientStore = exports.ConfigNames = void 0;
+const electron_1 = require("electron");
 const electron_store_1 = __importDefault(require("electron-store"));
 var ConfigNames;
 (function (ConfigNames) {
@@ -11,8 +12,8 @@ var ConfigNames;
     ConfigNames["log"] = "LogConfig";
 })(ConfigNames = exports.ConfigNames || (exports.ConfigNames = {}));
 class ClientStore {
-    constructor(cwd = 'C:\\Users\\Administrator\\Desktop\\client.data') {
-        ClientStore.cwd = cwd;
+    constructor(cwd) {
+        ClientStore.cwd = cwd ? cwd : electron_1.app.getPath('appData');
         ClientStore.stores = new Map();
         ClientStore.create({
             name: 'config',

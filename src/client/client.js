@@ -24,15 +24,15 @@ const store_1 = require("./store/store");
 const ipc_handler_1 = require("../platform/ipc/handlers/ipc.handler");
 const ipc_events_1 = require("../platform/ipc/events/ipc.events");
 const workspace_1 = require("./workspace/workspace");
-const utils_1 = require("../platform/base/utils/utils");
 const process_1 = require("./process/process");
 const path = require('path');
 class Client {
-    constructor() {
+    constructor(dev) {
         try {
+            Client.dev = dev;
             this.requestSingleInstance();
-            this.bindQuitEvents();
             this.startup();
+            this.bindQuitEvents();
         }
         catch (e) {
             console.error(e.message);
@@ -46,16 +46,10 @@ class Client {
     }
     startup() {
         return __awaiter(this, void 0, void 0, function* () {
-            error_1.ErrorHandler.setUnexpectedErrorHandler((error) => {
-                if ('source' in error) {
-                    log_1.Log.error(error);
-                }
-                else {
-                    log_1.Log.error(new log_1.ClientError('Uncaught', 'An unexpected exception while client running', error.message, error.stack));
-                }
-            });
             try {
-                yield this.createWorkbench();
+                this.createWorkbench();
+                this.initErrorHandler();
+                this.createBaseServices();
                 yield this.initServices();
             }
             catch (e) {
@@ -64,29 +58,50 @@ class Client {
             }
         });
     }
+    initErrorHandler() {
+        new error_1.ErrorHandler();
+        error_1.ErrorHandler.setUnexpectedErrorHandler((error) => {
+            if ('source' in error) {
+                log_1.Log.error(error);
+            }
+            else {
+                log_1.Log.error(new log_1.ClientError('Uncaught', 'An unexpected exception while client running', error.message, error.stack));
+            }
+        });
+    }
     bindQuitEvents() {
-        ipc_handler_1.eventsBind.benchBind(ipc_events_1.rendererEvents.benchEvents.quit, () => {
+        ipc_handler_1.ipcClient.on(ipc_events_1.rendererEvents.benchEvents.quit, () => {
             this.quit();
         });
-        electron_1.app.on('window-all-closed', () => {
-            this.quit();
-        });
+        // app.on('window-all-closed', () => {
+        //     this.quit()
+        // })
     }
     createWorkbench() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.workbench = new workbench_1.Workbench(path.join(__dirname, '../workbench/preload.js'), path.join(__dirname, '../workbench/index.html'), true);
-            this.mainWindow = this.workbench.getMainWindow();
-            this.mainWindow.once('ready-to-show', () => {
-                this.mainWindow.show();
-            });
-        });
+        this.workbench = new workbench_1.Workbench(path.join(__dirname, '../workbench/preload.js'), path.join(__dirname, '../workbench/index.html'), Client.dev);
+        this.mainWindow = this.workbench.getMainWindow();
+        this.mainWindow.once('ready-to-show', () => __awaiter(this, void 0, void 0, function* () {
+            yield this.mainWindow.show();
+        }));
+        // this.mainWindow.webContents.once('did-finish-load', () => {
+        //     new ipcClient(this.mainWindow)
+        // })
     }
-    createBaseService() {
+    createBaseServices() {
+        new store_1.ClientStore();
+        new broker_1.Broker();
+    }
+    initServices() {
         return __awaiter(this, void 0, void 0, function* () {
-            async_1.default.series([
-                //初始化存储服务
+            async_1.default.parallel([
+                //初始化Broker中间转发者服务
+                // async () => {
+                //     this.broker = new Broker()
+                // },
+                //初始化ORM服务
                 () => __awaiter(this, void 0, void 0, function* () {
-                    new store_1.ClientStore();
+                    // let defaultAttributes: ModelAttributes = ClientStore.get('config', 'modelAttribute')
+                    this.persist = new persistence_1.Persistence(); //TODO 处理数据库自动命名的问题
                 }),
                 //初始化工作空间管理者
                 () => __awaiter(this, void 0, void 0, function* () {
@@ -100,30 +115,10 @@ class Client {
                 () => __awaiter(this, void 0, void 0, function* () {
                     new log_1.Log();
                 }),
-            ]);
-        });
-    }
-    initServices() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.createBaseService();
-            async_1.default.parallel([
-                //初始化Broker中间转发者服务
-                () => __awaiter(this, void 0, void 0, function* () {
-                    this.broker = new broker_1.Broker();
-                }),
-                //初始化ORM服务
-                () => __awaiter(this, void 0, void 0, function* () {
-                    let defaultAttributes = store_1.ClientStore.get('config', 'modelAttribute');
-                    this.persist = new persistence_1.Persistence(store_1.ClientStore.get('config', 'dbpath'), utils_1.Utils.formatDateYMW(new Date()), //TODO 处理数据库自动命名的问题
-                    defaultAttributes);
-                }),
-                //初始化插件服务
-                () => __awaiter(this, void 0, void 0, function* () {
-                    this.extensionManager = new extend_1.GlobalExtensionManager(workspace_1.GlobalWorkspaceManager.getCurrentWSNames());
-                }),
                 //初始化postbox服务
                 () => __awaiter(this, void 0, void 0, function* () { }),
             ]);
+            this.extensionManager = new extend_1.GlobalExtensionManager(workspace_1.GlobalWorkspaceManager.getCurrentWSNames());
         });
     }
     setErrorHandler(errorHandler) {
@@ -146,4 +141,5 @@ class Client {
         electron_1.app.quit();
     }
 }
+new broker_1.Broker();
 const client = new Client();

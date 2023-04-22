@@ -21,19 +21,22 @@ var SubscriptService;
 (function (SubscriptService) {
     let monitoredItems = new Map();
     let subscriptionOption = config_default_1.Config.defaultSubscript;
+    let pipe = broker_1.Broker.getPipe(config_default_1.Config.defaultPipeName);
     function bindingAndPush(monitoredItem, displayName, itemId) {
         try {
             itemId = itemId.toString();
             monitoredItem
-                .on('changed', (data) => {
+                .on('changed', (data) => __awaiter(this, void 0, void 0, function* () {
                 let item = monitoredItems.get(itemId);
                 if (item) {
-                    // MessageQueue.enqueue(
+                    // Broker.receive(
+                    //     Config.defaultPipeName,
+                    //     monitoredItem.itemToMonitor.nodeId.toString(),
                     //     new UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName),
                     // )
-                    broker_1.Broker.receive(config_default_1.Config.defaultPipeName, monitoredItem.itemToMonitor.nodeId.toString(), new message_model_1.UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName));
+                    yield pipe.inPipe(monitoredItem.itemToMonitor.nodeId.toString(), new message_model_1.UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName));
                 }
-            })
+            }))
                 .on('err', (err) => {
                 throw new log_1.ClientError(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaErrors.errorMonitoringItem, err);
             });
@@ -77,7 +80,7 @@ var SubscriptService;
      */
     function addMonitoredItems(param) {
         try {
-            param.parameters = param.parameters || { samplingInterval: 100, discardOldest: true, queueSize: 10, };
+            param.parameters = param.parameters || { samplingInterval: 100, discardOldest: true, queueSize: 10 };
             param.timeStampToReturn = param.timeStampToReturn || node_opcua_1.TimestampsToReturn.Both;
             if (SubscriptService.subscription) {
                 for (let i = 0; i < param.itemsToMonitor.length; i++) {
@@ -100,7 +103,7 @@ var SubscriptService;
      */
     function addMonitoredItem(param) {
         try {
-            param.parameters = param.parameters || { samplingInterval: 100, discardOldest: true, queueSize: 10, };
+            param.parameters = param.parameters || { samplingInterval: 100, discardOldest: true, queueSize: 10 };
             param.timeStampToReturn = param.timeStampToReturn || node_opcua_1.TimestampsToReturn.Both;
             let monitoredItem = node_opcua_1.ClientMonitoredItem.create(SubscriptService.subscription, param.itemToMonitor, param.parameters, param.timeStampToReturn);
             bindingAndPush(monitoredItem, param.displayName, param.itemToMonitor.nodeId);

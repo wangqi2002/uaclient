@@ -8,7 +8,6 @@ module.exports = {
         beforeClose: () => {
             console.log('即将结束')
         },
-        workerEntrance: 'WorkerEntranceAbsolutePath',
+        workerEntrance: 'F:\\idea_projects\\uaclient\\src\\plugins\\ua.client\\ua.servant\\ua.servant.js',
     },
-    nice: 'nice',
 }

@@ -2,7 +2,8 @@ import { BrowserView, BrowserWindow, Rectangle, screen } from 'electron'
 import WinState from 'electron-win-state'
 import path from 'path'
 import { EventEmitter } from 'stream'
-import { eventsBind } from '../platform/ipc/handlers/ipc.handler'
+import { rendererEvents } from '../platform/ipc/events/ipc.events'
+import { ipcClient } from '../platform/ipc/handlers/ipc.handler'
 
 type viewId = string
 
@@ -22,7 +23,7 @@ export class Workbench extends EventEmitter {
     }
 
     private async createMainWindow(
-        preloadPath: string = path.join(__dirname, '../preload.js'),
+        preloadPath: string = path.join(__dirname, './preload.js'),
         indexHtmlPath: string = path.join(__dirname, './index.html'),
         dev: boolean = false
     ) {
@@ -32,7 +33,7 @@ export class Workbench extends EventEmitter {
             center: true,
             show: false,
             webPreferences: {
-                preload: path.join(__dirname, preloadPath),
+                preload: preloadPath,
                 devTools: true,
                 nodeIntegration: true,
                 contextIsolation: false,
@@ -41,15 +42,26 @@ export class Workbench extends EventEmitter {
         if (dev) {
             this.mainWindow.webContents.openDevTools()
         }
-        this.mainWindow.webContents.openDevTools()
         await this.mainWindow.loadFile(indexHtmlPath)
         // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
-        this.mainWindow.once('ready-to-show', () => {
-            this.mainWindow.show()
-        })
-        // MainHandler.initBind(this.mainWindow)
-        eventsBind.workbenchInitBind(this.mainWindow)
+        this.initBind(this.mainWindow)
         this.winState.manage(this.mainWindow)
+    }
+
+    initBind(mainWindow: BrowserWindow) {
+        ipcClient.on(rendererEvents.benchEvents.minimize, () => {
+            mainWindow.minimize()
+        })
+        ipcClient.on(rendererEvents.benchEvents.maximize, () => {
+            if (mainWindow.isMaximized()) {
+                mainWindow.restore()
+            } else {
+                mainWindow.maximize()
+            }
+        })
+        ipcClient.on(rendererEvents.benchEvents.close, () => {
+            mainWindow.close()
+        })
     }
 
     public async createWindow(viewUrl: string, isWebView: boolean) {

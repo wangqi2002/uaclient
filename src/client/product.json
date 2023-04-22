@@ -1,5 +1,6 @@
 {
-  "appData": "C:\\Users\\Administrator\\Desktop\\client.data",
-  "preloadPath": "",
-  "indexViewPath": ""
+    "appData": "C:\\Users\\Administrator\\Desktop\\client.data",
+    "preloadPath": "",
+    "indexViewPath": "",
+    "dev": true
 }
