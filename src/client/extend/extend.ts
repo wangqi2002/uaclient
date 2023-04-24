@@ -1,14 +1,16 @@
 import { join } from 'path'
 import { existsSync } from 'fs'
 import EventEmitter from 'events'
-import { GlobalWorkspaceManager } from './../workspace/workspace'
-import { ClientStore } from '../store/store'
-import { ExtensionActivator } from './activator'
-import { ipcClient } from '../../platform/ipc/handlers/ipc.handler'
-import { rendererEvents } from '../../platform/ipc/events/ipc.events'
-import { workspace } from '../workspace/workspace'
-import { ProcessManager } from '../process/process'
-import { moduleName, moduleStoreNames } from '../enums'
+import { GlobalWorkspaceManager } from './../workspace/workspace.js'
+import { ClientStore } from '../store/store.js'
+import { ExtensionActivator } from './activator.js'
+import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
+import { rendererEvents } from '../../platform/ipc/events/ipc.events.js'
+import { workspace } from '../workspace/workspace.js'
+import { ProcessManager } from '../process/process.js'
+import { moduleName, moduleStoreNames } from '../enums.js'
+import { Workbench } from '../../workbench/workbench.js'
+import { FileTransfer } from '../path/path.js'
 
 type extensionStorage = string
 type extensionActivateEvent = string
@@ -184,7 +186,7 @@ export class GlobalExtensionManager implements IGlobalExtensionManager {
     }
 
     async startUp() {
-        this.hookRequire(join(__dirname, '..', '..', '/platform/platform'))
+        this.hookRequire(join(FileTransfer.dirname(import.meta.url), '..', '..', '/platform/platform'))
         await this.initActivator()
         await this.loadAllManagers()
         await this.bindEventsToMain()
@@ -195,8 +197,8 @@ export class GlobalExtensionManager implements IGlobalExtensionManager {
      *  然后替换其中的uniclient字段改为api实际路径
      * @param apiPath
      */
-    hookRequire(apiPath: string) {
-        const addHook = require('pirates').addHook
+    async hookRequire(apiPath: string) {
+        const pirates = await import('pirates')
         //替换字符串中的转义字符
         apiPath = apiPath.replace(/\\/g, '/')
         //匹配者:只针对extension.js文件进行api的替换
@@ -204,7 +206,7 @@ export class GlobalExtensionManager implements IGlobalExtensionManager {
         //     if (fileName.endsWith('extension.js')) return true
         //     return false
         // }
-        addHook(
+        pirates.addHook(
             (code: string, filename: string) => {
                 return code.replace(/require\((['"])uniclient\1\)/, `require("${apiPath}")`)
             },
@@ -240,7 +242,10 @@ export class GlobalExtensionManager implements IGlobalExtensionManager {
 
     //启动activator.js文件作为一个子进程存在
     initActivator() {
-        ProcessManager.createChildProcess(join(__dirname, './activator.js'), moduleName.extensionActivator)
+        ProcessManager.createChildProcess(
+            join(FileTransfer.dirname(import.meta.url), './src/client/extend/activator.js'),
+            moduleName.extensionActivator
+        )
     }
 
     /**

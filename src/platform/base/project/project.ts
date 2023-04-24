@@ -1,4 +1,4 @@
-import { workspace } from './../../../client/workspace/workspace'
+import { workspace } from './../../../client/workspace/workspace.js'
 
 export interface IProject {
     workspace: workspace

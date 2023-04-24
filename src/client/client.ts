@@ -1,20 +1,21 @@
-import { GlobalExtensionManager } from './extend/extend'
+import { GlobalExtensionManager } from './extend/extend.js'
 import { ModelAttributes } from 'sequelize'
-import { Workbench } from './../workbench/workbench'
-import { Broker } from '../platform/base/broker/broker'
+import { Workbench } from './../workbench/workbench.js'
+import { Broker } from '../platform/base/broker/broker.js'
 import { app, BrowserWindow } from 'electron'
-import { ErrorHandler } from './error/error'
-import { ClientError, Log } from '../platform/base/log/log'
+import { ErrorHandler } from './error/error.js'
+import { ClientError, Log } from '../platform/base/log/log.js'
 import async from 'async'
-import { Persistence } from '../platform/base/persist/persistence'
-import { ClientStore } from './store/store'
-import { ipcClient } from '../platform/ipc/handlers/ipc.handler'
-import { rendererEvents } from '../platform/ipc/events/ipc.events'
-import { GlobalWorkspaceManager } from './workspace/workspace'
-import { Utils } from '../platform/base/utils/utils'
-import { ProcessManager } from './process/process'
+import { Persistence } from '../platform/base/persist/persistence.js'
+import { ClientStore } from './store/store.js'
+import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js'
+import { rendererEvents } from '../platform/ipc/events/ipc.events.js'
+import { GlobalWorkspaceManager } from './workspace/workspace.js'
+import { Utils } from '../platform/base/utils/utils.js'
+import { ProcessManager } from './process/process.js'
 
-const path = require('path')
+import path from 'path'
+import { FileTransfer } from './path/path.js'
 
 class Client {
     workbench!: Workbench
@@ -44,9 +45,9 @@ class Client {
 
     private async startup() {
         try {
+            this.createBaseService()
             this.createWorkbench()
             this.initErrorHandler()
-            this.createBaseServices()
             await this.initServices()
         } catch (e: any) {
             console.log('出错了')
@@ -81,26 +82,25 @@ class Client {
         // })
     }
 
+    private createBaseService() {
+        new ClientStore()
+    }
+
     private createWorkbench() {
+        let { width, height } = ClientStore.get('config', 'border')
         this.workbench = new Workbench(
-            path.join(__dirname, '../workbench/preload.js'),
-            path.join(__dirname, '../workbench/index.html'),
-            Client.dev
+            path.join(FileTransfer.dirname(import.meta.url), '../workbench/preload.js'),
+            path.join(FileTransfer.dirname(import.meta.url), './src/workbench/index.html'),
+            Client.dev,
+            width,
+            height
         )
         this.mainWindow = this.workbench.getMainWindow()
         this.mainWindow.webContents.once('did-finish-load', async () => {
             await this.mainWindow.show()
-            new ipcClient(this.mainWindow)
+            ipcClient.currentWindow = this.mainWindow.webContents.send
             //todo 处理这个问题
         })
-        // this.mainWindow.webContents.once('did-finish-load', () => {
-        //     new ipcClient(this.mainWindow)
-        // })
-    }
-
-    private createBaseServices() {
-        new ClientStore()
-        new Broker()
     }
 
     private async initServices() {
@@ -153,5 +153,4 @@ class Client {
         app.quit()
     }
 }
-new Broker()
 const client = new Client()

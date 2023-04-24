@@ -1,7 +1,7 @@
 import EventEmitter from 'events'
 // import { Worker } from 'worker_threads'
 import { fork } from 'child_process'
-import { ExtensionManager, IExtensionIdentifier, IExtension } from './extend'
+import { ExtensionManager, IExtensionIdentifier, IExtension } from './extend.js'
 // import cluster from 'cluster'
 
 type extensionId = string

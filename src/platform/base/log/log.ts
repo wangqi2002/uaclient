@@ -1,8 +1,10 @@
 import { app } from 'electron'
-import { Configuration, configure, getLogger, Logger } from 'log4js'
-import { MainEvents, rendererEvents } from '../../ipc/events/ipc.events'
-import { ipcClient } from '../../ipc/handlers/ipc.handler'
-import { ClientStore, ConfigNames } from '../../../client/store/store'
+import { Configuration, Logger } from 'log4js'
+import log from 'log4js'
+const { configure, getLogger } = log
+import { MainEvents, rendererEvents } from '../../ipc/events/ipc.events.js'
+import { ipcClient } from '../../ipc/handlers/ipc.handler.js'
+import { ClientStore, ConfigNames } from '../../../client/store/store.js'
 
 type Source = string | undefined
 type Warn = string

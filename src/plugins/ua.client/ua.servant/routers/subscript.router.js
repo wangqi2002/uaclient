@@ -1,19 +1,16 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.SubscriptRouter = void 0;
-const Router = require("koa-router");
-const subscript_controller_1 = require("../controllers/subscript.controller");
-const agent_middleware_1 = require("../middlewares/agent.middleware");
-var SubscriptRouter;
+import Router from 'koa-router';
+import { SubscriptController } from '../controllers/subscript.controller';
+import { AgentMiddleware } from '../middlewares/agent.middleware';
+export var SubscriptRouter;
 (function (SubscriptRouter) {
     SubscriptRouter.router = new Router({
-        prefix: '/subscript'
+        prefix: '/subscript',
     });
-    SubscriptRouter.router.use(agent_middleware_1.AgentMiddleware.subscriptValidator);
-    SubscriptRouter.router.post('/init', subscript_controller_1.SubscriptController.init);
-    SubscriptRouter.router.post('/modify', subscript_controller_1.SubscriptController.modify);
-    SubscriptRouter.router.post('/item/group', subscript_controller_1.SubscriptController.addItemGroup);
-    SubscriptRouter.router.post('/item/single', subscript_controller_1.SubscriptController.addItem);
-    SubscriptRouter.router.post('/item/delete', subscript_controller_1.SubscriptController.deleteItems);
-    SubscriptRouter.router.get('/terminate', subscript_controller_1.SubscriptController.terminate);
-})(SubscriptRouter = exports.SubscriptRouter || (exports.SubscriptRouter = {}));
+    SubscriptRouter.router.use(AgentMiddleware.subscriptValidator);
+    SubscriptRouter.router.post('/init', SubscriptController.init);
+    SubscriptRouter.router.post('/modify', SubscriptController.modify);
+    SubscriptRouter.router.post('/item/group', SubscriptController.addItemGroup);
+    SubscriptRouter.router.post('/item/single', SubscriptController.addItem);
+    SubscriptRouter.router.post('/item/delete', SubscriptController.deleteItems);
+    SubscriptRouter.router.get('/terminate', SubscriptController.terminate);
+})(SubscriptRouter || (SubscriptRouter = {}));

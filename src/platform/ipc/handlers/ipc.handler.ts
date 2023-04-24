@@ -1,10 +1,9 @@
-import { BrowserWindow, ipcMain, IpcMainEvent, IpcMainInvokeEvent } from 'electron'
-
+import { ipcMain, IpcMainEvent, IpcMainInvokeEvent, BrowserWindow } from 'electron'
 export class ipcClient {
-    static mainWindow: BrowserWindow
+    static currentWindow: (channel: string, ...args: any[]) => void
 
-    constructor(mainWindow: BrowserWindow) {
-        ipcClient.mainWindow = mainWindow
+    constructor(send: (channel: string, ...args: any[]) => void) {
+        ipcClient.currentWindow = send
     }
 
     static on(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
@@ -25,6 +24,6 @@ export class ipcClient {
      * @param args
      */
     static emit(event: string, ...args: any[]) {
-        ipcClient.mainWindow.webContents.emit(event, ...args)
+        ipcClient.currentWindow(event, ...args)
     }
 }

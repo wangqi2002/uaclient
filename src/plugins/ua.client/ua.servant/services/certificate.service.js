@@ -1,26 +1,14 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CertificateService = void 0;
-const node_opcua_1 = require("node-opcua");
-const ua_enums_1 = require("../../common/ua.enums");
-const config_default_1 = require("../../config/config.default");
-const log_1 = require("../../../../platform/base/log/log");
+import { OPCUACertificateManager } from 'node-opcua';
+import { UaErrors, UaSources } from '../../common/ua.enums';
+import { Config } from '../../config/config.default';
+import { ClientError } from '../../../../platform/base/log/log';
 // const cry = require("node-opcua-pki")
-var CertificateService;
+export var CertificateService;
 (function (CertificateService) {
-    CertificateService.certificate = new node_opcua_1.OPCUACertificateManager({
-        rootFolder: config_default_1.Config.certRoot,
+    CertificateService.certificate = new OPCUACertificateManager({
+        rootFolder: Config.certRoot,
         name: 'pki',
-        automaticallyAcceptUnknownCertificate: false
+        automaticallyAcceptUnknownCertificate: false,
     });
     //todo node-opcua-pki命令测试
     /**
@@ -30,7 +18,7 @@ var CertificateService;
      * 具体请转到CreateSelfSignCertificateParam1声明处查看
      * @example
      * {
-     *    "outputFile": path.join(__dirname, '..', '..', '..','certificates/PKI/own/certs/client_cert.pem'),
+     *    "outputFile": path.join(FileTransfer.dirname(import.meta.url), '..', '..', '..','certificates/PKI/own/certs/client_cert.pem'),
      *    "subject": {
      *       "commonName": "UaExpert@WIN-4D29EPFU0V6",
      *       "organization": "uaclient",
@@ -47,59 +35,51 @@ var CertificateService;
      * }
      * @param params
      */
-    function createCertificate(params) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                yield CertificateService.certificate.createSelfSignedCertificate(Object.assign({}, params));
-            }
-            catch (e) {
-                throw new log_1.ClientError(ua_enums_1.UaSources.certService, ua_enums_1.UaErrors.errorCreatCert, e.message, e.stack);
-            }
-        });
+    async function createCertificate(params) {
+        try {
+            await CertificateService.certificate.createSelfSignedCertificate({ ...params });
+        }
+        catch (e) {
+            throw new ClientError(UaSources.certService, UaErrors.errorCreatCert, e.message, e.stack);
+        }
     }
     CertificateService.createCertificate = createCertificate;
-    function trustServerCertificate(serverCertificate) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                yield CertificateService.certificate.trustCertificate(serverCertificate);
-            }
-            catch (e) {
-                throw new log_1.ClientError(ua_enums_1.UaSources.certService, ua_enums_1.UaErrors.errorTrustCert, e.message, e.stack);
-            }
-        });
+    async function trustServerCertificate(serverCertificate) {
+        try {
+            await CertificateService.certificate.trustCertificate(serverCertificate);
+        }
+        catch (e) {
+            throw new ClientError(UaSources.certService, UaErrors.errorTrustCert, e.message, e.stack);
+        }
     }
     CertificateService.trustServerCertificate = trustServerCertificate;
-    function rejectServerCertificate(serverCertificate) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                yield CertificateService.certificate.rejectCertificate(serverCertificate);
-            }
-            catch (e) {
-                throw new log_1.ClientError(ua_enums_1.UaSources.certService, ua_enums_1.UaErrors.errorRejectCert, e.message, e.stack);
-            }
-        });
+    async function rejectServerCertificate(serverCertificate) {
+        try {
+            await CertificateService.certificate.rejectCertificate(serverCertificate);
+        }
+        catch (e) {
+            throw new ClientError(UaSources.certService, UaErrors.errorRejectCert, e.message, e.stack);
+        }
     }
     CertificateService.rejectServerCertificate = rejectServerCertificate;
     /**
      * @description 返回server证书的信任状态
      * @param serverCertificate
      */
-    function getTrustStatus(serverCertificate) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                return yield CertificateService.certificate.getTrustStatus(serverCertificate);
-            }
-            catch (e) {
-                throw new log_1.ClientError(ua_enums_1.UaSources.certService, ua_enums_1.UaErrors.errorGetTrust, e.message, e.stack);
-            }
-        });
+    async function getTrustStatus(serverCertificate) {
+        try {
+            return await CertificateService.certificate.getTrustStatus(serverCertificate);
+        }
+        catch (e) {
+            throw new ClientError(UaSources.certService, UaErrors.errorGetTrust, e.message, e.stack);
+        }
     }
     CertificateService.getTrustStatus = getTrustStatus;
-})(CertificateService = exports.CertificateService || (exports.CertificateService = {}));
+})(CertificateService || (CertificateService = {}));
 // async function f() {
 //     try {
 //         await CertificateService.createCertificate({
-//             "outputFile": path.join(__dirname, '..', '..', '..', 'certificates/PKI/own/certs/client_cert.pem'),
+//             "outputFile": path.join(FileTransfer.dirname(import.meta.url), '..', '..', '..', 'certificates/PKI/own/certs/client_cert.pem'),
 //             "subject": {
 //                 "commonName": "UaExpert@WIN-4D29EPFU0V6",
 //                 "organization": "uaclient",

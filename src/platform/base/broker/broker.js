@@ -1,21 +1,12 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Broker = exports.MessagePipe = void 0;
-const ipc_handler_1 = require("./../../ipc/handlers/ipc.handler");
-const events_1 = require("events");
+import { ipcClient } from './../../ipc/handlers/ipc.handler.js';
+import { EventEmitter } from 'events';
 /**
  * @description 一个MessagePipe,本质上是一个map其中存储了形如<nodeId,[data1,data2]>的数据,并且定义了events用于订阅使用
  */
-class MessagePipe extends events_1.EventEmitter {
+export class MessagePipe extends EventEmitter {
+    content;
+    maxLength;
+    pipeId;
     constructor(pipeId, maxLength) {
         super();
         this.pipeId = pipeId;
@@ -29,37 +20,35 @@ class MessagePipe extends events_1.EventEmitter {
         }
         return false;
     }
-    inPipe(id, message) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let data = this.content.get(id);
-            if (data) {
-                data.push(message);
-                if (data.length >= this.maxLength) {
-                    this.emit('full', data);
-                    ipc_handler_1.ipcClient.emit(this.pipeId + ':full', data);
-                    data.length = 0;
-                }
+    async inPipe(id, message) {
+        let data = this.content.get(id);
+        if (data) {
+            data.push(message);
+            if (data.length >= this.maxLength) {
+                this.emit('full', data);
+                ipcClient.emit(this.pipeId + ':full', data);
+                data.length = 0;
             }
-            else {
-                this.content.set(message.nodeId, [message]);
-            }
-            this.emit('pushed', message);
-            ipc_handler_1.ipcClient.emit(this.pipeId + ':pushed', message);
-        });
+        }
+        else {
+            this.content.set(message.nodeId, [message]);
+        }
+        this.emit('pushed', message);
+        ipcClient.emit(this.pipeId + ':pushed', message);
     }
     terminate() {
         let copy = new Map(this.content);
         this.emit('close', copy);
-        ipc_handler_1.ipcClient.emit(this.pipeId + ':close', copy);
+        ipcClient.emit(this.pipeId + ':close', copy);
         this.content.clear();
         return copy;
     }
 }
-exports.MessagePipe = MessagePipe;
 /**
  * @description 一个中间消息转发者,通过自主新建的MessagePipe来实现不同管道的订阅与通信
  */
-class Broker {
+export class Broker {
+    static pipes = new Map();
     /**
      * @description 接收消息并且推入pipe中,如果pipe不存在,那么新建一个pipe
      * @param pipeId
@@ -72,17 +61,15 @@ class Broker {
      *   new UaMessage(data, nodeId, item.displayName),
      *)
      */
-    static receive(pipeId, messageId, message) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let data = Broker.pipes.get(pipeId);
-            if (!data) {
-                let pipe = new MessagePipe(pipeId);
-                Broker.pipes.set(pipeId, pipe);
-                data = pipe;
-            }
-            data.inPipe(messageId, message);
-            return true;
-        });
+    static async receive(pipeId, messageId, message) {
+        let data = Broker.pipes.get(pipeId);
+        if (!data) {
+            let pipe = new MessagePipe(pipeId);
+            Broker.pipes.set(pipeId, pipe);
+            data = pipe;
+        }
+        data.inPipe(messageId, message);
+        return true;
     }
     static hasPipe(pipeId) {
         return Broker.pipes.has(pipeId);
@@ -119,13 +106,9 @@ class Broker {
     /**
      * @description 终结所有当前存在的messagePipe,注意:这会导致pipe中的数据丢失,但是会在消失之前通过close事件发送出去
      */
-    beforeClose() {
-        return __awaiter(this, void 0, void 0, function* () {
-            Broker.pipes.forEach((pipe) => {
-                pipe.terminate();
-            });
+    async beforeClose() {
+        Broker.pipes.forEach((pipe) => {
+            pipe.terminate();
         });
     }
 }
-exports.Broker = Broker;
-Broker.pipes = new Map();

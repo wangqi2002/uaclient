@@ -1,11 +1,7 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProcessManager = void 0;
-const child_process_1 = __importDefault(require("child_process"));
-class ProcessManager {
+import child_process from 'child_process';
+export class ProcessManager {
+    static events;
+    static processes;
     constructor() {
         ProcessManager.processes = new Map();
     }
@@ -16,7 +12,7 @@ class ProcessManager {
      * @param options
      */
     static createChildProcess(path, module, options) {
-        let child = child_process_1.default.fork(path, options);
+        let child = child_process.fork(path, options);
         if (child.pid) {
             ProcessManager.processes.set(module, child);
         }
@@ -34,4 +30,3 @@ class ProcessManager {
         });
     }
 }
-exports.ProcessManager = ProcessManager;

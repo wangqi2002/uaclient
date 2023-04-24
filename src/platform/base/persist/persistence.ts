@@ -1,6 +1,6 @@
-import { Utils } from './../utils/utils'
+import { Utils } from './../utils/utils.js'
 import { FindOptions, ModelAttributes, ModelCtor, Options, Sequelize } from 'sequelize'
-import { ClientStore, ConfigNames } from '../../../client/store/store'
+import { ClientStore, ConfigNames } from '../../../client/store/store.js'
 
 export class Persistence {
     private static sequelize: Sequelize

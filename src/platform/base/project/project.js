@@ -1,9 +1,8 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProjectManager = exports.ProjectManagerFactory = void 0;
 // export interface IProjectManager{
 // }
-class ProjectManagerFactory {
+export class ProjectManagerFactory {
+    static currentManager;
+    static currentProject;
     constructor() { }
     static produceProjectManager(project) {
         let manager = new ProjectManager(project);
@@ -15,8 +14,6 @@ class ProjectManagerFactory {
         return ProjectManagerFactory.currentProject;
     }
 }
-exports.ProjectManagerFactory = ProjectManagerFactory;
-class ProjectManager {
+export class ProjectManager {
     constructor(project) { }
 }
-exports.ProjectManager = ProjectManager;

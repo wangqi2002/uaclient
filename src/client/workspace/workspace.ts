@@ -1,9 +1,9 @@
-import { ProjectManagerFactory, IProject } from './../../platform/base/project/project'
-import { moduleStoreNames } from './../enums'
-import { ClientStore } from '../store/store'
+import { ProjectManagerFactory, IProject } from './../../platform/base/project/project.js'
+import { moduleStoreNames } from './../enums.js'
+import { ClientStore } from '../store/store.js'
 import { mkdir } from 'fs'
-import { ipcClient } from '../../platform/ipc/handlers/ipc.handler'
-import { FileUtils } from '../../platform/base/utils/utils'
+import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
+import { FileUtils } from '../../platform/base/utils/utils.js'
 import EventEmitter from 'events'
 
 enum storeNames {

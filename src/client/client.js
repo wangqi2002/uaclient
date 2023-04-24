@@ -1,145 +1,138 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const extend_1 = require("./extend/extend");
-const workbench_1 = require("./../workbench/workbench");
-const broker_1 = require("../platform/base/broker/broker");
-const electron_1 = require("electron");
-const error_1 = require("./error/error");
-const log_1 = require("../platform/base/log/log");
-const async_1 = __importDefault(require("async"));
-const persistence_1 = require("../platform/base/persist/persistence");
-const store_1 = require("./store/store");
-const ipc_handler_1 = require("../platform/ipc/handlers/ipc.handler");
-const ipc_events_1 = require("../platform/ipc/events/ipc.events");
-const workspace_1 = require("./workspace/workspace");
-const process_1 = require("./process/process");
-const path = require('path');
+import { GlobalExtensionManager } from './extend/extend.js'
+import { Workbench } from './../workbench/workbench.js'
+import { app } from 'electron'
+import { ErrorHandler } from './error/error.js'
+import { ClientError, Log } from '../platform/base/log/log.js'
+import async from 'async'
+import { Persistence } from '../platform/base/persist/persistence.js'
+import { ClientStore } from './store/store.js'
+import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js'
+import { rendererEvents } from '../platform/ipc/events/ipc.events.js'
+import { GlobalWorkspaceManager } from './workspace/workspace.js'
+import { ProcessManager } from './process/process.js'
+import path from 'path'
+import { FileTransfer } from './path/path.js'
 class Client {
+    workbench
+    broker
+    persist
+    mainWindow
+    extensionManager
+    static dev
     constructor(dev) {
         try {
-            Client.dev = dev;
-            this.requestSingleInstance();
-            this.startup();
-            this.bindQuitEvents();
-        }
-        catch (e) {
-            console.error(e.message);
-            electron_1.app.exit(1);
+            Client.dev = dev
+            this.requestSingleInstance()
+            this.startup()
+            this.bindQuitEvents()
+        } catch (e) {
+            console.error(e.message)
+            app.exit(1)
         }
     }
     requestSingleInstance() {
-        if (!electron_1.app.requestSingleInstanceLock()) {
-            electron_1.app.quit();
+        if (!app.requestSingleInstanceLock()) {
+            app.quit()
         }
     }
-    startup() {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                this.createWorkbench();
-                this.initErrorHandler();
-                this.createBaseServices();
-                yield this.initServices();
-            }
-            catch (e) {
-                console.log('出错了');
-                throw e;
-            }
-        });
+    async startup() {
+        try {
+            this.createBaseService()
+            this.createWorkbench()
+            this.initErrorHandler()
+            await this.initServices()
+        } catch (e) {
+            console.log('出错了')
+            throw e
+        }
     }
     initErrorHandler() {
-        new error_1.ErrorHandler();
-        error_1.ErrorHandler.setUnexpectedErrorHandler((error) => {
+        new ErrorHandler()
+        ErrorHandler.setUnexpectedErrorHandler((error) => {
             if ('source' in error) {
-                log_1.Log.error(error);
+                Log.error(error)
+            } else {
+                Log.error(
+                    new ClientError(
+                        'Uncaught',
+                        'An unexpected exception while client running',
+                        error.message,
+                        error.stack
+                    )
+                )
             }
-            else {
-                log_1.Log.error(new log_1.ClientError('Uncaught', 'An unexpected exception while client running', error.message, error.stack));
-            }
-        });
+        })
     }
     bindQuitEvents() {
-        ipc_handler_1.ipcClient.on(ipc_events_1.rendererEvents.benchEvents.quit, () => {
-            this.quit();
-        });
+        ipcClient.on(rendererEvents.benchEvents.quit, () => {
+            this.quit()
+        })
         // app.on('window-all-closed', () => {
         //     this.quit()
         // })
     }
+    createBaseService() {
+        new ClientStore()
+    }
     createWorkbench() {
-        this.workbench = new workbench_1.Workbench(path.join(__dirname, '../workbench/preload.js'), path.join(__dirname, '../workbench/index.html'), Client.dev);
-        this.mainWindow = this.workbench.getMainWindow();
-        this.mainWindow.once('ready-to-show', () => __awaiter(this, void 0, void 0, function* () {
-            yield this.mainWindow.show();
-        }));
-        // this.mainWindow.webContents.once('did-finish-load', () => {
-        //     new ipcClient(this.mainWindow)
-        // })
+        this.workbench = new Workbench(
+            path.join(FileTransfer.dirname(import.meta.url), './src/workbench/preload.js'),
+            path.join(FileTransfer.dirname(import.meta.url), './src/workbench/index.html'),
+            Client.dev
+        )
+        this.mainWindow = this.workbench.getMainWindow()
+        this.mainWindow.webContents.once('did-finish-load', async () => {
+            await this.mainWindow.show()
+            ipcClient.currentWindow = this.mainWindow.webContents.send
+            //todo 处理这个问题
+        })
     }
-    createBaseServices() {
-        new store_1.ClientStore();
-        new broker_1.Broker();
-    }
-    initServices() {
-        return __awaiter(this, void 0, void 0, function* () {
-            async_1.default.parallel([
-                //初始化Broker中间转发者服务
-                // async () => {
-                //     this.broker = new Broker()
-                // },
-                //初始化ORM服务
-                () => __awaiter(this, void 0, void 0, function* () {
-                    // let defaultAttributes: ModelAttributes = ClientStore.get('config', 'modelAttribute')
-                    this.persist = new persistence_1.Persistence(); //TODO 处理数据库自动命名的问题
-                }),
-                //初始化工作空间管理者
-                () => __awaiter(this, void 0, void 0, function* () {
-                    new workspace_1.GlobalWorkspaceManager();
-                }),
-                //初始化进程管理者
-                () => __awaiter(this, void 0, void 0, function* () {
-                    new process_1.ProcessManager();
-                }),
-                //初始化log服务
-                () => __awaiter(this, void 0, void 0, function* () {
-                    new log_1.Log();
-                }),
-                //初始化postbox服务
-                () => __awaiter(this, void 0, void 0, function* () { }),
-            ]);
-            this.extensionManager = new extend_1.GlobalExtensionManager(workspace_1.GlobalWorkspaceManager.getCurrentWSNames());
-        });
+    async initServices() {
+        async.parallel([
+            //初始化Broker中间转发者服务
+            // async () => {
+            //     this.broker = new Broker()
+            // },
+            //初始化ORM服务
+            async () => {
+                // let defaultAttributes: ModelAttributes = ClientStore.get('config', 'modelAttribute')
+                this.persist = new Persistence() //TODO 处理数据库自动命名的问题
+            },
+            //初始化工作空间管理者
+            async () => {
+                new GlobalWorkspaceManager()
+            },
+            //初始化进程管理者
+            async () => {
+                new ProcessManager()
+            },
+            //初始化log服务
+            async () => {
+                new Log()
+            },
+            //初始化postbox服务
+            async () => {},
+        ])
+        this.extensionManager = new GlobalExtensionManager(GlobalWorkspaceManager.getCurrentWSNames())
     }
     setErrorHandler(errorHandler) {
-        error_1.ErrorHandler.setUnexpectedErrorHandler(errorHandler);
+        ErrorHandler.setUnexpectedErrorHandler(errorHandler)
     }
     quit() {
-        async_1.default.series([
+        async.series([
             //终结broker转发者服务
-            () => __awaiter(this, void 0, void 0, function* () {
-                this.broker.beforeClose();
-            }),
+            async () => {
+                this.broker.beforeClose()
+            },
             //结束extensionManager服务
-            () => __awaiter(this, void 0, void 0, function* () {
-                this.extensionManager.beforeClose();
-            }),
-            () => __awaiter(this, void 0, void 0, function* () {
-                this.workbench.beforeClose();
-            }),
-        ]);
-        electron_1.app.quit();
+            async () => {
+                this.extensionManager.beforeClose()
+            },
+            async () => {
+                this.workbench.beforeClose()
+            },
+        ])
+        app.quit()
     }
 }
-new broker_1.Broker();
-const client = new Client();
+const client = new Client()

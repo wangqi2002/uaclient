@@ -1,34 +1,35 @@
 import { BrowserView, BrowserWindow, Rectangle, screen } from 'electron'
-import WinState from 'electron-win-state'
 import path from 'path'
-import { EventEmitter } from 'stream'
-import { rendererEvents } from '../platform/ipc/events/ipc.events'
-import { ipcClient } from '../platform/ipc/handlers/ipc.handler'
+import { EventEmitter } from 'events'
+import { rendererEvents } from '../platform/ipc/events/ipc.events.js'
+import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js'
+import { FileTransfer } from '../client/path/path.js'
 
 type viewId = string
 
 export class Workbench extends EventEmitter {
-    public winState: WinState<unknown>
     private existViews: Map<viewId, BrowserView>
     private mainWindow!: BrowserWindow
 
-    constructor(preload?: string, homeViewPath?: string, dev: boolean = false) {
+    constructor(preload: string, homeViewPath: string, dev: boolean = false, width?: number, height?: number) {
         super()
-        this.winState = new WinState({
-            defaultWidth: (screen.getPrimaryDisplay().workAreaSize.width * 3) / 4,
-            defaultHeight: (screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
-        })
-        this.createMainWindow(preload, homeViewPath, dev)
+        // this.winState = new WinState({
+        //     defaultWidth: (screen.getPrimaryDisplay().workAreaSize.width * 3) / 4,
+        //     defaultHeight: (screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
+        // })
+        this.createMainWindow(preload, homeViewPath, dev, width, height)
         this.existViews = new Map()
     }
 
     private async createMainWindow(
-        preloadPath: string = path.join(__dirname, './preload.js'),
-        indexHtmlPath: string = path.join(__dirname, './index.html'),
-        dev: boolean = false
+        preloadPath: string,
+        indexHtmlPath: string,
+        dev: boolean = false,
+        width?: number,
+        height?: number
     ) {
         this.mainWindow = new BrowserWindow({
-            ...this.winState.winOptions,
+            // ...this.winState.winOptions,
             frame: false,
             center: true,
             show: false,
@@ -45,7 +46,7 @@ export class Workbench extends EventEmitter {
         await this.mainWindow.loadFile(indexHtmlPath)
         // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
         this.initBind(this.mainWindow)
-        this.winState.manage(this.mainWindow)
+        // this.winState.manage(this.mainWindow)
     }
 
     initBind(mainWindow: BrowserWindow) {
@@ -66,7 +67,7 @@ export class Workbench extends EventEmitter {
 
     public async createWindow(viewUrl: string, isWebView: boolean) {
         const window = new BrowserWindow({
-            ...this.winState.winOptions,
+            // ...this.winState.winOptions,
             frame: false,
         })
         isWebView ? await window.loadFile(viewUrl) : await window.loadURL(viewUrl)

@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CertUtils = exports.DbUtils = exports.JsonUtils = void 0;
-const fs_1 = require("fs");
+import { existsSync, readFile, readFileSync, writeFile } from 'fs';
 const Log = require('../../../../platform/base/log/log');
-var JsonUtils;
+export var JsonUtils;
 (function (JsonUtils) {
     /**
      * @description nodeToModify应该传入一个字符串数组,按顺序描述json节点,
@@ -17,15 +14,15 @@ var JsonUtils;
      * @author hhj
      */
     function modifyJsonNode(path, nodeToModify, dataToReplace) {
-        if ((0, fs_1.existsSync)(path)) {
-            (0, fs_1.readFile)(path, (err, data) => {
+        if (existsSync(path)) {
+            readFile(path, (err, data) => {
                 if (err) {
                     Log.error(err.message);
                 }
                 else {
                     if (data.length === 0) {
                         let temp = `{"${nodeToModify}":` + JSON.stringify(dataToReplace) + '}';
-                        (0, fs_1.writeFile)(path, temp, 'utf-8', (err) => {
+                        writeFile(path, temp, 'utf-8', (err) => {
                             if (err) {
                                 Log.error(err.message);
                                 throw err;
@@ -40,7 +37,7 @@ var JsonUtils;
                         }
                         if (temp[nodeToModify[nodeToModify.length - 1]]) {
                             temp[nodeToModify[nodeToModify.length - 1]] = dataToReplace;
-                            (0, fs_1.writeFile)(path, JSON.stringify(result), 'utf-8', (err) => {
+                            writeFile(path, JSON.stringify(result), 'utf-8', (err) => {
                                 if (err) {
                                     Log.error(err.message);
                                     throw err;
@@ -57,7 +54,7 @@ var JsonUtils;
         }
         else {
             let temp = `{"${nodeToModify}":` + JSON.stringify(dataToReplace) + '}';
-            (0, fs_1.writeFile)(path, temp, 'utf-8', (err) => {
+            writeFile(path, temp, 'utf-8', (err) => {
                 if (err) {
                     Log.error(err.message);
                     throw err;
@@ -79,8 +76,8 @@ var JsonUtils;
      * @author hhj
      */
     function getJsonNode(path, nodeToSelect) {
-        if ((0, fs_1.existsSync)(path)) {
-            let data = (0, fs_1.readFileSync)(path).toString();
+        if (existsSync(path)) {
+            let data = readFileSync(path).toString();
             if (data.length === 0) {
                 Log.error('empty file');
                 throw Error('empty file');
@@ -105,8 +102,8 @@ var JsonUtils;
         }
     }
     JsonUtils.getJsonNode = getJsonNode;
-})(JsonUtils = exports.JsonUtils || (exports.JsonUtils = {}));
-var DbUtils;
+})(JsonUtils || (JsonUtils = {}));
+export var DbUtils;
 (function (DbUtils) {
     /**
      * @description 输出形如yyyy_mm_dd格式的日期字符串
@@ -157,8 +154,8 @@ var DbUtils;
         }
     }
     DbUtils.validateDbName = validateDbName;
-})(DbUtils = exports.DbUtils || (exports.DbUtils = {}));
-var CertUtils;
+})(DbUtils || (DbUtils = {}));
+export var CertUtils;
 (function (CertUtils) {
     function validateCertOptions(param) {
         if (!(typeof param.subject === 'string')) {
@@ -173,4 +170,4 @@ var CertUtils;
         }
     }
     CertUtils.validateCertOptions = validateCertOptions;
-})(CertUtils = exports.CertUtils || (exports.CertUtils = {}));
+})(CertUtils || (CertUtils = {}));

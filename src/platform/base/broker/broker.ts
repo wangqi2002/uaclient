@@ -1,4 +1,4 @@
-import { ipcClient } from './../../ipc/handlers/ipc.handler'
+import { ipcClient } from './../../ipc/handlers/ipc.handler.js'
 import { EventEmitter } from 'events'
 type pipeId = string
 

@@ -1,19 +1,15 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ClientStore = exports.ConfigNames = void 0;
-const electron_1 = require("electron");
-const electron_store_1 = __importDefault(require("electron-store"));
-var ConfigNames;
+import { app } from 'electron';
+import Store from 'electron-store';
+export var ConfigNames;
 (function (ConfigNames) {
     ConfigNames["persistence"] = "PersistConfig";
     ConfigNames["log"] = "LogConfig";
-})(ConfigNames = exports.ConfigNames || (exports.ConfigNames = {}));
-class ClientStore {
+})(ConfigNames || (ConfigNames = {}));
+export class ClientStore {
+    static stores;
+    static cwd;
     constructor(cwd) {
-        ClientStore.cwd = cwd ? cwd : electron_1.app.getPath('appData');
+        ClientStore.cwd = cwd ? cwd : app.getPath('appData');
         ClientStore.stores = new Map();
         ClientStore.create({
             name: 'config',
@@ -64,11 +60,10 @@ class ClientStore {
             return false;
         }
         else {
-            let store = new electron_store_1.default(Object.assign(Object.assign({}, options), { cwd: ClientStore.cwd }));
+            let store = new Store({ ...options, cwd: ClientStore.cwd });
             ClientStore.stores.set(options.name, store);
             store.openInEditor();
             return store;
         }
     }
 }
-exports.ClientStore = ClientStore;

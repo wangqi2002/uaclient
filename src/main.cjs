@@ -1,9 +1,8 @@
 const { app, Menu, ipcRenderer, ipcMain } = require('electron')
-const path = require('path')
-require('v8-compile-cache')
+const path = import('path')
+import('v8-compile-cache')
 const product = require('./client/product.json')
-const { FileUtils } = require('./platform/base/utils/utils')
-
+// const { FileUtils } = import('./platform/base/utils/utils')
 const userDataPath = getUserDataPath()
 
 const workspacePath = app.setPath('appData', userDataPath)
@@ -18,8 +17,8 @@ app.whenReady().then(() => {
     onReady()
 })
 
-function startUp(cachePath, workspacePath, appDataPath, config) {
-    require('./client/client')
+async function startUp(cachePath, workspacePath, appDataPath, config) {
+    await import('./client/client.js')
 }
 
 async function onReady() {

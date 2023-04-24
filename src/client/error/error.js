@@ -1,7 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorHandler = void 0;
-class ErrorHandler {
+export class ErrorHandler {
+    static errorHandler;
+    static listeners = [];
     static addListener(listener) {
         ErrorHandler.listeners.push(listener);
     }
@@ -12,5 +11,3 @@ class ErrorHandler {
         });
     }
 }
-exports.ErrorHandler = ErrorHandler;
-ErrorHandler.listeners = [];
