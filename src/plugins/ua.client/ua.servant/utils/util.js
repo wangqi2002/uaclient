@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.CertUtils = exports.DbUtils = exports.JsonUtils = void 0;
 const fs_1 = require("fs");
 const Log = require('../../../../platform/base/log/log');
@@ -21,8 +21,7 @@ var JsonUtils;
             (0, fs_1.readFile)(path, (err, data) => {
                 if (err) {
                     Log.error(err.message);
-                }
-                else {
+                } else {
                     if (data.length === 0) {
                         let temp = `{"${nodeToModify}":` + JSON.stringify(dataToReplace) + '}';
                         (0, fs_1.writeFile)(path, temp, 'utf-8', (err) => {
@@ -31,8 +30,7 @@ var JsonUtils;
                                 throw err;
                             }
                         });
-                    }
-                    else {
+                    } else {
                         let result = JSON.parse(data.toString());
                         let temp = result;
                         for (let i = 0; i < nodeToModify.length - 1; i++) {
@@ -46,16 +44,14 @@ var JsonUtils;
                                     throw err;
                                 }
                             });
-                        }
-                        else {
+                        } else {
                             Log.error('no such node');
                             throw Error('no such node');
                         }
                     }
                 }
             });
-        }
-        else {
+        } else {
             let temp = `{"${nodeToModify}":` + JSON.stringify(dataToReplace) + '}';
             (0, fs_1.writeFile)(path, temp, 'utf-8', (err) => {
                 if (err) {
@@ -65,7 +61,9 @@ var JsonUtils;
             });
         }
     }
+
     JsonUtils.modifyJsonNode = modifyJsonNode;
+
     /**
      * @description 用于读取json文件中的指定节点,并返回目标对象/值,
      * nodeToModify应该传入一个字符串数组,按顺序描述json节点,前后节点之间应当为父子关系
@@ -84,26 +82,24 @@ var JsonUtils;
             if (data.length === 0) {
                 Log.error('empty file');
                 throw Error('empty file');
-            }
-            else {
+            } else {
                 let temp = JSON.parse(data.toString());
                 for (let i = 0; i < nodeToSelect.length - 1; i++) {
                     temp = temp[nodeToSelect[i]];
                 }
                 if (temp[nodeToSelect[nodeToSelect.length - 1]]) {
                     return temp[nodeToSelect[nodeToSelect.length - 1]];
-                }
-                else {
+                } else {
                     Log.error('no such node');
                     throw Error('no such node');
                 }
             }
-        }
-        else {
+        } else {
             Log.error('no such file');
             throw Error('no such file');
         }
     }
+
     JsonUtils.getJsonNode = getJsonNode;
 })(JsonUtils = exports.JsonUtils || (exports.JsonUtils = {}));
 var DbUtils;
@@ -123,7 +119,9 @@ var DbUtils;
             day = '0' + day;
         return `date_${date.getFullYear()}_${month}_${day}`;
     }
+
     DbUtils.formatDateYMD = formatDateYMD;
+
     function formatDateYM(date) {
         let monthN = date.getMonth() + 1;
         let month = monthN.toString();
@@ -135,27 +133,33 @@ var DbUtils;
             day = '0' + day;
         return `month_${date.getFullYear()}_${month}`;
     }
+
     DbUtils.formatDateYM = formatDateYM;
+
     function formatDateYMW(date) {
         let day = date.getDay();
         let d = date.getDate();
         return `week_${date.getFullYear()}_${date.getMonth() + 1}_${Math.ceil((d + 6 - day) / 7)}`;
     }
+
     DbUtils.formatDateYMW = formatDateYMW;
+
     function formatDateY(date) {
         let year = date.getFullYear();
         return `year_${year}`;
     }
+
     DbUtils.formatDateY = formatDateY;
+
     function validateDbName(name) {
         if (typeof name === 'string') {
             let reg = new RegExp('^[\u4E00-\u9FA5A-Za-z_]+[\u4E00-\u9FA5a-z0-9_]{2,15}$');
             return reg.test(name);
-        }
-        else {
+        } else {
             return false;
         }
     }
+
     DbUtils.validateDbName = validateDbName;
 })(DbUtils = exports.DbUtils || (exports.DbUtils = {}));
 var CertUtils;
@@ -167,10 +171,10 @@ var CertUtils;
                     return false;
                 }
             }
-        }
-        else {
+        } else {
             return true;
         }
     }
+
     CertUtils.validateCertOptions = validateCertOptions;
 })(CertUtils = exports.CertUtils || (exports.CertUtils = {}));

@@ -1,45 +1,64 @@
 import EventEmitter from 'events'
-import { Worker } from 'worker_threads'
-import { ExtensionManager, IExtensionIdentifier, IMainExtension } from './extend'
+// import { Worker } from 'worker_threads'
+import {fork} from 'child_process'
+import {ExtensionManager, IExtensionIdentifier, IExtension} from './extend.js'
+// import cluster from 'cluster'
 
 type extensionId = string
 
-export interface extensionInstance {
+/**
+ * @description activate是插件激活时执行的函数,
+ * beforeClose会在结束插件结束之前执行,
+ * 而workerEntrance提供一个需要做cpu密集型工作的js模块的绝对路径
+ */
+export interface IExtensionInstance {
     activate: () => void
-    beforeClose: () => boolean
-    actualEntrance: string
+    beforeClose: () => void
+    workerEntrance: string | null
 }
 
-export interface extensionInstanceManager {
+export interface IExtensionInstanceManager {
     identifier: IExtensionIdentifier
-    worker: Worker
-    instance: extensionInstance
+    worker: Worker | undefined | null
+    instance: IExtensionInstance
 }
 
 export class ExtensionActivator {
     static events: EventEmitter
-    static extensionInstanceManagers: Map<extensionId, extensionInstanceManager>
+    static extensionInstanceManagers: Map<extensionId, IExtensionInstanceManager>
 
     constructor() {
+        ExtensionActivator.events = new EventEmitter()
         ExtensionActivator.extensionInstanceManagers = new Map()
     }
 
-    static activate(extension: IMainExtension) {
+    static activate(extension: IExtension) {
         ExtensionActivator.events.emit('activate', extension)
     }
 
-    async doActivateExtension(extension: IMainExtension) {
-        let { activate, beforeClose, actualEntrance } = require(extension.storage)
+    /**
+     * @description 每个插件的入口文件extension.js必须导出一个instance对象实现extensionInstance接口
+     * @param IExtension
+     */
+    async doActivateExtension(IExtension: IExtension) {
         try {
-            await activate()
-            ExtensionManager.registerCloseFunction(beforeClose)
-            ExtensionActivator.extensionInstanceManagers.set(extension.identifier.id, {
-                identifier: extension.identifier,
-                worker: new Worker(actualEntrance),
+            let {extension} = await import(IExtension.storage)
+            await extension.activate()
+            let worker = undefined
+            if (extension.workerEntrance) {
+                // worker = new Worker(extension.workerEntrance)
+                // fork(extension.workerEntrance)
+                require(extension.workerEntrance)
+                // cluster.fork(extension.workerEntrance)
+                // await require(extension.workerEntrance)
+            }
+            ExtensionActivator.extensionInstanceManagers.set(IExtension.identifier.id, {
+                identifier: IExtension.identifier,
+                worker: worker,
                 instance: {
-                    activate: activate,
-                    beforeClose: beforeClose,
-                    actualEntrance: actualEntrance,
+                    activate: extension.activate,
+                    beforeClose: extension.beforeClose,
+                    workerEntrance: extension.workerEntrance,
                 },
             })
         } catch (e: any) {
@@ -52,7 +71,7 @@ export class ExtensionActivator {
         try {
             if (instance) {
                 instance.instance.beforeClose()
-                instance.worker.terminate()
+                if (instance.worker) instance.worker.terminate()
             }
         } catch (e: any) {
             throw e
@@ -61,7 +80,7 @@ export class ExtensionActivator {
 
     static beforeClose() {
         ExtensionActivator.extensionInstanceManagers.forEach(
-            (instance: extensionInstanceManager, extensionId: string) => {
+            (instance: IExtensionInstanceManager, extensionId: string) => {
                 ExtensionActivator.terminateExtensionInstance(extensionId)
             }
         )
@@ -69,6 +88,6 @@ export class ExtensionActivator {
 }
 
 const activator = new ExtensionActivator()
-ExtensionActivator.events.on('activate', (extension: IMainExtension) => {
+ExtensionActivator.events.on('activate', (extension: IExtension) => {
     activator.doActivateExtension(extension)
 })

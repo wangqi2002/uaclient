@@ -1,11 +1,11 @@
-const { app, Menu } = require('electron')
-const path = require('path')
-require('v8-compile-cache')
+const { app, Menu, ipcRenderer, ipcMain } = require('electron')
+const path = import('path')
+import('v8-compile-cache')
 const product = require('./client/product.json')
-
+// const { FileUtils } = import('./platform/base/utils/utils')
 const userDataPath = getUserDataPath()
 
-const workspacePath = app.setPath('userData', userDataPath)
+const workspacePath = app.setPath('appData', userDataPath)
 Menu.setApplicationMenu(null)
 const codeCachePath = getCodeCachePath()
 
@@ -17,18 +17,31 @@ app.whenReady().then(() => {
     onReady()
 })
 
-function startUp(cachePath, workspacePath, appDataPath, config) {
-    require('./client/client')
+async function startUp(cachePath, workspacePath, appDataPath, config) {
+    await import('./client/client.js')
 }
 
 async function onReady() {
     startUp()
+    // setTimeout(async () => {
+    //     ipcMain.handle('folder:open', async (event, fileName) => {
+    //         let files = FileUtils.openFolder(fileName)
+    //         console.log(files)
+    //         if (files.includes('project.json')) {
+    //             ipcClient.emit('project:load', fileName, files)
+    //             return null
+    //         } else {
+    //             return files
+    //         }
+    //     })
+    //     console.log(await ipcRenderer.invoke('folder:open', 'F:\\idea_projects\\uaclient\\src\\client'))
+    // }, 10000)
 }
 
 function getUserDataPath() {
-    let path = product['userData']
+    let path = product['appData']
     if (!path) {
-        path = app.getPath('userData')
+        path = app.getPath('appData')
     }
     return path
 }

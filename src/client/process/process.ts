@@ -1,6 +1,6 @@
 import child_process, { ChildProcess } from 'child_process'
 import EventEmitter from 'events'
-import { moduleName } from '../enums'
+import { moduleName } from '../enums.js'
 
 export class ProcessManager {
     static events: EventEmitter

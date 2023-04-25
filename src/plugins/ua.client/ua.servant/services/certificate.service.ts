@@ -1,18 +1,17 @@
-import {OPCUACertificateManager} from 'node-opcua'
-import {CreateSelfSignCertificateParam1} from 'node-opcua-pki'
-import {Certificate} from 'node-opcua-crypto'
-import {UaErrors, UaSources} from '../../common/ua.enums'
-import {Config} from '../../config/config.default'
-import {ClientError} from '../../../../platform/base/log/log'
+import { OPCUACertificateManager } from 'node-opcua'
+import { CreateSelfSignCertificateParam1 } from 'node-opcua-pki'
+import { Certificate } from 'node-opcua-crypto'
+import { UaErrors, UaSources } from '../../common/ua.enums'
+import { Config } from '../../config/config.default'
+import { ClientError } from '../../../../platform/base/log/log'
 
 // const cry = require("node-opcua-pki")
-
 
 export module CertificateService {
     export let certificate = new OPCUACertificateManager({
         rootFolder: Config.certRoot,
         name: 'pki',
-        automaticallyAcceptUnknownCertificate: false
+        automaticallyAcceptUnknownCertificate: false,
     })
 
     //todo node-opcua-pki命令测试
@@ -23,7 +22,7 @@ export module CertificateService {
      * 具体请转到CreateSelfSignCertificateParam1声明处查看
      * @example
      * {
-     *    "outputFile": path.join(__dirname, '..', '..', '..','certificates/PKI/own/certs/client_cert.pem'),
+     *    "outputFile": path.join(FileTransfer.dirname(import.meta.url), '..', '..', '..','certificates/PKI/own/certs/client_cert.pem'),
      *    "subject": {
      *       "commonName": "UaExpert@WIN-4D29EPFU0V6",
      *       "organization": "uaclient",
@@ -42,7 +41,7 @@ export module CertificateService {
      */
     export async function createCertificate(params: CreateSelfSignCertificateParam1) {
         try {
-            await certificate.createSelfSignedCertificate({...params})
+            await certificate.createSelfSignedCertificate({ ...params })
         } catch (e: any) {
             throw new ClientError(UaSources.certService, UaErrors.errorCreatCert, e.message, e.stack)
         }
@@ -80,7 +79,7 @@ export module CertificateService {
 // async function f() {
 //     try {
 //         await CertificateService.createCertificate({
-//             "outputFile": path.join(__dirname, '..', '..', '..', 'certificates/PKI/own/certs/client_cert.pem'),
+//             "outputFile": path.join(FileTransfer.dirname(import.meta.url), '..', '..', '..', 'certificates/PKI/own/certs/client_cert.pem'),
 //             "subject": {
 //                 "commonName": "UaExpert@WIN-4D29EPFU0V6",
 //                 "organization": "uaclient",

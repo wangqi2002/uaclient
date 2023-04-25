@@ -1,38 +1,45 @@
-import { BrowserView, BrowserWindow, Rectangle, screen } from 'electron'
-import WinState from 'electron-win-state'
+import {BrowserView, BrowserWindow, Rectangle, screen} from 'electron'
 import path from 'path'
-import { EventEmitter } from 'stream'
-import { eventsBind } from '../platform/ipc/handlers/ipc.handler'
+import {EventEmitter} from 'events'
+import {rendererEvents} from '../platform/ipc/events/ipc.events.js'
+import {ipcClient} from '../platform/ipc/handlers/ipc.handler.js'
+import {FileTransfer} from '../client/path/path.js'
+import windowStateKeeper from 'electron-window-state'
 
 type viewId = string
 
 export class Workbench extends EventEmitter {
-    public winState: WinState<unknown>
     private existViews: Map<viewId, BrowserView>
     private mainWindow!: BrowserWindow
+    private winState: windowStateKeeper.State
 
-    constructor(preload?: string, homeViewPath?: string, dev: boolean = false) {
+    constructor(preload: string, homeViewPath: string, dev: boolean = false, width?: number, height?: number) {
         super()
-        this.winState = new WinState({
+        this.winState = windowStateKeeper({
             defaultWidth: (screen.getPrimaryDisplay().workAreaSize.width * 3) / 4,
             defaultHeight: (screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
         })
-        this.createMainWindow(preload, homeViewPath, dev)
+        this.createMainWindow(preload, homeViewPath, dev, width, height)
         this.existViews = new Map()
     }
 
     private async createMainWindow(
-        preloadPath: string = path.join(__dirname, '../preload.js'),
-        indexHtmlPath: string = path.join(__dirname, './index.html'),
-        dev: boolean = false
+        preloadPath: string,
+        indexHtmlPath: string,
+        dev: boolean = false,
+        width?: number,
+        height?: number
     ) {
         this.mainWindow = new BrowserWindow({
-            ...this.winState.winOptions,
+            x: this.winState.x,
+            y: this.winState.y,
+            width: this.winState.width,
+            height: this.winState.height,
             frame: false,
             center: true,
             show: false,
             webPreferences: {
-                preload: path.join(__dirname, preloadPath),
+                preload: preloadPath,
                 devTools: true,
                 nodeIntegration: true,
                 contextIsolation: false,
@@ -41,20 +48,31 @@ export class Workbench extends EventEmitter {
         if (dev) {
             this.mainWindow.webContents.openDevTools()
         }
-        this.mainWindow.webContents.openDevTools()
         await this.mainWindow.loadFile(indexHtmlPath)
         // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
-        this.mainWindow.once('ready-to-show', () => {
-            this.mainWindow.show()
-        })
-        // MainHandler.initBind(this.mainWindow)
-        eventsBind.workbenchInitBind(this.mainWindow)
+        this.initBind(this.mainWindow)
         this.winState.manage(this.mainWindow)
+    }
+
+    initBind(mainWindow: BrowserWindow) {
+        ipcClient.on(rendererEvents.benchEvents.minimize, () => {
+            mainWindow.minimize()
+        })
+        ipcClient.on(rendererEvents.benchEvents.maximize, () => {
+            if (mainWindow.isMaximized()) {
+                mainWindow.restore()
+            } else {
+                mainWindow.maximize()
+            }
+        })
+        ipcClient.on(rendererEvents.benchEvents.close, () => {
+            mainWindow.close()
+        })
     }
 
     public async createWindow(viewUrl: string, isWebView: boolean) {
         const window = new BrowserWindow({
-            ...this.winState.winOptions,
+            // ...this.winState.winOptions,
             frame: false,
         })
         isWebView ? await window.loadFile(viewUrl) : await window.loadURL(viewUrl)
@@ -63,7 +81,7 @@ export class Workbench extends EventEmitter {
     public async createView(
         viewId: string,
         viewUrl: string,
-        rectangle: Rectangle = { x: 0, y: 0, width: 300, height: 300 },
+        rectangle: Rectangle = {x: 0, y: 0, width: 300, height: 300},
         isWebView: boolean = false
     ) {
         if (this.existViews.has(viewId)) {
@@ -79,11 +97,11 @@ export class Workbench extends EventEmitter {
 
         isWebView
             ? await browserView.webContents.loadURL(viewUrl).then(() => {
-                  this.mainWindow.addBrowserView(browserView)
-              })
+                this.mainWindow.addBrowserView(browserView)
+            })
             : await browserView.webContents.loadFile(viewUrl).then(() => {
-                  this.mainWindow.addBrowserView(browserView)
-              })
+                this.mainWindow.addBrowserView(browserView)
+            })
         browserView.setBounds(rectangle)
         browserView.setAutoResize({
             horizontal: true,
@@ -113,6 +131,7 @@ export class Workbench extends EventEmitter {
     //     })
     // }
 }
+
 // export const workbench = new Workbench()
 // export const mainWindow = workbench.getMainWindow()
 //todo 命令inline名称获取

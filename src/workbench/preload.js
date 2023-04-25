@@ -1,4 +1,4 @@
-const { ipcRenderer } = require("electron")
+const { ipcRenderer } = require('electron')
 
 // export let RendererEvents = {
 //     //main
@@ -7,8 +7,11 @@ const { ipcRenderer } = require("electron")
 //     mainClose: 'main:close',
 //     mainMenu: 'main:menu',
 // }
-ipcRenderer.send("project:opcua")
-window.addEventListener("DOMContentLoaded", () => {
+console.log('preload')
+setTimeout(async () => {
+    console.log(await ipcRenderer.invoke('folder:open', 'F:\\idea_projects\\uaclient\\src\\client'))
+}, 1000)
+window.addEventListener('DOMContentLoaded', () => {
     window.ipcRenderer = ipcRenderer
     // const minimizeButton = document.getElementById("minimize-btn");
     // const maxButton = document.getElementById("max-max-btn");

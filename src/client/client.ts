@@ -1,20 +1,21 @@
-import { GlobalExtensionManager } from './extend/extend'
-import { ModelAttributes } from 'sequelize'
-import { Workbench } from './../workbench/workbench'
-import { Broker } from '../platform/base/broker/broker'
-import { app, BrowserWindow } from 'electron'
-import { ErrorHandler } from './error/error'
-import { ClientError, Log } from '../platform/base/log/log'
+import {GlobalExtensionManager} from './extend/extend.js'
+import {ModelAttributes} from 'sequelize'
+import {Workbench} from './../workbench/workbench.js'
+import {Broker} from '../platform/base/broker/broker.js'
+import {app, BrowserWindow} from 'electron'
+import {ErrorHandler} from './error/error.js'
+import {ClientError, Log} from '../platform/base/log/log.js'
 import async from 'async'
-import { Persistence } from '../platform/base/persist/persistence'
-import { ClientStore } from './store/store'
-import { eventsBind } from '../platform/ipc/handlers/ipc.handler'
-import { rendererEvents } from '../platform/ipc/events/ipc.events'
-import { GlobalWorkspaceManager } from './workspace/workspace'
-import { Utils } from '../platform/base/utils/utils'
-import { ProcessManager } from './process/process'
+import {Persistence} from '../platform/base/persist/persistence.js'
+import {ClientStore} from './store/store.js'
+import {ipcClient} from '../platform/ipc/handlers/ipc.handler.js'
+import {rendererEvents} from '../platform/ipc/events/ipc.events.js'
+import {GlobalWorkspaceManager} from './workspace/workspace.js'
+import {Utils} from '../platform/base/utils/utils.js'
+import {ProcessManager} from './process/process.js'
 
-const path = require('path')
+import path from 'path'
+import {FileTransfer} from './path/path.js'
 
 class Client {
     workbench!: Workbench
@@ -22,12 +23,14 @@ class Client {
     persist!: Persistence
     mainWindow!: BrowserWindow
     extensionManager!: GlobalExtensionManager
+    static dev: boolean | undefined
 
-    constructor() {
+    constructor(dev?: boolean) {
         try {
+            Client.dev = dev
             this.requestSingleInstance()
-            this.bindQuitEvents()
             this.startup()
+            this.bindQuitEvents()
         } catch (e: any) {
             console.error(e.message)
             app.exit(1)
@@ -41,6 +44,19 @@ class Client {
     }
 
     private async startup() {
+        try {
+            this.createBaseService()
+            this.createWorkbench()
+            this.initErrorHandler()
+            await this.initServices()
+        } catch (e: any) {
+            console.log('出错了')
+            throw e
+        }
+    }
+
+    private initErrorHandler() {
+        new ErrorHandler()
         ErrorHandler.setUnexpectedErrorHandler((error: any) => {
             if ('source' in error) {
                 Log.error(error)
@@ -55,41 +71,50 @@ class Client {
                 )
             }
         })
-        try {
-            await this.createWorkbench()
-            await this.initServices()
-        } catch (e: any) {
-            console.log('出错了')
-            throw e
-        }
     }
 
     private bindQuitEvents() {
-        eventsBind.benchBind(rendererEvents.benchEvents.quit, () => {
+        ipcClient.on(rendererEvents.benchEvents.quit, () => {
             this.quit()
         })
-        app.on('window-all-closed', () => {
-            this.quit()
-        })
+        // app.on('window-all-closed', () => {
+        //     this.quit()
+        // })
     }
 
-    private async createWorkbench() {
+    private createBaseService() {
+        new ClientStore()
+    }
+
+    private createWorkbench() {
+        let {width, height} = ClientStore.get('config', 'border')
         this.workbench = new Workbench(
             path.join(__dirname, '../workbench/preload.js'),
             path.join(__dirname, '../workbench/index.html'),
-            true
+            Client.dev,
+            width,
+            height
         )
         this.mainWindow = this.workbench.getMainWindow()
-        this.mainWindow.once('ready-to-show', () => {
-            this.mainWindow.show()
+        this.mainWindow.webContents.once('did-finish-load', async () => {
+            await this.mainWindow.show()
+            ipcClient.registerToEmit('emitToRender', (event, ...args) => {
+                this.mainWindow.webContents.send(event, ...args)
+            })
+            //todo 处理这个问题
         })
     }
 
-    private async createBaseService() {
-        async.series([
-            //初始化存储服务
+    private async initServices() {
+        async.parallel([
+            //初始化Broker中间转发者服务
+            // async () => {
+            //     this.broker = new Broker()
+            // },
+            //初始化ORM服务
             async () => {
-                new ClientStore()
+                // let defaultAttributes: ModelAttributes = ClientStore.get('config', 'modelAttribute')
+                this.persist = new Persistence() //TODO 处理数据库自动命名的问题
             },
             //初始化工作空间管理者
             async () => {
@@ -103,32 +128,11 @@ class Client {
             async () => {
                 new Log()
             },
-        ])
-    }
-
-    private async initServices() {
-        this.createBaseService()
-        async.parallel([
-            //初始化Broker中间转发者服务
-            async () => {
-                this.broker = new Broker()
-            },
-            //初始化ORM服务
-            async () => {
-                let defaultAttributes: ModelAttributes = ClientStore.get('config', 'modelAttribute')
-                this.persist = new Persistence(
-                    ClientStore.get('config', 'dbpath'),
-                    Utils.formatDateYMW(new Date()), //TODO 处理数据库自动命名的问题
-                    defaultAttributes
-                )
-            },
-            //初始化插件服务
-            async () => {
-                this.extensionManager = new GlobalExtensionManager(GlobalWorkspaceManager.getCurrentWSNames())
-            },
             //初始化postbox服务
-            async () => {},
+            async () => {
+            },
         ])
+        this.extensionManager = new GlobalExtensionManager(GlobalWorkspaceManager.getCurrentWSNames())
     }
 
     private setErrorHandler(errorHandler: (error: any) => void) {
@@ -152,4 +156,5 @@ class Client {
         app.quit()
     }
 }
+
 const client = new Client()

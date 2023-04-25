@@ -1,11 +1,11 @@
-import Router = require("koa-router")
+import Router from 'koa-router'
 
-import {ClientController} from '../controllers/client.controller'
-import {AgentMiddleware} from '../middlewares/agent.middleware'
+import { ClientController } from '../controllers/client.controller'
+import { AgentMiddleware } from '../middlewares/agent.middleware'
 
 export module ClientRouter {
     export let router = new Router({
-        prefix: '/client'
+        prefix: '/client',
     })
     router.use(AgentMiddleware.clientValidator)
 
@@ -17,5 +17,4 @@ export module ClientRouter {
     router.get('/private_key', ClientController.getPrivateKey)
     router.get('/cert', ClientController.getCertificate)
     router.get('/servers', ClientController.getServers)
-
 }

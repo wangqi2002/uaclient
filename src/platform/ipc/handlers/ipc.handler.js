@@ -1,71 +1,60 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.mainEmit = exports.eventsBind = void 0;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : {"default": mod};
+};
+Object.defineProperty(exports, "__esModule", {value: true});
+exports.ipcClient = void 0;
 const electron_1 = require("electron");
-const ipc_events_1 = require("../events/ipc.events");
-const log_1 = require("../../base/log/log");
-var eventsBind;
-(function (eventsBind) {
-    function workbenchInitBind(mainWindow) {
-        electron_1.ipcMain.on(ipc_events_1.rendererEvents.benchEvents.minimize, () => {
-            mainWindow.minimize();
-        });
-        electron_1.ipcMain.on(ipc_events_1.rendererEvents.benchEvents.maximize, () => {
-            if (mainWindow.isMaximized()) {
-                mainWindow.restore();
-            }
-            else {
-                mainWindow.maximize();
-            }
-        });
-        electron_1.ipcMain.on(ipc_events_1.rendererEvents.benchEvents.close, () => {
-            mainWindow.close();
-        });
-    }
-    eventsBind.workbenchInitBind = workbenchInitBind;
-    function logInitBind() {
-        electron_1.ipcMain.on(ipc_events_1.rendererEvents.logEvents.info, (event, args) => {
-            log_1.Log.info(args);
-        });
-        electron_1.ipcMain.on(ipc_events_1.rendererEvents.logEvents.error, (event, args) => {
-            log_1.Log.error(args);
-        });
-        electron_1.ipcMain.on(ipc_events_1.rendererEvents.logEvents.warn, (event, args) => {
-            log_1.Log.warn(args);
-        });
-    }
-    eventsBind.logInitBind = logInitBind;
-    function benchBind(event, eventHandler) {
+const events_1 = __importDefault(require("events"));
+
+class ipcClient {
+    static localEvents = new events_1.default();
+    static clientEvents = new events_1.default();
+    // constructor(send: (channel: string, ...args: any[]) => void) {
+    //     ipcClient.currentWindow = send
+    // }
+    static on(event, eventHandler) {
         electron_1.ipcMain.on(event, eventHandler);
     }
-    eventsBind.benchBind = benchBind;
-    function workspaceBind(event, eventHandler) {
-        electron_1.ipcMain.on(event, eventHandler);
-    }
-    eventsBind.workspaceBind = workspaceBind;
-    function persistBind() {
-        // ipcMain.on("persist:init", (event, storage, tableName, attributes) => {
-        //     Persistence.init(storage, tableName, attributes)
-        // })
-    }
-    eventsBind.persistBind = persistBind;
-    function extendBind(event, eventHandler) {
-        electron_1.ipcMain.on(event, eventHandler);
-    }
-    eventsBind.extendBind = extendBind;
-    function bindEvent(event, eventHandler) {
-        electron_1.ipcMain.on(event, eventHandler);
-    }
-    eventsBind.bindEvent = bindEvent;
-    function onceBind(event, eventHandler) {
+
+    static once(event, eventHandler) {
         electron_1.ipcMain.once(event, eventHandler);
     }
-    eventsBind.onceBind = onceBind;
-})(eventsBind = exports.eventsBind || (exports.eventsBind = {}));
-var mainEmit;
-(function (mainEmit) {
-    function emit(event, ...args) {
-        electron_1.ipcMain.emit(event, ...args);
+
+    static handle(event, eventHandler) {
+        electron_1.ipcMain.handle(event, eventHandler);
     }
-    mainEmit.emit = emit;
-})(mainEmit = exports.mainEmit || (exports.mainEmit = {}));
+
+    /**
+     * @description 通过mainwindow进行广播,并且发送消息到mainwindow.webContents
+     * @param event
+     * @param args
+     */
+    static emitToRender(event, ...args) {
+        // ipcClient.currentWindow(event, ...args)
+        // ipcMain.emit(event, ...args)
+        ipcClient.localEvents.emit('emitToRender', event, ...args);
+    }
+
+    static registerToEmit(event, eventHandler) {
+        ipcClient.localEvents.on(event, eventHandler);
+    }
+
+    static emitLocal(event, ...args) {
+        ipcClient.localEvents.emit(event, ...args);
+    }
+
+    static onLocal(event, handler) {
+        ipcClient.localEvents.on(event, handler);
+    }
+
+    static onClient(event, handler) {
+        ipcClient.clientEvents.on(event, handler);
+    }
+
+    static emitClient(event, ...args) {
+        ipcClient.clientEvents.emit(event, ...args);
+    }
+}
+
+exports.ipcClient = ipcClient;

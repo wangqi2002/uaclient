@@ -1,7 +1,8 @@
 import { MessageSecurityMode, SecurityPolicy } from 'node-opcua'
-import { DbUtils } from '../ua.servant/utils/util'
+import { DbUtils } from '../ua.servant/utils/util.js'
 import path from 'path'
 import { DataTypes } from 'sequelize'
+import { FileTransfer } from '../../../client/path/path.js'
 
 const dotenv = require('dotenv')
 let Path = require('path')

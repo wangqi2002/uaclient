@@ -1,10 +1,10 @@
-import Router = require("koa-router")
-import {DbController} from '../controllers/db.controller'
-import {AgentMiddleware} from '../middlewares/agent.middleware'
+import Router from 'koa-router'
+import { DbController } from '../controllers/db.controller'
+import { AgentMiddleware } from '../middlewares/agent.middleware'
 
 export module DbRouter {
     export let router = new Router({
-        prefix: '/db'
+        prefix: '/db',
     })
     router.use(AgentMiddleware.dbValidator)
 

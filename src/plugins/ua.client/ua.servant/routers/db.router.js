@@ -1,13 +1,16 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : {"default": mod};
+};
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.DbRouter = void 0;
-const Router = require("koa-router");
+const koa_router_1 = __importDefault(require("koa-router"));
 const db_controller_1 = require("../controllers/db.controller");
 const agent_middleware_1 = require("../middlewares/agent.middleware");
 var DbRouter;
 (function (DbRouter) {
-    DbRouter.router = new Router({
-        prefix: '/db'
+    DbRouter.router = new koa_router_1.default({
+        prefix: '/db',
     });
     DbRouter.router.use(agent_middleware_1.AgentMiddleware.dbValidator);
     DbRouter.router.post('/init', db_controller_1.DbController.init);

@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.MainEvents = exports.rendererEvents = void 0;
 var rendererEvents;
 (function (rendererEvents) {

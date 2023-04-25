@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.UaInfos = exports.UaErrors = exports.UaWarns = exports.UaSources = exports.ServerMessage = exports.ServerStatusCodes = exports.TableCreateModes = void 0;
 /**
  * @description 数据库创建表格模式

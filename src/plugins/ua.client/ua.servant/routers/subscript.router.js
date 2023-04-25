@@ -1,13 +1,16 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : {"default": mod};
+};
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.SubscriptRouter = void 0;
-const Router = require("koa-router");
+const koa_router_1 = __importDefault(require("koa-router"));
 const subscript_controller_1 = require("../controllers/subscript.controller");
 const agent_middleware_1 = require("../middlewares/agent.middleware");
 var SubscriptRouter;
 (function (SubscriptRouter) {
-    SubscriptRouter.router = new Router({
-        prefix: '/subscript'
+    SubscriptRouter.router = new koa_router_1.default({
+        prefix: '/subscript',
     });
     SubscriptRouter.router.use(agent_middleware_1.AgentMiddleware.subscriptValidator);
     SubscriptRouter.router.post('/init', subscript_controller_1.SubscriptController.init);

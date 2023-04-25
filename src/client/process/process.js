@@ -1,14 +1,19 @@
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+    return (mod && mod.__esModule) ? mod : {"default": mod};
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.ProcessManager = void 0;
 const child_process_1 = __importDefault(require("child_process"));
+
 class ProcessManager {
+    static events;
+    static processes;
+
     constructor() {
         ProcessManager.processes = new Map();
     }
+
     /**
      * @description 创建一个子线程,指定path和moduleName,其中moduleName应当是一个工作的子进程所属模块
      * @param path
@@ -21,12 +26,14 @@ class ProcessManager {
             ProcessManager.processes.set(module, child);
         }
     }
+
     static killProcess(module) {
         let child = ProcessManager.processes.get(module);
         if (child) {
             child.kill();
         }
     }
+
     beforeClose() {
         ProcessManager.processes.forEach((process, module) => {
             process.kill();
@@ -34,4 +41,5 @@ class ProcessManager {
         });
     }
 }
+
 exports.ProcessManager = ProcessManager;

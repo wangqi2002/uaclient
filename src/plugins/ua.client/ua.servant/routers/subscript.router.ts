@@ -1,10 +1,10 @@
-import Router = require("koa-router")
-import {SubscriptController} from '../controllers/subscript.controller'
-import {AgentMiddleware} from '../middlewares/agent.middleware'
+import Router from 'koa-router'
+import { SubscriptController } from '../controllers/subscript.controller'
+import { AgentMiddleware } from '../middlewares/agent.middleware'
 
 export module SubscriptRouter {
     export let router = new Router({
-        prefix: '/subscript'
+        prefix: '/subscript',
     })
     router.use(AgentMiddleware.subscriptValidator)
 

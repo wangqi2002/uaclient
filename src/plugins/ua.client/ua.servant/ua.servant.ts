@@ -1,12 +1,12 @@
-import Koa = require("koa")
-import {koaBody} from "koa-body"
-import {Config} from "../config/config.default"
-import {ClientRouter} from "./routers/client.router"
-import {SessionRouter} from "./routers/session.router"
-import {SubscriptRouter} from "./routers/subscript.router"
-import {CertificateRouter} from "./routers/certificate.router"
-import {DbRouter} from "./routers/db.router"
-import {ErrorMiddleware} from "./middlewares/error.middleware"
+import Koa from 'koa'
+import { koaBody } from 'koa-body'
+import { Config } from '../config/config.default'
+import { ClientRouter } from './routers/client.router'
+import { SessionRouter } from './routers/session.router'
+import { SubscriptRouter } from './routers/subscript.router'
+import { CertificateRouter } from './routers/certificate.router'
+import { DbRouter } from './routers/db.router'
+import { ErrorMiddleware } from './middlewares/error.middleware'
 
 // require('v8-compile-cache')
 //todo 性能调优/v8-compile-cache缓存,实现插件系统,模仿vscode的架构设计
@@ -28,11 +28,10 @@ export module Server {
         })
         try {
             app.listen(Config.port, () => {
-                console.log("complete")
-                app.emit("serverCreated", Config.port)
+                console.log('complete')
+                app.emit('serverCreated', Config.port)
             })
-        } catch (e: any) {
-        }
+        } catch (e: any) {}
     }
 }
 Server.activateServer()

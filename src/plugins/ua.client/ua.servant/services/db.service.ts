@@ -1,13 +1,14 @@
-import { TableCreateModes, UaErrors, UaSources } from "../../common/ua.enums"
-import { Config } from "../../config/config.default"
-import { DbUtils } from "../utils/util"
-import { IDbData, IFieldNames } from "../models/params.model"
-import { ClientError } from "../../../../platform/base/log/log"
-import { Persistence } from "../../../../platform/base/persist/persistence"
-import { DataTypes } from "sequelize"
+import {TableCreateModes, UaErrors, UaSources} from "../../common/ua.enums"
+import {Config} from "../../config/config.default"
+import {DbUtils} from "../utils/util"
+import {IDbData, IFieldNames} from "../models/params.model"
+import {ClientError} from "../../../../platform/base/log/log"
+import {Persistence} from "../../../../platform/base/persist/persistence"
+import {DataTypes} from "sequelize"
 import EventEmitter from "events"
-import { Broker } from "../../../../platform/base/broker/broker"
 import path from "path"
+import {UaMessage} from '../models/message.model'
+import {ipcClient} from '../../../../platform/ipc/handlers/ipc.handler'
 //todo 全面测试数据库模块
 export module DbService {
     export let defaultTableName: string = Config.defaultTable
@@ -95,11 +96,15 @@ export module DbService {
             }
             await DbService.createTable()
 
-            let pipe = Broker.createPipe(Config.defaultPipeName)
-            // let events = Broker.getPipeEvents(Config.defaultPipeName)
-            pipe.on("full", (data) => {
+            // let pipe = Broker.createPipe(Config.defaultPipeName)
+            // // let events = Broker.getPipeEvents(Config.defaultPipeName)
+            // pipe.on("full", (data: any) => {
+            //     DbService.insertMany(data)
+            // })
+            ipcClient.onLocal('pipe:ua.full', (data: UaMessage[]) => {
                 DbService.insertMany(data)
             })
+            //todo 注意这里ipcClient的使用
             DbService.events.on("init", () => {
                 console.log("yes")
             })

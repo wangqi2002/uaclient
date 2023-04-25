@@ -1,10 +1,10 @@
-import Router = require("koa-router")
-import {CertificateController} from '../controllers/certificate.controller'
-import {AgentMiddleware} from '../middlewares/agent.middleware'
+import Router from 'koa-router'
+import { CertificateController } from '../controllers/certificate.controller'
+import { AgentMiddleware } from '../middlewares/agent.middleware'
 
 export module CertificateRouter {
     export let router = new Router({
-        prefix: '/cert'
+        prefix: '/cert',
     })
     router.use(AgentMiddleware.certValidator)
 

@@ -1,11 +1,11 @@
 "use strict";
 var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+    return (mod && mod.__esModule) ? mod : {"default": mod};
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", {value: true});
 exports.Config = void 0;
 const node_opcua_1 = require("node-opcua");
-const util_1 = require("../ua.servant/utils/util");
+const util_js_1 = require("../ua.servant/utils/util.js");
 const path_1 = __importDefault(require("path"));
 const sequelize_1 = require("sequelize");
 const dotenv = require('dotenv');
@@ -20,7 +20,7 @@ var Config;
     Config.dbPath = Path.join(__dirname, '..', '..', '..', '..', process.env.DB_PATH)
         ? Path.join(__dirname, '..', '..', '..', '..', process.env.DB_PATH).toString()
         : Path.join(__dirname, '..', '..', '..', '..', '/databases/data.db').toString();
-    Config.defaultTable = util_1.DbUtils.formatDateYMW(new Date());
+    Config.defaultTable = util_js_1.DbUtils.formatDateYMW(new Date());
     Config.certRoot = path_1.default.join(__dirname, '..', '..', 'ua.client', 'certificates', 'PKI');
     Config.defaultAttributes = {
         server: {
@@ -92,7 +92,7 @@ var Config;
                 maxLogSize: 50000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
             },
         },
-        categories: { default: { appenders: ['client'], level: 'info' } },
+        categories: {default: {appenders: ['client'], level: 'info'}},
     };
     Config.defaultPipeName = 'ua';
 })(Config = exports.Config || (exports.Config = {}));

@@ -1,9 +1,9 @@
-import Router = require('koa-router')
-import {SessionController} from '../controllers/session.controller'
-import {AgentMiddleware} from '../middlewares/agent.middleware'
+import Router from 'koa-router'
+import { SessionController } from '../controllers/session.controller'
+import { AgentMiddleware } from '../middlewares/agent.middleware'
 
 export module SessionRouter {
-    export let router = new Router({prefix: '/session'})
+    export let router = new Router({ prefix: '/session' })
     router.use(AgentMiddleware.sessionValidator)
 
     router.post('/init', SessionController.init)
