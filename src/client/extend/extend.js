@@ -39,7 +39,6 @@ const store_js_1 = require("../store/store.js");
 const activator_js_1 = require("./activator.js");
 const ipc_handler_js_1 = require("../../platform/ipc/handlers/ipc.handler.js");
 const ipc_events_js_1 = require("../../platform/ipc/events/ipc.events.js");
-const process_js_1 = require("../process/process.js");
 const enums_js_1 = require("../enums.js");
 
 function verifyStoragePath(path) {
@@ -237,7 +236,11 @@ class GlobalExtensionManager {
 
     //启动activator.js文件作为一个子进程存在
     initActivator() {
-        process_js_1.ProcessManager.createChildProcess((0, path_1.join)(__dirname, './src/client/extend/activator.js'), enums_js_1.moduleName.extensionActivator);
+        // ProcessManager.createChildProcess(
+        //     join(__dirname, './activator.js'),
+        //     moduleName.extensionActivator
+        // )
+        require((0, path_1.join)(__dirname, './activator.js'));
     }
 
     /**

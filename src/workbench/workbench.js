@@ -41,9 +41,11 @@ class Workbench extends events_1.EventEmitter {
         if (dev) {
             this.mainWindow.webContents.openDevTools();
         }
+
         await this.mainWindow.loadFile(indexHtmlPath);
         // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
         this.initBind(this.mainWindow);
+        this.mainWindow.webContents.openDevTools();
         this.winState.manage(this.mainWindow);
     }
     initBind(mainWindow) {

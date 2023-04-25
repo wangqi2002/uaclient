@@ -11,7 +11,7 @@ const log_1 = require("../../../../platform/base/log/log");
 const persistence_1 = require("../../../../platform/base/persist/persistence");
 const sequelize_1 = require("sequelize");
 const events_1 = __importDefault(require("events"));
-const broker_1 = require("../../../../platform/base/broker/broker");
+const ipc_handler_1 = require("../../../../platform/ipc/handlers/ipc.handler");
 //todo 全面测试数据库模块
 var DbService;
 (function (DbService) {
@@ -100,11 +100,15 @@ var DbService;
                     throw new log_1.ClientError(ua_enums_1.UaSources.dbService, ua_enums_1.UaErrors.errorTableMode);
             }
             await DbService.createTable();
-            let pipe = broker_1.Broker.createPipe(config_default_1.Config.defaultPipeName);
-            // let events = Broker.getPipeEvents(Config.defaultPipeName)
-            pipe.on("full", (data) => {
+            // let pipe = Broker.createPipe(Config.defaultPipeName)
+            // // let events = Broker.getPipeEvents(Config.defaultPipeName)
+            // pipe.on("full", (data: any) => {
+            //     DbService.insertMany(data)
+            // })
+            ipc_handler_1.ipcClient.onLocal('pipe:ua.full', (data) => {
                 DbService.insertMany(data);
             });
+            //todo 注意这里ipcClient的使用
             DbService.events.on("init", () => {
                 console.log("yes");
             });

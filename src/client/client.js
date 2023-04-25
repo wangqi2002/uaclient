@@ -15,6 +15,7 @@ const ipc_handler_js_1 = require("../platform/ipc/handlers/ipc.handler.js");
 const ipc_events_js_1 = require("../platform/ipc/events/ipc.events.js");
 const workspace_js_1 = require("./workspace/workspace.js");
 const process_js_1 = require("./process/process.js");
+const {ipcClient} = require('../platform/ipc/handlers/ipc.handler')
 const path_1 = __importDefault(require("path"));
 
 class Client {
@@ -85,7 +86,9 @@ class Client {
         this.mainWindow = this.workbench.getMainWindow();
         this.mainWindow.webContents.once('did-finish-load', async () => {
             await this.mainWindow.show();
-            ipc_handler_js_1.ipcClient.currentWindow = this.mainWindow.webContents.send;
+            ipc_handler_js_1.ipcClient.registerToEmit('emitToRender', (event, ...args) => {
+                this.mainWindow.webContents.send(event, ...args);
+            });
             //todo 处理这个问题
         });
     }
@@ -143,3 +146,6 @@ class Client {
 }
 
 const client = new Client();
+ipcClient.onLocal('pipe:ua.pushed', (data) => {
+    console.log(data, 'client')
+})

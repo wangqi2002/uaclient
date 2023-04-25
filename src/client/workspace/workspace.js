@@ -44,7 +44,7 @@ class WorkspaceManager {
 
     toStart() {
         if (this.onStart) {
-            ipc_handler_js_1.ipcClient.emit('project:load', this.workspace.storagePath + '/' + this.onStart);
+            ipc_handler_js_1.ipcClient.emitToRender('project:load', this.workspace.storagePath + '/' + this.onStart);
         }
     }
 
@@ -61,7 +61,7 @@ class WorkspaceManager {
     loadProject(fileName) {
         GlobalWorkspaceManager.projectExtend.forEach((projectType) => {
             if (fileName.endsWith(projectType)) {
-                ipc_handler_js_1.ipcClient.emit('project:activate.' + projectType);
+                ipc_handler_js_1.ipcClient.emitToRender('project:activate.' + projectType);
             }
         });
         let project = require(fileName + '/project.json');
@@ -93,7 +93,7 @@ class GlobalWorkspaceManager {
         ipc_handler_js_1.ipcClient.handle('folder:open', (event, fileName) => {
             let files = utils_js_1.FileUtils.openFolder(fileName);
             if (files.includes('project.json')) {
-                ipc_handler_js_1.ipcClient.emit('project:load', fileName, files);
+                ipc_handler_js_1.ipcClient.emitToRender('project:load', fileName, files);
                 return null;
             } else {
                 return files;

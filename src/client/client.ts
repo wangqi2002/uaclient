@@ -1,21 +1,21 @@
-import { GlobalExtensionManager } from './extend/extend.js'
-import { ModelAttributes } from 'sequelize'
-import { Workbench } from './../workbench/workbench.js'
-import { Broker } from '../platform/base/broker/broker.js'
-import { app, BrowserWindow } from 'electron'
-import { ErrorHandler } from './error/error.js'
-import { ClientError, Log } from '../platform/base/log/log.js'
+import {GlobalExtensionManager} from './extend/extend.js'
+import {ModelAttributes} from 'sequelize'
+import {Workbench} from './../workbench/workbench.js'
+import {Broker} from '../platform/base/broker/broker.js'
+import {app, BrowserWindow} from 'electron'
+import {ErrorHandler} from './error/error.js'
+import {ClientError, Log} from '../platform/base/log/log.js'
 import async from 'async'
-import { Persistence } from '../platform/base/persist/persistence.js'
-import { ClientStore } from './store/store.js'
-import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js'
-import { rendererEvents } from '../platform/ipc/events/ipc.events.js'
-import { GlobalWorkspaceManager } from './workspace/workspace.js'
-import { Utils } from '../platform/base/utils/utils.js'
-import { ProcessManager } from './process/process.js'
+import {Persistence} from '../platform/base/persist/persistence.js'
+import {ClientStore} from './store/store.js'
+import {ipcClient} from '../platform/ipc/handlers/ipc.handler.js'
+import {rendererEvents} from '../platform/ipc/events/ipc.events.js'
+import {GlobalWorkspaceManager} from './workspace/workspace.js'
+import {Utils} from '../platform/base/utils/utils.js'
+import {ProcessManager} from './process/process.js'
 
 import path from 'path'
-import { FileTransfer } from './path/path.js'
+import {FileTransfer} from './path/path.js'
 
 class Client {
     workbench!: Workbench
@@ -87,7 +87,7 @@ class Client {
     }
 
     private createWorkbench() {
-        let { width, height } = ClientStore.get('config', 'border')
+        let {width, height} = ClientStore.get('config', 'border')
         this.workbench = new Workbench(
             path.join(__dirname, '../workbench/preload.js'),
             path.join(__dirname, '../workbench/index.html'),
@@ -98,7 +98,9 @@ class Client {
         this.mainWindow = this.workbench.getMainWindow()
         this.mainWindow.webContents.once('did-finish-load', async () => {
             await this.mainWindow.show()
-            ipcClient.currentWindow = this.mainWindow.webContents.send
+            ipcClient.registerToEmit('emitToRender', (event, ...args) => {
+                this.mainWindow.webContents.send(event, ...args)
+            })
             //todo 处理这个问题
         })
     }
@@ -127,7 +129,8 @@ class Client {
                 new Log()
             },
             //初始化postbox服务
-            async () => {},
+            async () => {
+            },
         ])
         this.extensionManager = new GlobalExtensionManager(GlobalWorkspaceManager.getCurrentWSNames())
     }
@@ -153,4 +156,5 @@ class Client {
         app.quit()
     }
 }
+
 const client = new Client()

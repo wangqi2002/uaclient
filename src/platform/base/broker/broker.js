@@ -2,18 +2,16 @@
 Object.defineProperty(exports, "__esModule", {value: true});
 exports.Broker = exports.MessagePipe = void 0;
 const ipc_handler_js_1 = require("./../../ipc/handlers/ipc.handler.js");
-const events_1 = require("events");
 
 /**
  * @description 一个MessagePipe,本质上是一个map其中存储了形如<nodeId,[data1,data2]>的数据,并且定义了events用于订阅使用
  */
-class MessagePipe extends events_1.EventEmitter {
+class MessagePipe {
     content;
     maxLength;
     pipeId;
 
     constructor(pipeId, maxLength) {
-        super();
         this.pipeId = pipeId;
         this.content = new Map();
         this.maxLength = maxLength ? maxLength : 200;
@@ -32,21 +30,24 @@ class MessagePipe extends events_1.EventEmitter {
         if (data) {
             data.push(message);
             if (data.length >= this.maxLength) {
-                this.emit('full', data);
-                ipc_handler_js_1.ipcClient.emit(this.pipeId + ':full', data);
+                // this.emit('full', data)
+                ipc_handler_js_1.ipcClient.emitToRender('pipe:' + this.pipeId + '.full', data);
+                ipc_handler_js_1.ipcClient.emitLocal('pipe:' + this.pipeId + '.full', data);
                 data.length = 0;
             }
         } else {
             this.content.set(message.nodeId, [message]);
         }
-        this.emit('pushed', message);
-        ipc_handler_js_1.ipcClient.emit(this.pipeId + ':pushed', message);
+        // this.emit('pushed', message)
+        ipc_handler_js_1.ipcClient.emitToRender('pipe:' + this.pipeId + '.pushed', message);
+        ipc_handler_js_1.ipcClient.emitLocal('pipe:' + this.pipeId + '.pushed', message);
     }
 
     terminate() {
         let copy = new Map(this.content);
-        this.emit('close', copy);
-        ipc_handler_js_1.ipcClient.emit(this.pipeId + ':close', copy);
+        // this.emit('close', copy)
+        ipc_handler_js_1.ipcClient.emitToRender('pipe:' + this.pipeId + '.close', copy);
+        ipc_handler_js_1.ipcClient.emitLocal('pipe:' + this.pipeId + '.close', copy);
         this.content.clear();
         return copy;
     }
@@ -83,6 +84,12 @@ class Broker {
         return true;
     }
 
+    // static registerHandler(pipeId: pipeId,) {
+    //     let data = Broker.pipes.get(pipeId)
+    //     data?.on('pushed', () => {
+    //         ipcClient.emit('pipeId:ua.pushed')
+    //     })
+    // }
     static hasPipe(pipeId) {
         return Broker.pipes.has(pipeId);
     }

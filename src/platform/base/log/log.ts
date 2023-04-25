@@ -1,10 +1,11 @@
-import { app } from 'electron'
-import { Configuration, Logger } from 'log4js'
+import {app} from 'electron'
+import {Configuration, Logger} from 'log4js'
 import log from 'log4js'
-const { configure, getLogger } = log
-import { MainEvents, rendererEvents } from '../../ipc/events/ipc.events.js'
-import { ipcClient } from '../../ipc/handlers/ipc.handler.js'
-import { ClientStore, ConfigNames } from '../../../client/store/store.js'
+
+const {configure, getLogger} = log
+import {MainEvents, rendererEvents} from '../../ipc/events/ipc.events.js'
+import {ipcClient} from '../../ipc/handlers/ipc.handler.js'
+import {ClientStore, ConfigNames} from '../../../client/store/store.js'
 
 type Source = string | undefined
 type Warn = string
@@ -62,8 +63,8 @@ export class Log {
 
     static info(info: ClientInfo) {
         try {
-            Log.clientLogger.info(info.information, { source: info.source, ...info.message })
-            ipcClient.emit(MainEvents.logEmitEvents.info, info)
+            Log.clientLogger.info(info.information, {source: info.source, ...info.message})
+            ipcClient.emitToRender(MainEvents.logEmitEvents.info, info)
         } catch (e: any) {
             throw e
         }
@@ -77,7 +78,7 @@ export class Log {
                 stack: info.trace,
                 ...info.message,
             })
-            ipcClient.emit(MainEvents.logEmitEvents.error, info)
+            ipcClient.emitToRender(MainEvents.logEmitEvents.error, info)
         } catch (e: any) {
             throw e
         }
@@ -85,8 +86,8 @@ export class Log {
 
     static warn(info: ClientWarn) {
         try {
-            Log.clientLogger.warn(info.information, { source: info.source, warn: info.warn, ...info.message })
-            ipcClient.emit(MainEvents.logEmitEvents.warn, info)
+            Log.clientLogger.warn(info.information, {source: info.source, warn: info.warn, ...info.message})
+            ipcClient.emitToRender(MainEvents.logEmitEvents.warn, info)
         } catch (e: any) {
             throw e
         }
@@ -109,7 +110,7 @@ export class Log {
                             maxLogSize: 50000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
                         },
                     },
-                    categories: { default: { appenders: ['client'], level: 'info' } },
+                    categories: {default: {appenders: ['client'], level: 'info'}},
                 }
                 if (!ClientStore.has('config', ConfigNames.log)) ClientStore.set('config', ConfigNames.log, conf)
                 configure(conf)
@@ -131,4 +132,5 @@ export class Log {
         })
     }
 }
+
 //todo 安装时,应当初始化log和database服务

@@ -73,7 +73,7 @@ class Log {
     static info(info) {
         try {
             Log.clientLogger.info(info.information, {source: info.source, ...info.message});
-            ipc_handler_js_1.ipcClient.emit(ipc_events_js_1.MainEvents.logEmitEvents.info, info);
+            ipc_handler_js_1.ipcClient.emitToRender(ipc_events_js_1.MainEvents.logEmitEvents.info, info);
         } catch (e) {
             throw e;
         }
@@ -87,7 +87,7 @@ class Log {
                 stack: info.trace,
                 ...info.message,
             });
-            ipc_handler_js_1.ipcClient.emit(ipc_events_js_1.MainEvents.logEmitEvents.error, info);
+            ipc_handler_js_1.ipcClient.emitToRender(ipc_events_js_1.MainEvents.logEmitEvents.error, info);
         } catch (e) {
             throw e;
         }
@@ -96,7 +96,7 @@ class Log {
     static warn(info) {
         try {
             Log.clientLogger.warn(info.information, {source: info.source, warn: info.warn, ...info.message});
-            ipc_handler_js_1.ipcClient.emit(ipc_events_js_1.MainEvents.logEmitEvents.warn, info);
+            ipc_handler_js_1.ipcClient.emitToRender(ipc_events_js_1.MainEvents.logEmitEvents.warn, info);
         } catch (e) {
             throw e;
         }

@@ -5,19 +5,18 @@ import {
     ModifySubscriptionOptions,
     TimestampsToReturn,
 } from 'node-opcua'
-import { SessionService } from './session.service'
-import { UaErrors, UaSources, UaWarns } from '../../common/ua.enums'
-import { Broker } from '../../../../platform/base/broker/broker'
-import { UaMessage } from '../models/message.model'
-import { ItemAndName, NodeID, SubscriptGroupParam, SubscriptSingleParam } from '../models/params.model'
-import { Config } from '../../config/config.default'
-import { ClientError, ClientWarn } from '../../../../platform/base/log/log'
+import {SessionService} from './session.service'
+import {UaErrors, UaSources, UaWarns} from '../../common/ua.enums'
+import {Broker} from '../../../../platform/base/broker/broker'
+import {UaMessage} from '../models/message.model'
+import {ItemAndName, NodeID, SubscriptGroupParam, SubscriptSingleParam} from '../models/params.model'
+import {Config} from '../../config/config.default'
+import {ClientError, ClientWarn} from '../../../../platform/base/log/log'
 
 export module SubscriptService {
     export let subscription!: ClientSubscription
     let monitoredItems: Map<string, ItemAndName> = new Map()
     let subscriptionOption = Config.defaultSubscript
-    let pipe = Broker.getPipe(Config.defaultPipeName)
 
     function bindingAndPush(monitoredItem: ClientMonitoredItem, displayName: string, itemId: any) {
         try {
@@ -26,21 +25,21 @@ export module SubscriptService {
                 .on('changed', async (data) => {
                     let item = monitoredItems.get(itemId)
                     if (item) {
-                        // Broker.receive(
-                        //     Config.defaultPipeName,
-                        //     monitoredItem.itemToMonitor.nodeId.toString(),
-                        //     new UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName),
-                        // )
-                        await pipe.inPipe(
+                        Broker.receive(
+                            Config.defaultPipeName,
                             monitoredItem.itemToMonitor.nodeId.toString(),
-                            new UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName)
+                            new UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName),
                         )
+                        // await pipe.inPipe(
+                        //     monitoredItem.itemToMonitor.nodeId.toString(),
+                        //     new UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName)
+                        // )
                     }
                 })
                 .on('err', (err) => {
                     throw new ClientError(UaSources.subscriptService, UaErrors.errorMonitoringItem, err)
                 })
-            monitoredItems.set(itemId, { monitoredItem: monitoredItem, displayName: displayName })
+            monitoredItems.set(itemId, {monitoredItem: monitoredItem, displayName: displayName})
         } catch (e: any) {
             throw new ClientError(UaSources.subscriptService, UaErrors.errorBinding, e.message, e.stack)
         }
@@ -74,7 +73,7 @@ export module SubscriptService {
      */
     export function addMonitoredItems(param: SubscriptGroupParam) {
         try {
-            param.parameters = param.parameters || { samplingInterval: 100, discardOldest: true, queueSize: 10 }
+            param.parameters = param.parameters || {samplingInterval: 100, discardOldest: true, queueSize: 10}
             param.timeStampToReturn = param.timeStampToReturn || TimestampsToReturn.Both
             if (subscription) {
                 for (let i = 0; i < param.itemsToMonitor.length; i++) {
@@ -100,7 +99,7 @@ export module SubscriptService {
      */
     export function addMonitoredItem(param: SubscriptSingleParam) {
         try {
-            param.parameters = param.parameters || { samplingInterval: 100, discardOldest: true, queueSize: 10 }
+            param.parameters = param.parameters || {samplingInterval: 100, discardOldest: true, queueSize: 10}
             param.timeStampToReturn = param.timeStampToReturn || TimestampsToReturn.Both
             let monitoredItem = ClientMonitoredItem.create(
                 subscription,

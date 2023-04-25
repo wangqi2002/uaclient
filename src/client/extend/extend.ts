@@ -1,16 +1,16 @@
-import { join } from 'path'
-import { existsSync } from 'fs'
+import {join} from 'path'
+import {existsSync} from 'fs'
 import EventEmitter from 'events'
-import { GlobalWorkspaceManager } from './../workspace/workspace.js'
-import { ClientStore } from '../store/store.js'
-import { ExtensionActivator } from './activator.js'
-import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
-import { rendererEvents } from '../../platform/ipc/events/ipc.events.js'
-import { workspace } from '../workspace/workspace.js'
-import { ProcessManager } from '../process/process.js'
-import { moduleName, moduleStoreNames } from '../enums.js'
-import { Workbench } from '../../workbench/workbench.js'
-import { FileTransfer } from '../path/path.js'
+import {GlobalWorkspaceManager} from './../workspace/workspace.js'
+import {ClientStore} from '../store/store.js'
+import {ExtensionActivator} from './activator.js'
+import {ipcClient} from '../../platform/ipc/handlers/ipc.handler.js'
+import {rendererEvents} from '../../platform/ipc/events/ipc.events.js'
+import {workspace} from '../workspace/workspace.js'
+import {ProcessManager} from '../process/process.js'
+import {moduleName, moduleStoreNames} from '../enums.js'
+import {Workbench} from '../../workbench/workbench.js'
+import {FileTransfer} from '../path/path.js'
 
 type extensionStorage = string
 type extensionActivateEvent = string
@@ -36,6 +36,7 @@ export interface IExtensionManager {
     enabledExtensions: IExtension[]
     disabledExtensions: IExtension[]
 }
+
 export interface IGlobalExtensionInfo {
     extensionManagers: IExtensionManager[]
     globalExtensionManager: IExtensionManager
@@ -50,6 +51,7 @@ export interface IGlobalExtensionManager {
 function verifyStoragePath(path: string) {
     return existsSync(path)
 }
+
 export class ExtensionManager extends EventEmitter implements IExtensionManager {
     attributes: workspace
     enabledExtensions: IExtension[]
@@ -210,7 +212,7 @@ export class GlobalExtensionManager implements IGlobalExtensionManager {
             (code: string, filename: string) => {
                 return code.replace(/require\((['"])uniclient\1\)/, `require("${apiPath}")`)
             },
-            { exts: ['.js'] }
+            {exts: ['.js']}
         )
     }
 
@@ -242,10 +244,11 @@ export class GlobalExtensionManager implements IGlobalExtensionManager {
 
     //启动activator.js文件作为一个子进程存在
     initActivator() {
-        ProcessManager.createChildProcess(
-            join(__dirname, './src/client/extend/activator.js'),
-            moduleName.extensionActivator
-        )
+        // ProcessManager.createChildProcess(
+        //     join(__dirname, './activator.js'),
+        //     moduleName.extensionActivator
+        // )
+        require(join(__dirname, './activator.js'))
     }
 
     /**

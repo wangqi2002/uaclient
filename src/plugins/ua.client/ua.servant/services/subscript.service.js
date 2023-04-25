@@ -12,7 +12,6 @@ var SubscriptService;
 (function (SubscriptService) {
     let monitoredItems = new Map();
     let subscriptionOption = config_default_1.Config.defaultSubscript;
-    let pipe = broker_1.Broker.getPipe(config_default_1.Config.defaultPipeName);
 
     function bindingAndPush(monitoredItem, displayName, itemId) {
         try {
@@ -21,12 +20,11 @@ var SubscriptService;
                 .on('changed', async (data) => {
                     let item = monitoredItems.get(itemId);
                     if (item) {
-                        // Broker.receive(
-                        //     Config.defaultPipeName,
+                        broker_1.Broker.receive(config_default_1.Config.defaultPipeName, monitoredItem.itemToMonitor.nodeId.toString(), new message_model_1.UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName));
+                        // await pipe.inPipe(
                         //     monitoredItem.itemToMonitor.nodeId.toString(),
-                        //     new UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName),
+                        //     new UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName)
                         // )
-                        await pipe.inPipe(monitoredItem.itemToMonitor.nodeId.toString(), new message_model_1.UaMessage(data, monitoredItem.itemToMonitor.nodeId.toString(), item.displayName));
                     }
                 })
                 .on('err', (err) => {

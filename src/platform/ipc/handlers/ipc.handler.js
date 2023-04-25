@@ -1,15 +1,18 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : {"default": mod};
+};
 Object.defineProperty(exports, "__esModule", {value: true});
 exports.ipcClient = void 0;
 const electron_1 = require("electron");
+const events_1 = __importDefault(require("events"));
 
 class ipcClient {
-    static currentWindow;
-
-    constructor(send) {
-        ipcClient.currentWindow = send;
-    }
-
+    static localEvents = new events_1.default();
+    static clientEvents = new events_1.default();
+    // constructor(send: (channel: string, ...args: any[]) => void) {
+    //     ipcClient.currentWindow = send
+    // }
     static on(event, eventHandler) {
         electron_1.ipcMain.on(event, eventHandler);
     }
@@ -27,8 +30,30 @@ class ipcClient {
      * @param event
      * @param args
      */
-    static emit(event, ...args) {
-        ipcClient.currentWindow(event, ...args);
+    static emitToRender(event, ...args) {
+        // ipcClient.currentWindow(event, ...args)
+        // ipcMain.emit(event, ...args)
+        ipcClient.localEvents.emit('emitToRender', event, ...args);
+    }
+
+    static registerToEmit(event, eventHandler) {
+        ipcClient.localEvents.on(event, eventHandler);
+    }
+
+    static emitLocal(event, ...args) {
+        ipcClient.localEvents.emit(event, ...args);
+    }
+
+    static onLocal(event, handler) {
+        ipcClient.localEvents.on(event, handler);
+    }
+
+    static onClient(event, handler) {
+        ipcClient.clientEvents.on(event, handler);
+    }
+
+    static emitClient(event, ...args) {
+        ipcClient.clientEvents.emit(event, ...args);
     }
 }
 

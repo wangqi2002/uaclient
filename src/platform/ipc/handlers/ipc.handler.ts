@@ -1,10 +1,13 @@
-import { ipcMain, IpcMainEvent, IpcMainInvokeEvent, BrowserWindow } from 'electron'
-export class ipcClient {
-    static currentWindow: (channel: string, ...args: any[]) => void
+import {ipcMain, IpcMainEvent, IpcMainInvokeEvent} from 'electron'
+import EventEmitter from 'events'
 
-    constructor(send: (channel: string, ...args: any[]) => void) {
-        ipcClient.currentWindow = send
-    }
+export class ipcClient {
+    static localEvents: EventEmitter = new EventEmitter()
+    static clientEvents: EventEmitter = new EventEmitter()
+
+    // constructor(send: (channel: string, ...args: any[]) => void) {
+    //     ipcClient.currentWindow = send
+    // }
 
     static on(event: string, eventHandler: (event: IpcMainEvent, ...args: any[]) => void) {
         ipcMain.on(event, eventHandler)
@@ -23,7 +26,29 @@ export class ipcClient {
      * @param event
      * @param args
      */
-    static emit(event: string, ...args: any[]) {
-        ipcClient.currentWindow(event, ...args)
+    static emitToRender(event: string, ...args: any[]) {
+        // ipcClient.currentWindow(event, ...args)
+        // ipcMain.emit(event, ...args)
+        ipcClient.localEvents.emit('emitToRender', event, ...args)
+    }
+
+    static registerToEmit(event: string, eventHandler: (subEvent: string, ...args: any[]) => void) {
+        ipcClient.localEvents.on(event, eventHandler)
+    }
+
+    static emitLocal(event: string, ...args: any[]) {
+        ipcClient.localEvents.emit(event, ...args)
+    }
+
+    static onLocal(event: string, handler: (...args: any[]) => void) {
+        ipcClient.localEvents.on(event, handler)
+    }
+
+    static onClient(event: string, handler: (...args: any[]) => void) {
+        ipcClient.clientEvents.on(event, handler)
+    }
+
+    static emitClient(event: string, ...args: any[]) {
+        ipcClient.clientEvents.emit(event, ...args)
     }
 }

@@ -1,9 +1,9 @@
-import { ProjectManagerFactory, IProject } from './../../platform/base/project/project.js'
-import { moduleStoreNames } from './../enums.js'
-import { ClientStore } from '../store/store.js'
-import { mkdir } from 'fs'
-import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js'
-import { FileUtils } from '../../platform/base/utils/utils.js'
+import {ProjectManagerFactory, IProject} from './../../platform/base/project/project.js'
+import {moduleStoreNames} from './../enums.js'
+import {ClientStore} from '../store/store.js'
+import {mkdir} from 'fs'
+import {ipcClient} from '../../platform/ipc/handlers/ipc.handler.js'
+import {FileUtils} from '../../platform/base/utils/utils.js'
 import EventEmitter from 'events'
 
 enum storeNames {
@@ -59,20 +59,24 @@ export class WorkspaceManager implements IWorkspaceManager {
 
     toStart() {
         if (this.onStart) {
-            ipcClient.emit('project:load', this.workspace.storagePath + '/' + this.onStart)
+            ipcClient.emitToRender('project:load', this.workspace.storagePath + '/' + this.onStart)
         }
     }
 
     createProject(projectName: string, projectType: string) {
         mkdir(this.workspace.storagePath + `\\${projectName}` + `\\.${projectType}`, () => {
-            mkdir(this.workspace.storagePath + `\\${projectName}` + '\\.client', () => {})
+            mkdir(this.workspace.storagePath + `\\${projectName}` + '\\.client', () => {
+            })
         })
     }
-    deleteProject() {}
+
+    deleteProject() {
+    }
+
     loadProject(fileName: string) {
         GlobalWorkspaceManager.projectExtend.forEach((projectType: string) => {
             if (fileName.endsWith(projectType)) {
-                ipcClient.emit('project:activate.' + projectType)
+                ipcClient.emitToRender('project:activate.' + projectType)
             }
         })
         let project: IProject = require(fileName + '/project.json')
@@ -102,7 +106,7 @@ export class GlobalWorkspaceManager implements IGlobalWorkSpaceManager {
         ipcClient.handle('folder:open', (event, fileName: string) => {
             let files = FileUtils.openFolder(fileName)
             if (files.includes('project.json')) {
-                ipcClient.emit('project:load', fileName, files)
+                ipcClient.emitToRender('project:load', fileName, files)
                 return null
             } else {
                 return files
@@ -127,7 +131,8 @@ export class GlobalWorkspaceManager implements IGlobalWorkSpaceManager {
     createDirAsWorkspace(dirPath: string, workspaceName: string) {
         if (!this.workspaces.has(workspaceName)) {
             mkdir(dirPath + `//${workspaceName}`, () => {
-                mkdir(dirPath + '//.ws', () => {})
+                mkdir(dirPath + '//.ws', () => {
+                })
             })
             let w = {
                 workspace: {
@@ -161,7 +166,8 @@ export class GlobalWorkspaceManager implements IGlobalWorkSpaceManager {
         return GlobalWorkspaceManager.currentManager.workspace
     }
 
-    static changeWorkspace() {}
+    static changeWorkspace() {
+    }
 
     updateStore() {
         ClientStore.set('workspace', 'workspaces', [...this.workspaces.values()])
@@ -171,4 +177,5 @@ export class GlobalWorkspaceManager implements IGlobalWorkSpaceManager {
         this.updateStore()
     }
 }
+
 // new ClientStore()
