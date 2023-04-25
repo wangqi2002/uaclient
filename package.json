@@ -4,7 +4,7 @@
     "version": "1.0.0",
     "description": "This client solve any problem with plugins in any system for 'Internet of Things'",
     "main": "src/main.cjs",
-    "type": "module",
+    "type": "commonjs",
     "scripts": {
         "dev": "nodemon -e js,html,cjs --exec electron .",
         "start": "electron-forge start",
@@ -26,7 +26,7 @@
         "dotenv": "^16.0.3",
         "electron-squirrel-startup": "^1.0.0",
         "electron-store": "^8.1.0",
-        "electron-win-state": "^1.1.22",
+        "electron-window-state": "^5.0.3",
         "koa": "^2.14.1",
         "koa-body": "^6.0.1",
         "koa-router": "^12.0.0",

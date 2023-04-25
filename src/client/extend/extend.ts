@@ -182,11 +182,11 @@ export class GlobalExtensionManager implements IGlobalExtensionManager {
             clearInvalidConfig: true,
         })
         this.startUp()
-        ipcClient.emit('extension:ready')
+        // ipcClient.emit('extension:ready')
     }
 
     async startUp() {
-        this.hookRequire(join(FileTransfer.dirname(import.meta.url), '..', '..', '/platform/platform'))
+        this.hookRequire(join(__dirname, '..', '..', '/platform/platform'))
         await this.initActivator()
         await this.loadAllManagers()
         await this.bindEventsToMain()
@@ -243,7 +243,7 @@ export class GlobalExtensionManager implements IGlobalExtensionManager {
     //启动activator.js文件作为一个子进程存在
     initActivator() {
         ProcessManager.createChildProcess(
-            join(FileTransfer.dirname(import.meta.url), './src/client/extend/activator.js'),
+            join(__dirname, './src/client/extend/activator.js'),
             moduleName.extensionActivator
         )
     }

@@ -1,27 +1,28 @@
-import { ServerMessage, ServerStatusCodes, UaErrors, UaSources } from '../../common/ua.enums';
-import { ResponseModel } from '../models/response.model';
-import { ClientError, ClientWarn, Log } from '../../../../platform/base/log/log';
-export var ErrorMiddleware;
+"use strict";
+Object.defineProperty(exports, "__esModule", {value: true});
+exports.ErrorMiddleware = void 0;
+const ua_enums_1 = require("../../common/ua.enums");
+const response_model_1 = require("../models/response.model");
+const log_1 = require("../../../../platform/base/log/log");
+var ErrorMiddleware;
 (function (ErrorMiddleware) {
     async function handleError(ctx, next) {
         try {
             await next();
-        }
-        catch (e) {
-            if (e instanceof ClientWarn) {
-                Log.warn(e);
-                ctx.body = new ResponseModel(e, ServerMessage.warn, ServerStatusCodes.success);
-            }
-            else if (e instanceof ClientError) {
-                Log.error(e);
-                ctx.body = new ResponseModel(e, ServerMessage.error, ServerStatusCodes.internalError);
-            }
-            else {
-                let err = new ClientError(UaSources.server, UaErrors.internalError, e.message);
-                Log.error(err);
-                ctx.body = new ResponseModel(err, ServerMessage.error, ServerStatusCodes.internalError);
+        } catch (e) {
+            if (e instanceof log_1.ClientWarn) {
+                log_1.Log.warn(e);
+                ctx.body = new response_model_1.ResponseModel(e, ua_enums_1.ServerMessage.warn, ua_enums_1.ServerStatusCodes.success);
+            } else if (e instanceof log_1.ClientError) {
+                log_1.Log.error(e);
+                ctx.body = new response_model_1.ResponseModel(e, ua_enums_1.ServerMessage.error, ua_enums_1.ServerStatusCodes.internalError);
+            } else {
+                let err = new log_1.ClientError(ua_enums_1.UaSources.server, ua_enums_1.UaErrors.internalError, e.message);
+                log_1.Log.error(err);
+                ctx.body = new response_model_1.ResponseModel(err, ua_enums_1.ServerMessage.error, ua_enums_1.ServerStatusCodes.internalError);
             }
         }
     }
+
     ErrorMiddleware.handleError = handleError;
-})(ErrorMiddleware || (ErrorMiddleware = {}));
+})(ErrorMiddleware = exports.ErrorMiddleware || (exports.ErrorMiddleware = {}));

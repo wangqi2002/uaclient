@@ -1,15 +1,19 @@
-import { OPCUACertificateManager } from 'node-opcua';
-import { UaErrors, UaSources } from '../../common/ua.enums';
-import { Config } from '../../config/config.default';
-import { ClientError } from '../../../../platform/base/log/log';
+"use strict";
+Object.defineProperty(exports, "__esModule", {value: true});
+exports.CertificateService = void 0;
+const node_opcua_1 = require("node-opcua");
+const ua_enums_1 = require("../../common/ua.enums");
+const config_default_1 = require("../../config/config.default");
+const log_1 = require("../../../../platform/base/log/log");
 // const cry = require("node-opcua-pki")
-export var CertificateService;
+var CertificateService;
 (function (CertificateService) {
-    CertificateService.certificate = new OPCUACertificateManager({
-        rootFolder: Config.certRoot,
+    CertificateService.certificate = new node_opcua_1.OPCUACertificateManager({
+        rootFolder: config_default_1.Config.certRoot,
         name: 'pki',
         automaticallyAcceptUnknownCertificate: false,
     });
+
     //todo node-opcua-pki命令测试
     /**
      * @description 创建一个证书,dns即domain names,默认证书根文件夹为项目根目录,
@@ -37,31 +41,34 @@ export var CertificateService;
      */
     async function createCertificate(params) {
         try {
-            await CertificateService.certificate.createSelfSignedCertificate({ ...params });
-        }
-        catch (e) {
-            throw new ClientError(UaSources.certService, UaErrors.errorCreatCert, e.message, e.stack);
+            await CertificateService.certificate.createSelfSignedCertificate({...params});
+        } catch (e) {
+            throw new log_1.ClientError(ua_enums_1.UaSources.certService, ua_enums_1.UaErrors.errorCreatCert, e.message, e.stack);
         }
     }
+
     CertificateService.createCertificate = createCertificate;
+
     async function trustServerCertificate(serverCertificate) {
         try {
             await CertificateService.certificate.trustCertificate(serverCertificate);
-        }
-        catch (e) {
-            throw new ClientError(UaSources.certService, UaErrors.errorTrustCert, e.message, e.stack);
+        } catch (e) {
+            throw new log_1.ClientError(ua_enums_1.UaSources.certService, ua_enums_1.UaErrors.errorTrustCert, e.message, e.stack);
         }
     }
+
     CertificateService.trustServerCertificate = trustServerCertificate;
+
     async function rejectServerCertificate(serverCertificate) {
         try {
             await CertificateService.certificate.rejectCertificate(serverCertificate);
-        }
-        catch (e) {
-            throw new ClientError(UaSources.certService, UaErrors.errorRejectCert, e.message, e.stack);
+        } catch (e) {
+            throw new log_1.ClientError(ua_enums_1.UaSources.certService, ua_enums_1.UaErrors.errorRejectCert, e.message, e.stack);
         }
     }
+
     CertificateService.rejectServerCertificate = rejectServerCertificate;
+
     /**
      * @description 返回server证书的信任状态
      * @param serverCertificate
@@ -69,13 +76,13 @@ export var CertificateService;
     async function getTrustStatus(serverCertificate) {
         try {
             return await CertificateService.certificate.getTrustStatus(serverCertificate);
-        }
-        catch (e) {
-            throw new ClientError(UaSources.certService, UaErrors.errorGetTrust, e.message, e.stack);
+        } catch (e) {
+            throw new log_1.ClientError(ua_enums_1.UaSources.certService, ua_enums_1.UaErrors.errorGetTrust, e.message, e.stack);
         }
     }
+
     CertificateService.getTrustStatus = getTrustStatus;
-})(CertificateService || (CertificateService = {}));
+})(CertificateService = exports.CertificateService || (exports.CertificateService = {}));
 // async function f() {
 //     try {
 //         await CertificateService.createCertificate({

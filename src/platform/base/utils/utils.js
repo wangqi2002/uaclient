@@ -1,5 +1,8 @@
-import { readdirSync, watch, statSync } from 'fs';
-export class Utils {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FileUtils = exports.Utils = void 0;
+const fs_1 = require("fs");
+class Utils {
     /**
      * @description 输出形如yyyy_mm_dd格式的日期字符串
      * @param date
@@ -45,7 +48,8 @@ export class Utils {
         }
     }
 }
-export class FileUtils {
+exports.Utils = Utils;
+class FileUtils {
     constructor() { }
     static makeDir() {
         // mkdir(this.workspace.storagePath + `\\${projectName}` + `\\.${projectType}`, () => {
@@ -53,14 +57,14 @@ export class FileUtils {
         // })
     }
     static openFolder(fileName) {
-        return readdirSync(fileName);
+        return (0, fs_1.readdirSync)(fileName);
     }
     static openFolderWithChild(fileName) {
-        let files = readdirSync(fileName);
+        let files = (0, fs_1.readdirSync)(fileName);
         let results = [];
         files.forEach((file) => {
-            if (statSync(fileName + '/' + file).isDirectory()) {
-                results.push({ name: file, child: readdirSync(fileName + '/' + file) });
+            if ((0, fs_1.statSync)(fileName + '/' + file).isDirectory()) {
+                results.push({ name: file, child: (0, fs_1.readdirSync)(fileName + '/' + file) });
             }
             else {
                 results.push({ name: file, child: null });
@@ -69,8 +73,9 @@ export class FileUtils {
         return results;
     }
     static watchFolder(path) {
-        watch(path, {
+        (0, fs_1.watch)(path, {
             persistent: true,
         }, (event, filename) => { });
     }
 }
+exports.FileUtils = FileUtils;

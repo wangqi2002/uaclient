@@ -1,9 +1,12 @@
-import "koa-body/lib/index";
-import { is } from "typia";
-import { UaErrors, UaInfos, UaSources } from "../../common/ua.enums";
-import { ClientError, ClientInfo, Log } from "../../../../platform/base/log/log";
-import { CertUtils, DbUtils } from "../utils/util";
-export var AgentMiddleware;
+"use strict";
+Object.defineProperty(exports, "__esModule", {value: true});
+exports.AgentMiddleware = void 0;
+require("koa-body/lib/index");
+const typia_1 = require("typia");
+const ua_enums_1 = require("../../common/ua.enums");
+const log_1 = require("../../../../platform/base/log/log");
+const util_1 = require("../utils/util");
+var AgentMiddleware;
 (function (AgentMiddleware) {
     async function clientValidator(ctx, next) {
         switch (ctx.request.path) {
@@ -16,10 +19,9 @@ export var AgentMiddleware;
                     const $io3 = input => (undefined === input.maxChunkCount || "number" === typeof input.maxChunkCount) && (undefined === input.maxMessageSize || "number" === typeof input.maxMessageSize) && (undefined === input.sendBufferSize || "number" === typeof input.sendBufferSize) && (undefined === input.receiveBufferSize || "number" === typeof input.receiveBufferSize);
                     return undefined === input || "object" === typeof input && null !== input && false === Array.isArray(input) && $io0(input);
                 })(ctx.request.body)) {
-                    Log.info(new ClientInfo(UaSources.clientService, UaInfos.clientCreated, { ...ctx.request.body }));
+                    log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.clientService, ua_enums_1.UaInfos.clientCreated, {...ctx.request.body}));
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("OPCUAClientOptions | undefined");
                 }
                 break;
@@ -29,10 +31,9 @@ export var AgentMiddleware;
                     const $io0 = input => "string" === typeof input.endpointUrl;
                     return "object" === typeof input && null !== input && "string" === typeof input.endpointUrl;
                 })(ctx.request.body)) {
-                    Log.info(new ClientInfo(UaSources.clientService, UaInfos.connectionCreated, { ...ctx.request.body }));
+                    log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.clientService, ua_enums_1.UaInfos.connectionCreated, {...ctx.request.body}));
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("{ endpointUrl: string }");
                 }
                 break;
@@ -42,10 +43,9 @@ export var AgentMiddleware;
                     const $io0 = input => (undefined === input.reduce || "boolean" === typeof input.reduce) && (undefined === input.clientExist || "boolean" === typeof input.clientExist) && (undefined === input.endpoint || "string" === typeof input.endpoint);
                     return undefined === input || "object" === typeof input && null !== input && false === Array.isArray(input) && $io0(input);
                 })(ctx.request.body)) {
-                    Log.info(new ClientInfo(UaSources.clientService, UaInfos.connectionCreated, { ...ctx.request.body }));
+                    log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.clientService, ua_enums_1.UaInfos.connectionCreated, {...ctx.request.body}));
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("{ endpointUrl: string }");
                 }
                 break;
@@ -55,28 +55,29 @@ export var AgentMiddleware;
                     const $io0 = input => "boolean" === typeof input.deleteSubscription;
                     return undefined === input || "object" === typeof input && null !== input && $io0(input);
                 })(ctx.request.body)) {
-                    Log.info(new ClientInfo(UaSources.clientService, UaInfos.sessionClosed));
-                    Log.info(new ClientInfo(UaSources.clientService, UaInfos.clientDisconnect));
+                    log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.clientService, ua_enums_1.UaInfos.sessionClosed));
+                    log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.clientService, ua_enums_1.UaInfos.clientDisconnect));
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("{ deleteSubscription: boolean } | {}");
                 }
                 break;
             }
             case "/client/private_key": {
-                Log.info(new ClientInfo(UaSources.clientService, UaInfos.getPrivateKey));
+                log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.clientService, ua_enums_1.UaInfos.getPrivateKey));
                 break;
             }
             case "client/cert": {
-                Log.info(new ClientInfo(UaSources.clientService, UaInfos.getCertificate));
+                log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.clientService, ua_enums_1.UaInfos.getCertificate));
                 break;
             }
             default:
                 await next();
         }
     }
+
     AgentMiddleware.clientValidator = clientValidator;
+
     async function sessionValidator(ctx, next) {
         switch (ctx.request.body) {
             case "/session/init": {
@@ -95,10 +96,9 @@ export var AgentMiddleware;
                     })();
                     return undefined === input || "object" === typeof input && null !== input && $iu0(input);
                 })(ctx.request.body)) {
-                    Log.info(new ClientInfo(UaSources.sessionService, UaInfos.sessionCreated));
+                    log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.sessionService, ua_enums_1.UaInfos.sessionCreated));
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("UserIdentityInfo | undefined");
                 }
                 break;
@@ -120,8 +120,7 @@ export var AgentMiddleware;
                     return "object" === typeof input && null !== input && $iu0(input);
                 })(ctx.request.body)) {
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("UserIdentityInfo");
                 }
                 break;
@@ -132,8 +131,7 @@ export var AgentMiddleware;
                     return undefined === input || "object" === typeof input && null !== input && $io0(input);
                 })(ctx.request.body)) {
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("{ deleteSubscription: boolean } | undefined");
                 }
                 break;
@@ -161,8 +159,7 @@ export var AgentMiddleware;
                     return "object" === typeof input && null !== input && false === Array.isArray(input) && $io0(input);
                 })(ctx.request.body)) {
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("ReadValueIdOptions");
                 }
                 break;
@@ -172,10 +169,9 @@ export var AgentMiddleware;
                     const $io0 = input => "string" === typeof input.path;
                     return "object" === typeof input && null !== input && "string" === typeof input.path;
                 })(ctx.query)) {
-                    Log.info(new ClientInfo(UaSources.sessionService, UaInfos.getIdByName, { ...ctx.request.body }));
+                    log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.sessionService, ua_enums_1.UaInfos.getIdByName, {...ctx.request.body}));
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("{ path: string }");
                 }
                 break;
@@ -215,8 +211,7 @@ export var AgentMiddleware;
                     return "object" === typeof input && null !== input && false === Array.isArray(input) && $io0(input);
                 })(ctx.request.body)) {
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("WriteValueOptions");
                 }
                 break;
@@ -229,8 +224,7 @@ export var AgentMiddleware;
                     return "object" === typeof input && null !== input && $io0(input);
                 })(ctx.request.body)) {
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("{ nodes: BrowseDescriptionLike, browseNext: boolean }");
                 }
                 break;
@@ -262,8 +256,7 @@ export var AgentMiddleware;
                     return "object" === typeof input && null !== input && $io0(input);
                 })(ctx.request.body)) {
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("HistoryReadRequest");
                 }
                 break;
@@ -301,8 +294,7 @@ export var AgentMiddleware;
                     return "object" === typeof input && null !== input && $io0(input);
                 })(ctx.request.body)) {
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("HistoryValueParam");
                 }
                 break;
@@ -311,7 +303,9 @@ export var AgentMiddleware;
                 await next();
         }
     }
+
     AgentMiddleware.sessionValidator = sessionValidator;
+
     async function subscriptValidator(ctx, next) {
         switch (ctx.request.path) {
             case "/subscript/init": {
@@ -319,10 +313,9 @@ export var AgentMiddleware;
                     const $io0 = input => (undefined === input.requestedPublishingInterval || "number" === typeof input.requestedPublishingInterval) && (undefined === input.requestedLifetimeCount || "number" === typeof input.requestedLifetimeCount) && (undefined === input.requestedMaxKeepAliveCount || "number" === typeof input.requestedMaxKeepAliveCount) && (undefined === input.maxNotificationsPerPublish || "number" === typeof input.maxNotificationsPerPublish) && (undefined === input.publishingEnabled || "boolean" === typeof input.publishingEnabled) && (undefined === input.priority || "number" === typeof input.priority);
                     return undefined === input || "object" === typeof input && null !== input && false === Array.isArray(input) && $io0(input);
                 })(ctx.request.body)) {
-                    Log.info(new ClientInfo(UaSources.subscriptService, UaInfos.installedSub));
+                    log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaInfos.installedSub));
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("ClientSubscriptionOptions");
                 }
                 break;
@@ -332,10 +325,9 @@ export var AgentMiddleware;
                     const $io0 = input => (undefined === input.requestedPublishingInterval || "number" === typeof input.requestedPublishingInterval) && (undefined === input.requestedLifetimeCount || "number" === typeof input.requestedLifetimeCount) && (undefined === input.requestedMaxKeepAliveCount || "number" === typeof input.requestedMaxKeepAliveCount) && (undefined === input.maxNotificationsPerPublish || "number" === typeof input.maxNotificationsPerPublish) && (undefined === input.priority || "number" === typeof input.priority);
                     return "object" === typeof input && null !== input && false === Array.isArray(input) && $io0(input);
                 })(ctx.request.body)) {
-                    Log.info(new ClientInfo(UaSources.subscriptService, UaInfos.modifySubscription, { ...ctx.request.body }));
+                    log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaInfos.modifySubscription, {...ctx.request.body}));
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("ModifySubscriptionOptions");
                 }
                 break;
@@ -365,10 +357,9 @@ export var AgentMiddleware;
                     const $io6 = input => true;
                     return "object" === typeof input && null !== input && $io0(input);
                 })(ctx.request.body)) {
-                    Log.info(new ClientInfo(UaSources.subscriptService, UaInfos.monitoredItemInit, { ...ctx.request.body }));
+                    log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaInfos.monitoredItemInit, {...ctx.request.body}));
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("SubscriptGroupParam");
                 }
                 break;
@@ -398,10 +389,9 @@ export var AgentMiddleware;
                     const $io6 = input => true;
                     return "object" === typeof input && null !== input && $io0(input);
                 })(ctx.request.body)) {
-                    Log.info(new ClientInfo(UaSources.subscriptService, UaInfos.monitoredItemInit, { ...ctx.request.body }));
+                    log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaInfos.monitoredItemInit, {...ctx.request.body}));
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("SubscriptSingleParam");
                 }
                 break;
@@ -410,18 +400,17 @@ export var AgentMiddleware;
                 if ((input => {
                     return Array.isArray(input) && input.every(elem => "string" === typeof elem);
                 })(ctx.request.body)) {
-                    Log.info(new ClientInfo(UaSources.subscriptService, UaInfos.monitoredItemTerminate, {
+                    log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaInfos.monitoredItemTerminate, {
                         ...ctx.request.body,
                     }));
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("NodeID[]");
                 }
                 break;
             }
             case "/subscript/terminate": {
-                Log.info(new ClientInfo(UaSources.subscriptService, UaInfos.terminateSub));
+                log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.subscriptService, ua_enums_1.UaInfos.terminateSub));
                 await next();
                 break;
             }
@@ -429,7 +418,9 @@ export var AgentMiddleware;
                 await next();
         }
     }
+
     AgentMiddleware.subscriptValidator = subscriptValidator;
+
     async function certValidator(ctx, next) {
         switch (ctx.request.body) {
             case "/cert/create": {
@@ -438,15 +429,13 @@ export var AgentMiddleware;
                     const $io1 = input => (undefined === input.commonName || "string" === typeof input.commonName) && (undefined === input.organization || "string" === typeof input.organization) && (undefined === input.organizationalUnit || "string" === typeof input.organizationalUnit) && (undefined === input.locality || "string" === typeof input.locality) && (undefined === input.state || "string" === typeof input.state) && (undefined === input.country || "string" === typeof input.country) && (undefined === input.domainComponent || "string" === typeof input.domainComponent);
                     return "object" === typeof input && null !== input && $io0(input);
                 })(ctx.request.body)) {
-                    if (CertUtils.validateCertOptions(ctx.request.body)) {
-                        Log.info(new ClientInfo(UaSources.paramValidator, UaInfos.certCreated));
+                    if (util_1.CertUtils.validateCertOptions(ctx.request.body)) {
+                        log_1.Log.info(new log_1.ClientInfo(ua_enums_1.UaSources.paramValidator, ua_enums_1.UaInfos.certCreated));
                         await next();
+                    } else {
+                        throw new log_1.ClientError(ua_enums_1.UaSources.paramValidator, ua_enums_1.UaErrors.errorCertOptions, "country too long");
                     }
-                    else {
-                        throw new ClientError(UaSources.paramValidator, UaErrors.errorCertOptions, "country too long");
-                    }
-                }
-                else {
+                } else {
                     throw validateError("CreateSelfSignCertificateParam1");
                 }
                 break;
@@ -456,8 +445,7 @@ export var AgentMiddleware;
                     return input instanceof Buffer;
                 })(ctx.request.body)) {
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("Buffer");
                 }
                 break;
@@ -466,7 +454,9 @@ export var AgentMiddleware;
                 await next();
         }
     }
+
     AgentMiddleware.certValidator = certValidator;
+
     async function dbValidator(ctx, next) {
         switch (ctx.request.body) {
             /**
@@ -478,10 +468,9 @@ export var AgentMiddleware;
                     const $io1 = input => "string" === typeof input.serverF && "string" === typeof input.nodeIdF && "string" === typeof input.displayNameF && "string" === typeof input.statusCodeF && "string" === typeof input.sourceTimestampF && "string" === typeof input.serverTimestampF && "string" === typeof input.valueF && "string" === typeof input.dataTypeF;
                     return "object" === typeof input && null !== input && $io0(input);
                 })(ctx.request.body)) {
-                    DbUtils.validateDbName(ctx.request.body["tableName"]);
+                    util_1.DbUtils.validateDbName(ctx.request.body["tableName"]);
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("{createMode:TableCreateModes, tableName?:string, fields:IFieldNames}");
                 }
                 break;
@@ -492,8 +481,7 @@ export var AgentMiddleware;
                     return "object" === typeof input && null !== input && $io0(input);
                 })(ctx.request.body)) {
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("IDbData");
                 }
                 break;
@@ -504,8 +492,7 @@ export var AgentMiddleware;
                     return Array.isArray(input) && input.every(elem => "object" === typeof elem && null !== elem && $io0(elem));
                 })(ctx.request.body)) {
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("IDbData[]");
                 }
                 break;
@@ -518,24 +505,23 @@ export var AgentMiddleware;
                 })(ctx.request.body)) {
                     if (ctx.request.body) {
                         if ("tableName" in ctx.request.body) {
-                            if (!DbUtils.validateDbName(ctx.request.body["tableName"])) {
-                                throw new ClientError(UaSources.paramValidator, UaErrors.unFormatDbName, "It cannot start with a number. The name can only contain: " +
+                            if (!util_1.DbUtils.validateDbName(ctx.request.body["tableName"])) {
+                                throw new log_1.ClientError(ua_enums_1.UaSources.paramValidator, ua_enums_1.UaErrors.unFormatDbName, "It cannot start with a number. The name can only contain: " +
                                     "Chinese characters, numbers, lowercase letters, underscores, and the length is within 2-15 characters");
                             }
                         }
                         if ("fieldNames" in ctx.request.body && ctx.request.body["fieldNames"]) {
                             let key;
                             for (key in ctx.request.body["fieldNames"]) {
-                                if (!DbUtils.validateDbName(ctx.request.body["fieldNames"][key])) {
-                                    throw new ClientError(UaSources.paramValidator, UaErrors.unFormatDbName, "It cannot start with a number. The name can only contain: " +
+                                if (!util_1.DbUtils.validateDbName(ctx.request.body["fieldNames"][key])) {
+                                    throw new log_1.ClientError(ua_enums_1.UaSources.paramValidator, ua_enums_1.UaErrors.unFormatDbName, "It cannot start with a number. The name can only contain: " +
                                         "Chinese characters, numbers, lowercase letters, underscores, and the length is within 2-15 characters");
                                 }
                             }
                         }
                     }
                     await next();
-                }
-                else {
+                } else {
                     throw validateError("{ tableName?: string, fieldNames?: IFieldNames } | undefined");
                 }
                 break;
@@ -544,8 +530,10 @@ export var AgentMiddleware;
                 await next();
         }
     }
+
     AgentMiddleware.dbValidator = dbValidator;
+
     function validateError(paramType) {
-        return new ClientError(UaSources.paramValidator, UaErrors.errorValidateParam, `Supposed to be ${paramType}`);
+        return new log_1.ClientError(ua_enums_1.UaSources.paramValidator, ua_enums_1.UaErrors.errorValidateParam, `Supposed to be ${paramType}`);
     }
-})(AgentMiddleware || (AgentMiddleware = {}));
+})(AgentMiddleware = exports.AgentMiddleware || (exports.AgentMiddleware = {}));

@@ -1,4 +1,7 @@
-export var rendererEvents;
+"use strict";
+Object.defineProperty(exports, "__esModule", {value: true});
+exports.MainEvents = exports.rendererEvents = void 0;
+var rendererEvents;
 (function (rendererEvents) {
     let benchEvents;
     (function (benchEvents) {
@@ -31,8 +34,8 @@ export var rendererEvents;
         logEvents["error"] = "render:log.error";
         logEvents["warn"] = "render:log.warn";
     })(logEvents = rendererEvents.logEvents || (rendererEvents.logEvents = {}));
-})(rendererEvents || (rendererEvents = {}));
-export var MainEvents;
+})(rendererEvents = exports.rendererEvents || (exports.rendererEvents = {}));
+var MainEvents;
 (function (MainEvents) {
     let logEmitEvents;
     (function (logEmitEvents) {
@@ -40,4 +43,4 @@ export var MainEvents;
         logEmitEvents["info"] = "main:log.info";
         logEmitEvents["warn"] = "main:log.warn";
     })(logEmitEvents = MainEvents.logEmitEvents || (MainEvents.logEmitEvents = {}));
-})(MainEvents || (MainEvents = {}));
+})(MainEvents = exports.MainEvents || (exports.MainEvents = {}));

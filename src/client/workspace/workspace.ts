@@ -95,7 +95,7 @@ export class GlobalWorkspaceManager implements IGlobalWorkSpaceManager {
         })
         this.initBind()
         this.loadAllWorkspaces()
-        ipcClient.emit('workspace:ready')
+        // ipcClient.emit('workspace:ready')
     }
 
     initBind() {

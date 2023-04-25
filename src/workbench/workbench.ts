@@ -1,22 +1,24 @@
-import { BrowserView, BrowserWindow, Rectangle, screen } from 'electron'
+import {BrowserView, BrowserWindow, Rectangle, screen} from 'electron'
 import path from 'path'
-import { EventEmitter } from 'events'
-import { rendererEvents } from '../platform/ipc/events/ipc.events.js'
-import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js'
-import { FileTransfer } from '../client/path/path.js'
+import {EventEmitter} from 'events'
+import {rendererEvents} from '../platform/ipc/events/ipc.events.js'
+import {ipcClient} from '../platform/ipc/handlers/ipc.handler.js'
+import {FileTransfer} from '../client/path/path.js'
+import windowStateKeeper from 'electron-window-state'
 
 type viewId = string
 
 export class Workbench extends EventEmitter {
     private existViews: Map<viewId, BrowserView>
     private mainWindow!: BrowserWindow
+    private winState: windowStateKeeper.State
 
     constructor(preload: string, homeViewPath: string, dev: boolean = false, width?: number, height?: number) {
         super()
-        // this.winState = new WinState({
-        //     defaultWidth: (screen.getPrimaryDisplay().workAreaSize.width * 3) / 4,
-        //     defaultHeight: (screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
-        // })
+        this.winState = windowStateKeeper({
+            defaultWidth: (screen.getPrimaryDisplay().workAreaSize.width * 3) / 4,
+            defaultHeight: (screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
+        })
         this.createMainWindow(preload, homeViewPath, dev, width, height)
         this.existViews = new Map()
     }
@@ -29,7 +31,10 @@ export class Workbench extends EventEmitter {
         height?: number
     ) {
         this.mainWindow = new BrowserWindow({
-            // ...this.winState.winOptions,
+            x: this.winState.x,
+            y: this.winState.y,
+            width: this.winState.width,
+            height: this.winState.height,
             frame: false,
             center: true,
             show: false,
@@ -46,7 +51,7 @@ export class Workbench extends EventEmitter {
         await this.mainWindow.loadFile(indexHtmlPath)
         // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
         this.initBind(this.mainWindow)
-        // this.winState.manage(this.mainWindow)
+        this.winState.manage(this.mainWindow)
     }
 
     initBind(mainWindow: BrowserWindow) {
@@ -76,7 +81,7 @@ export class Workbench extends EventEmitter {
     public async createView(
         viewId: string,
         viewUrl: string,
-        rectangle: Rectangle = { x: 0, y: 0, width: 300, height: 300 },
+        rectangle: Rectangle = {x: 0, y: 0, width: 300, height: 300},
         isWebView: boolean = false
     ) {
         if (this.existViews.has(viewId)) {
@@ -92,11 +97,11 @@ export class Workbench extends EventEmitter {
 
         isWebView
             ? await browserView.webContents.loadURL(viewUrl).then(() => {
-                  this.mainWindow.addBrowserView(browserView)
-              })
+                this.mainWindow.addBrowserView(browserView)
+            })
             : await browserView.webContents.loadFile(viewUrl).then(() => {
-                  this.mainWindow.addBrowserView(browserView)
-              })
+                this.mainWindow.addBrowserView(browserView)
+            })
         browserView.setBounds(rectangle)
         browserView.setAutoResize({
             horizontal: true,
@@ -126,6 +131,7 @@ export class Workbench extends EventEmitter {
     //     })
     // }
 }
+
 // export const workbench = new Workbench()
 // export const mainWindow = workbench.getMainWindow()
 //todo 命令inline名称获取

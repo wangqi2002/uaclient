@@ -1,24 +1,33 @@
-import { BrowserView, BrowserWindow } from 'electron';
-import path from 'path';
-import { EventEmitter } from 'events';
-import { rendererEvents } from '../platform/ipc/events/ipc.events.js';
-import { ipcClient } from '../platform/ipc/handlers/ipc.handler.js';
-import { FileTransfer } from '../client/path/path.js';
-export class Workbench extends EventEmitter {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Workbench = void 0;
+const electron_1 = require("electron");
+const events_1 = require("events");
+const ipc_events_js_1 = require("../platform/ipc/events/ipc.events.js");
+const ipc_handler_js_1 = require("../platform/ipc/handlers/ipc.handler.js");
+const electron_window_state_1 = __importDefault(require("electron-window-state"));
+class Workbench extends events_1.EventEmitter {
     existViews;
     mainWindow;
-    constructor(width, height, preload, homeViewPath, dev = false) {
+    winState;
+    constructor(preload, homeViewPath, dev = false, width, height) {
         super();
-        // this.winState = new WinState({
-        //     defaultWidth: (screen.getPrimaryDisplay().workAreaSize.width * 3) / 4,
-        //     defaultHeight: (screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
-        // })
+        this.winState = (0, electron_window_state_1.default)({
+            defaultWidth: (electron_1.screen.getPrimaryDisplay().workAreaSize.width * 3) / 4,
+            defaultHeight: (electron_1.screen.getPrimaryDisplay().workAreaSize.height * 3) / 4,
+        });
         this.createMainWindow(preload, homeViewPath, dev, width, height);
         this.existViews = new Map();
     }
-    async createMainWindow(preloadPath = path.join(FileTransfer.dirname(import.meta.url), './preload.js'), indexHtmlPath = path.join(FileTransfer.dirname(import.meta.url), './index.html'), dev = false, width, height) {
-        this.mainWindow = new BrowserWindow({
-            // ...this.winState.winOptions,
+    async createMainWindow(preloadPath, indexHtmlPath, dev = false, width, height) {
+        this.mainWindow = new electron_1.BrowserWindow({
+            x: this.winState.x,
+            y: this.winState.y,
+            width: this.winState.width,
+            height: this.winState.height,
             frame: false,
             center: true,
             show: false,
@@ -35,13 +44,13 @@ export class Workbench extends EventEmitter {
         await this.mainWindow.loadFile(indexHtmlPath);
         // await this.mainWindow.loadURL("https://www.electronjs.org/zh/docs/latest/api/app")
         this.initBind(this.mainWindow);
-        // this.winState.manage(this.mainWindow)
+        this.winState.manage(this.mainWindow);
     }
     initBind(mainWindow) {
-        ipcClient.on(rendererEvents.benchEvents.minimize, () => {
+        ipc_handler_js_1.ipcClient.on(ipc_events_js_1.rendererEvents.benchEvents.minimize, () => {
             mainWindow.minimize();
         });
-        ipcClient.on(rendererEvents.benchEvents.maximize, () => {
+        ipc_handler_js_1.ipcClient.on(ipc_events_js_1.rendererEvents.benchEvents.maximize, () => {
             if (mainWindow.isMaximized()) {
                 mainWindow.restore();
             }
@@ -49,12 +58,12 @@ export class Workbench extends EventEmitter {
                 mainWindow.maximize();
             }
         });
-        ipcClient.on(rendererEvents.benchEvents.close, () => {
+        ipc_handler_js_1.ipcClient.on(ipc_events_js_1.rendererEvents.benchEvents.close, () => {
             mainWindow.close();
         });
     }
     async createWindow(viewUrl, isWebView) {
-        const window = new BrowserWindow({
+        const window = new electron_1.BrowserWindow({
             // ...this.winState.winOptions,
             frame: false,
         });
@@ -64,7 +73,7 @@ export class Workbench extends EventEmitter {
         if (this.existViews.has(viewId)) {
             return false;
         }
-        const browserView = new BrowserView({
+        const browserView = new electron_1.BrowserView({
             webPreferences: {
                 nodeIntegration: true,
                 devTools: true,
@@ -98,6 +107,7 @@ export class Workbench extends EventEmitter {
         this.emit('close');
     }
 }
+exports.Workbench = Workbench;
 // export const workbench = new Workbench()
 // export const mainWindow = workbench.getMainWindow()
 //todo 命令inline名称获取

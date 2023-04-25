@@ -1,18 +1,24 @@
-import { ipcClient } from './../../ipc/handlers/ipc.handler.js';
-import { EventEmitter } from 'events';
+"use strict";
+Object.defineProperty(exports, "__esModule", {value: true});
+exports.Broker = exports.MessagePipe = void 0;
+const ipc_handler_js_1 = require("./../../ipc/handlers/ipc.handler.js");
+const events_1 = require("events");
+
 /**
  * @description 一个MessagePipe,本质上是一个map其中存储了形如<nodeId,[data1,data2]>的数据,并且定义了events用于订阅使用
  */
-export class MessagePipe extends EventEmitter {
+class MessagePipe extends events_1.EventEmitter {
     content;
     maxLength;
     pipeId;
+
     constructor(pipeId, maxLength) {
         super();
         this.pipeId = pipeId;
         this.content = new Map();
         this.maxLength = maxLength ? maxLength : 200;
     }
+
     changeMaxLength(length) {
         if (length > 0) {
             this.maxLength = length;
@@ -20,35 +26,40 @@ export class MessagePipe extends EventEmitter {
         }
         return false;
     }
+
     async inPipe(id, message) {
         let data = this.content.get(id);
         if (data) {
             data.push(message);
             if (data.length >= this.maxLength) {
                 this.emit('full', data);
-                ipcClient.emit(this.pipeId + ':full', data);
+                ipc_handler_js_1.ipcClient.emit(this.pipeId + ':full', data);
                 data.length = 0;
             }
-        }
-        else {
+        } else {
             this.content.set(message.nodeId, [message]);
         }
         this.emit('pushed', message);
-        ipcClient.emit(this.pipeId + ':pushed', message);
+        ipc_handler_js_1.ipcClient.emit(this.pipeId + ':pushed', message);
     }
+
     terminate() {
         let copy = new Map(this.content);
         this.emit('close', copy);
-        ipcClient.emit(this.pipeId + ':close', copy);
+        ipc_handler_js_1.ipcClient.emit(this.pipeId + ':close', copy);
         this.content.clear();
         return copy;
     }
 }
+
+exports.MessagePipe = MessagePipe;
+
 /**
  * @description 一个中间消息转发者,通过自主新建的MessagePipe来实现不同管道的订阅与通信
  */
-export class Broker {
+class Broker {
     static pipes = new Map();
+
     /**
      * @description 接收消息并且推入pipe中,如果pipe不存在,那么新建一个pipe
      * @param pipeId
@@ -71,9 +82,11 @@ export class Broker {
         data.inPipe(messageId, message);
         return true;
     }
+
     static hasPipe(pipeId) {
         return Broker.pipes.has(pipeId);
     }
+
     static getPipe(pipeId) {
         let pipe = Broker.pipes.get(pipeId);
         if (!pipe) {
@@ -81,6 +94,7 @@ export class Broker {
         }
         return pipe;
     }
+
     /**
      * @description 创建一个MessagePipe
      * @param pipeId
@@ -92,6 +106,7 @@ export class Broker {
         Broker.pipes.set(pipeId, pipe);
         return pipe;
     }
+
     /**
      * @description 可以改变你所指定的MessagePipe中消息队列的长度,默认值为200
      * @param pipeId
@@ -103,6 +118,7 @@ export class Broker {
             pipe.changeMaxLength(length);
         }
     }
+
     /**
      * @description 终结所有当前存在的messagePipe,注意:这会导致pipe中的数据丢失,但是会在消失之前通过close事件发送出去
      */
@@ -112,3 +128,5 @@ export class Broker {
         });
     }
 }
+
+exports.Broker = Broker;

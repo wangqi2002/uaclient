@@ -1,90 +1,110 @@
-import { ProjectManagerFactory } from './../../platform/base/project/project.js';
-import { moduleStoreNames } from './../enums.js';
-import { ClientStore } from '../store/store.js';
-import { mkdir } from 'fs';
-import { ipcClient } from '../../platform/ipc/handlers/ipc.handler.js';
-import { FileUtils } from '../../platform/base/utils/utils.js';
-import EventEmitter from 'events';
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : {"default": mod};
+};
+Object.defineProperty(exports, "__esModule", {value: true});
+exports.GlobalWorkspaceManager = exports.WorkspaceManager = void 0;
+const project_js_1 = require("./../../platform/base/project/project.js");
+const enums_js_1 = require("./../enums.js");
+const store_js_1 = require("../store/store.js");
+const fs_1 = require("fs");
+const ipc_handler_js_1 = require("../../platform/ipc/handlers/ipc.handler.js");
+const utils_js_1 = require("../../platform/base/utils/utils.js");
+const events_1 = __importDefault(require("events"));
 var storeNames;
 (function (storeNames) {
     storeNames["workspaceManager"] = "workspaceManagers";
     storeNames["currentManager"] = "currentManager";
     storeNames["projectExtend"] = "projectExtend";
 })(storeNames || (storeNames = {}));
-export class WorkspaceManager {
+
+class WorkspaceManager {
     workspace;
     events;
     projects;
     onStart;
+
     constructor(ws) {
-        this.events = new EventEmitter();
+        this.events = new events_1.default();
         this.workspace = ws.workspace;
         this.projects = ws.projects;
         this.onStart = ws.onStart;
         this.initBind();
-        ipcClient.on('extension:ready', () => {
+        ipc_handler_js_1.ipcClient.on('extension:ready', () => {
             this.toStart();
         });
     }
+
     initBind() {
-        ipcClient.on('project:load', (event, fileName) => {
+        ipc_handler_js_1.ipcClient.on('project:load', (event, fileName) => {
             console.log(fileName);
             this.loadProject(fileName);
         });
     }
+
     toStart() {
         if (this.onStart) {
-            ipcClient.emit('project:load', this.workspace.storagePath + '/' + this.onStart);
+            ipc_handler_js_1.ipcClient.emit('project:load', this.workspace.storagePath + '/' + this.onStart);
         }
     }
+
     createProject(projectName, projectType) {
-        mkdir(this.workspace.storagePath + `\\${projectName}` + `\\.${projectType}`, () => {
-            mkdir(this.workspace.storagePath + `\\${projectName}` + '\\.client', () => { });
+        (0, fs_1.mkdir)(this.workspace.storagePath + `\\${projectName}` + `\\.${projectType}`, () => {
+            (0, fs_1.mkdir)(this.workspace.storagePath + `\\${projectName}` + '\\.client', () => {
+            });
         });
     }
-    deleteProject() { }
+
+    deleteProject() {
+    }
+
     loadProject(fileName) {
         GlobalWorkspaceManager.projectExtend.forEach((projectType) => {
             if (fileName.endsWith(projectType)) {
-                ipcClient.emit('project:activate.' + projectType);
+                ipc_handler_js_1.ipcClient.emit('project:activate.' + projectType);
             }
         });
         let project = require(fileName + '/project.json');
-        ProjectManagerFactory.produceProjectManager(project);
+        project_js_1.ProjectManagerFactory.produceProjectManager(project);
     }
 }
-export class GlobalWorkspaceManager {
+
+exports.WorkspaceManager = WorkspaceManager;
+
+class GlobalWorkspaceManager {
     workspaces;
     static currentManager;
     static projectExtend;
+
     constructor() {
         this.workspaces = new Map();
         GlobalWorkspaceManager.projectExtend = [];
-        ClientStore.create({
-            name: moduleStoreNames.workspace,
+        store_js_1.ClientStore.create({
+            name: enums_js_1.moduleStoreNames.workspace,
             fileExtension: 'json',
             clearInvalidConfig: true,
         });
         this.initBind();
         this.loadAllWorkspaces();
-        ipcClient.emit('workspace:ready');
+        // ipcClient.emit('workspace:ready')
     }
+
     initBind() {
-        ipcClient.handle('folder:open', (event, fileName) => {
-            let files = FileUtils.openFolder(fileName);
+        ipc_handler_js_1.ipcClient.handle('folder:open', (event, fileName) => {
+            let files = utils_js_1.FileUtils.openFolder(fileName);
             if (files.includes('project.json')) {
-                ipcClient.emit('project:load', fileName, files);
+                ipc_handler_js_1.ipcClient.emit('project:load', fileName, files);
                 return null;
-            }
-            else {
+            } else {
                 return files;
             }
         });
     }
+
     loadAllWorkspaces() {
-        let ws = ClientStore.get(moduleStoreNames.workspace, storeNames.workspaceManager);
-        let current = ClientStore.get(moduleStoreNames.workspace, storeNames.currentManager);
-        GlobalWorkspaceManager.projectExtend = ClientStore.get(moduleStoreNames.workspace, storeNames.projectExtend);
+        let ws = store_js_1.ClientStore.get(enums_js_1.moduleStoreNames.workspace, storeNames.workspaceManager);
+        let current = store_js_1.ClientStore.get(enums_js_1.moduleStoreNames.workspace, storeNames.currentManager);
+        GlobalWorkspaceManager.projectExtend = store_js_1.ClientStore.get(enums_js_1.moduleStoreNames.workspace, storeNames.projectExtend);
         if (current) {
             GlobalWorkspaceManager.currentManager = new WorkspaceManager(current);
         }
@@ -94,10 +114,12 @@ export class GlobalWorkspaceManager {
             });
         }
     }
+
     createDirAsWorkspace(dirPath, workspaceName) {
         if (!this.workspaces.has(workspaceName)) {
-            mkdir(dirPath + `//${workspaceName}`, () => {
-                mkdir(dirPath + '//.ws', () => { });
+            (0, fs_1.mkdir)(dirPath + `//${workspaceName}`, () => {
+                (0, fs_1.mkdir)(dirPath + '//.ws', () => {
+                });
             });
             let w = {
                 workspace: {
@@ -111,27 +133,37 @@ export class GlobalWorkspaceManager {
             GlobalWorkspaceManager.currentManager = new WorkspaceManager(w);
         }
     }
+
     switchWorkspace(workspaceName) {
         let ws = this.workspaces.get(workspaceName);
         if (ws) {
             GlobalWorkspaceManager.currentManager = new WorkspaceManager(ws);
         }
     }
+
     static addProjectExtend(projects) {
         GlobalWorkspaceManager.projectExtend.push(...projects);
     }
+
     static getProjectExtend() {
         return GlobalWorkspaceManager.projectExtend;
     }
+
     static getCurrentWSNames() {
         return GlobalWorkspaceManager.currentManager.workspace;
     }
-    static changeWorkspace() { }
-    updateStore() {
-        ClientStore.set('workspace', 'workspaces', [...this.workspaces.values()]);
+
+    static changeWorkspace() {
     }
+
+    updateStore() {
+        store_js_1.ClientStore.set('workspace', 'workspaces', [...this.workspaces.values()]);
+    }
+
     beforeClose() {
         this.updateStore();
     }
 }
+
+exports.GlobalWorkspaceManager = GlobalWorkspaceManager;
 // new ClientStore()

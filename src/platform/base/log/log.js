@@ -1,14 +1,22 @@
-import { app } from 'electron';
-import log from 'log4js';
-const { configure, getLogger } = log;
-import { MainEvents, rendererEvents } from '../../ipc/events/ipc.events.js';
-import { ipcClient } from '../../ipc/handlers/ipc.handler.js';
-import { ClientStore, ConfigNames } from '../../../client/store/store.js';
-export class InfoModel {
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : {"default": mod};
+};
+Object.defineProperty(exports, "__esModule", {value: true});
+exports.Log = exports.ClientInfo = exports.ClientError = exports.ClientWarn = exports.InfoModel = void 0;
+const electron_1 = require("electron");
+const log4js_1 = __importDefault(require("log4js"));
+const {configure, getLogger} = log4js_1.default;
+const ipc_events_js_1 = require("../../ipc/events/ipc.events.js");
+const ipc_handler_js_1 = require("../../ipc/handlers/ipc.handler.js");
+const store_js_1 = require("../../../client/store/store.js");
+
+class InfoModel {
     timeStamp;
     source;
     information;
     message;
+
     constructor(source, information, message) {
         this.timeStamp = new Date().toLocaleString();
         this.source = source;
@@ -16,17 +24,25 @@ export class InfoModel {
         this.message = message;
     }
 }
-export class ClientWarn extends InfoModel {
+
+exports.InfoModel = InfoModel;
+
+class ClientWarn extends InfoModel {
     warn;
+
     constructor(source, information, warn, message) {
         super(source, information, message);
         if (warn)
             this.warn = warn;
     }
 }
-export class ClientError extends InfoModel {
+
+exports.ClientWarn = ClientWarn;
+
+class ClientError extends InfoModel {
     error;
     trace;
+
     constructor(source, information, error, trace) {
         super(source, information);
         if (error)
@@ -35,26 +51,34 @@ export class ClientError extends InfoModel {
             this.trace = trace;
     }
 }
-export class ClientInfo extends InfoModel {
+
+exports.ClientError = ClientError;
+
+class ClientInfo extends InfoModel {
     constructor(source, information, message) {
         super(source, information, message);
     }
 }
-export class Log {
+
+exports.ClientInfo = ClientInfo;
+
+class Log {
     static clientLogger = getLogger('client');
+
     constructor(loggerName = 'client', config) {
         this.configureLog(config);
         this.initBind();
     }
+
     static info(info) {
         try {
-            Log.clientLogger.info(info.information, { source: info.source, ...info.message });
-            ipcClient.emit(MainEvents.logEmitEvents.info, info);
-        }
-        catch (e) {
+            Log.clientLogger.info(info.information, {source: info.source, ...info.message});
+            ipc_handler_js_1.ipcClient.emit(ipc_events_js_1.MainEvents.logEmitEvents.info, info);
+        } catch (e) {
             throw e;
         }
     }
+
     static error(info) {
         try {
             Log.clientLogger.error(info.information, {
@@ -63,21 +87,21 @@ export class Log {
                 stack: info.trace,
                 ...info.message,
             });
-            ipcClient.emit(MainEvents.logEmitEvents.error, info);
-        }
-        catch (e) {
+            ipc_handler_js_1.ipcClient.emit(ipc_events_js_1.MainEvents.logEmitEvents.error, info);
+        } catch (e) {
             throw e;
         }
     }
+
     static warn(info) {
         try {
-            Log.clientLogger.warn(info.information, { source: info.source, warn: info.warn, ...info.message });
-            ipcClient.emit(MainEvents.logEmitEvents.warn, info);
-        }
-        catch (e) {
+            Log.clientLogger.warn(info.information, {source: info.source, warn: info.warn, ...info.message});
+            ipc_handler_js_1.ipcClient.emit(ipc_events_js_1.MainEvents.logEmitEvents.warn, info);
+        } catch (e) {
             throw e;
         }
     }
+
     /**
      * @description 具体参考log4js配置方法
      * @param conf
@@ -85,38 +109,39 @@ export class Log {
     configureLog(conf) {
         try {
             if (conf) {
-                ClientStore.set('config', ConfigNames.log, conf);
-            }
-            else {
+                store_js_1.ClientStore.set('config', store_js_1.ConfigNames.log, conf);
+            } else {
                 conf = {
                     appenders: {
                         client: {
                             type: 'file',
-                            filename: app.getPath('appData') + '/logs/client.log',
+                            filename: electron_1.app.getPath('appData') + '/logs/client.log',
                             maxLogSize: 50000, //文件最大存储空间，当文件内容超过文件存储空间会自动生成一个文件test.log.1的序列自增长的文件
                         },
                     },
-                    categories: { default: { appenders: ['client'], level: 'info' } },
+                    categories: {default: {appenders: ['client'], level: 'info'}},
                 };
-                if (!ClientStore.has('config', ConfigNames.log))
-                    ClientStore.set('config', ConfigNames.log, conf);
+                if (!store_js_1.ClientStore.has('config', store_js_1.ConfigNames.log))
+                    store_js_1.ClientStore.set('config', store_js_1.ConfigNames.log, conf);
                 configure(conf);
             }
-        }
-        catch (e) {
+        } catch (e) {
             throw e;
         }
     }
+
     initBind() {
-        ipcClient.on(rendererEvents.logEvents.info, (event, args) => {
+        ipc_handler_js_1.ipcClient.on(ipc_events_js_1.rendererEvents.logEvents.info, (event, args) => {
             Log.info(args);
         });
-        ipcClient.on(rendererEvents.logEvents.error, (event, args) => {
+        ipc_handler_js_1.ipcClient.on(ipc_events_js_1.rendererEvents.logEvents.error, (event, args) => {
             Log.error(args);
         });
-        ipcClient.on(rendererEvents.logEvents.warn, (event, args) => {
+        ipc_handler_js_1.ipcClient.on(ipc_events_js_1.rendererEvents.logEvents.warn, (event, args) => {
             Log.warn(args);
         });
     }
 }
+
+exports.Log = Log;
 //todo 安装时,应当初始化log和database服务

@@ -1,18 +1,27 @@
-import { ipcMain } from 'electron';
-export class ipcClient {
+"use strict";
+Object.defineProperty(exports, "__esModule", {value: true});
+exports.ipcClient = void 0;
+const electron_1 = require("electron");
+
+class ipcClient {
     static currentWindow;
+
     constructor(send) {
         ipcClient.currentWindow = send;
     }
+
     static on(event, eventHandler) {
-        ipcMain.on(event, eventHandler);
+        electron_1.ipcMain.on(event, eventHandler);
     }
+
     static once(event, eventHandler) {
-        ipcMain.once(event, eventHandler);
+        electron_1.ipcMain.once(event, eventHandler);
     }
+
     static handle(event, eventHandler) {
-        ipcMain.handle(event, eventHandler);
+        electron_1.ipcMain.handle(event, eventHandler);
     }
+
     /**
      * @description 通过mainwindow进行广播,并且发送消息到mainwindow.webContents
      * @param event
@@ -22,3 +31,5 @@ export class ipcClient {
         ipcClient.currentWindow(event, ...args);
     }
 }
+
+exports.ipcClient = ipcClient;

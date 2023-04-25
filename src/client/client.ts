@@ -89,8 +89,8 @@ class Client {
     private createWorkbench() {
         let { width, height } = ClientStore.get('config', 'border')
         this.workbench = new Workbench(
-            path.join(FileTransfer.dirname(import.meta.url), '../workbench/preload.js'),
-            path.join(FileTransfer.dirname(import.meta.url), './src/workbench/index.html'),
+            path.join(__dirname, '../workbench/preload.js'),
+            path.join(__dirname, '../workbench/index.html'),
             Client.dev,
             width,
             height
